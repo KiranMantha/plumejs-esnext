@@ -48,6 +48,9 @@ Service(
 //         templatePath: () => import("./about-us")
 //       }
 //     ];
+
+//     static get observedProperties() { return []; };
+
 //     constructor(_samplesrvc, _routersrvc) {
 //       this.samplesrvc = _samplesrvc;
 //       this.routerSrvc = _routersrvc;
@@ -61,6 +64,8 @@ Service(
 //     unmount() {
 //       console.log("i was unmounted");
 //     }
+
+//     onPropertyChanged(propName, oldValue, newValue) {}
 
 //     enableContactusRoute() {
 //       window.localStorage.setItem(
