@@ -146,75 +146,75 @@ Service(
 // }
 
 var C = Component("a-element", [
-      "SampleService",
-      class {
-        props = {};
-        inputEl = useRef(null);
-        constructor(sampleSrvc, props) {
-          console.log(sampleSrvc, props);
-          this.props = props;
-        }
-
-        mount() {
-          console.log('ref', this.inputEl);
-        }
-
-        trigger(e) {
-          console.log(e);
-        }
-
-        render() {
-          return ( 
-            <div ref = {
-              this.inputEl
-            } onclick={ this.trigger.bind(this) }> {
-              this.props.name.a
-            } </div>);
-          }
-        }
-      ]);
-
-    class A extends HTMLElement {
-      props = {};
-      constructor(props) {
-        super();
-        console.log("props", props);
-        this.props = props;
-        Object.setPrototypeOf(
-          this,
-          new Proxy(Object.create(HTMLElement.prototype), {
-            set: (target, key, value) => {
-              console.log(target, key, value);
-              return true;
-            }
-          })
-        );
-      }
-
-      connectedCallback() {
-        this.innerHTML = `
-          <h1>${this.props.a}</h1>
-        `;
-      }
-
-      disconnectedCallback() {}
+  "SampleService",
+  class {
+    props = {};
+    inputEl = useRef(null);
+    constructor(sampleSrvc, props) {
+      console.log(sampleSrvc, props);
+      this.props = props;
     }
 
-    //window.customElements.define("a-element", A);
-    // const el = new A(1234);
-    // window.el = el;
-    // appDiv.appendChild(el);
-    const k = {
-      a: 1234
-    };
-    // const el = new A(k);
-    // window.el = el;
-    // appDiv.appendChild(el);
-    // appDiv.innerHTML = `<a-element name="${k}"></a-element>`;
-    // window.appDiv = appDiv;
+    mount() {
+      console.log('ref', this.inputEl);
+    }
 
-    const B = props => <div> {props.name.a} </div>;
+    trigger(e) {
+      console.log(e);
+    }
 
-    appDiv.appendChild(
-      <C name = {k}/>
+    render() {
+      return (
+        <div ref={
+          this.inputEl
+        } onclick={this.trigger.bind(this)}> {
+            this.props.name.a
+          } </div>);
+    }
+  }
+]);
+
+class A extends HTMLElement {
+  props = {};
+  constructor(props) {
+    super();
+    console.log("props", props);
+    this.props = props;
+    Object.setPrototypeOf(
+      this,
+      new Proxy(Object.create(HTMLElement.prototype), {
+        set: (target, key, value) => {
+          console.log(target, key, value);
+          return true;
+        }
+      })
     );
+  }
+
+  connectedCallback() {
+    this.innerHTML = `
+          <h1>${this.props.a}</h1>
+        `;
+  }
+
+  disconnectedCallback() { }
+}
+
+//window.customElements.define("a-element", A);
+// const el = new A(1234);
+// window.el = el;
+// appDiv.appendChild(el);
+const k = {
+  a: 1234
+};
+// const el = new A(k);
+// window.el = el;
+// appDiv.appendChild(el);
+// appDiv.innerHTML = `<a-element name="${k}"></a-element>`;
+// window.appDiv = appDiv;
+
+const B = props => <div> {props.name.a} </div>;
+
+appDiv.appendChild(
+  <C name={k} />
+);

@@ -1,5 +1,5 @@
-import instantiate from "./instance";
 import { augmentor } from "augmentor";
+import instantiate from "./instance";
 import { render } from "./plume";
 
 const customElements = window.customElements;
@@ -33,12 +33,12 @@ const Component = (sel, klass) => {
      * __bindProperties()
      * Internal method to bind properties and create a onPropertyChanged callback, also exposing an event of the same name
      * use this callback or watch the event to be notified of property changes that are subscribed too
-	  */
+    */
     _bindProperties() {
       if (!klass.constructor.observedProperties || !klass.constructor.observedProperties.length) return;
-  
+
       this.__properties = {};
-  
+
       for (const idx in klass.constructor.observedProperties) {
         Object.defineProperty(this, klass.constructor.observedProperties[idx], {
           get: function () { return this.__properties[klass.constructor.observedProperties[idx]]; },
@@ -71,3 +71,4 @@ const Component = (sel, klass) => {
 };
 
 export { Component };
+

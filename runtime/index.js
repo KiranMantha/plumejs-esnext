@@ -9,7 +9,7 @@ const h = (tag, props, ...children) => {
   }
   const element = document.createElement(tag);
 
-  for(let name in (props || {})) {
+  for (let name in (props || {})) {
     const value = props[name];
     switch (name) {
       case 'ref': {
