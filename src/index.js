@@ -2,9 +2,9 @@
 customElements.forcePolyfill = true;
 import "@webcomponents/custom-elements";
 import {
-  Component,
-  Service,
-  useRef
+    Component,
+    Service,
+    useRef
 } from "./lib/plume";
 
 // // Write Javascript code!
@@ -12,12 +12,12 @@ const appDiv = document.getElementById("app");
 // appDiv.innerHTML = `<h1>JS Starter</h1>`;
 
 Service(
-  "SampleService",
-  class {
-    log(s) {
-      console.log(s);
+    "SampleService",
+    class {
+        log(s) {
+            console.log(s);
+        }
     }
-  }
 );
 
 // component("app-root", [
@@ -146,58 +146,58 @@ Service(
 // }
 
 var C = Component("a-element", [
-  "SampleService",
-  class {
-    props = {};
-    inputEl = useRef(null);
-    constructor(sampleSrvc, props) {
-      console.log(sampleSrvc, props);
-      this.props = props;
-    }
+    "SampleService",
+    class {
+        props = {};
+        inputEl = useRef(null);
+        constructor(sampleSrvc, props) {
+            console.log(sampleSrvc, props);
+            this.props = props;
+        }
 
-    mount() {
-      console.log('ref', this.inputEl);
-    }
+        mount() {
+            console.log('ref', this.inputEl);
+        }
 
-    trigger(e) {
-      console.log(e);
-    }
+        trigger(e) {
+            console.log(e);
+        }
 
-    render() {
-      return (
-        <div ref={
-          this.inputEl
-        } onclick={this.trigger.bind(this)}> {
-            this.props.name.a
-          } </div>);
+        render() {
+            return (
+                <div ref={
+                    this.inputEl
+                } onclick={this.trigger.bind(this)}> {
+                        this.props.name.a
+                    } </div>);
+        }
     }
-  }
 ]);
 
 class A extends HTMLElement {
-  props = {};
-  constructor(props) {
-    super();
-    console.log("props", props);
-    this.props = props;
-    Object.setPrototypeOf(
-      this,
-      new Proxy(Object.create(HTMLElement.prototype), {
-        set: (target, key, value) => {
-          console.log(target, key, value);
-          return true;
-        }
-      })
-    );
-  }
+    props = {};
+    constructor(props) {
+        super();
+        console.log("props", props);
+        this.props = props;
+        Object.setPrototypeOf(
+            this,
+            new Proxy(Object.create(HTMLElement.prototype), {
+                set: (target, key, value) => {
+                    console.log(target, key, value);
+                    return true;
+                }
+            })
+        );
+    }
 
-  connectedCallback() {
-    this.innerHTML = `
+    connectedCallback() {
+        this.innerHTML = `
           <h1>${this.props.a}</h1>
         `;
-  }
+    }
 
-  disconnectedCallback() { }
+    disconnectedCallback() { }
 }
 
 //window.customElements.define("a-element", A);
@@ -205,7 +205,7 @@ class A extends HTMLElement {
 // window.el = el;
 // appDiv.appendChild(el);
 const k = {
-  a: 1234
+    a: 1234
 };
 // const el = new A(k);
 // window.el = el;
@@ -216,5 +216,11 @@ const k = {
 const B = props => <div> {props.name.a} </div>;
 
 appDiv.appendChild(
-  <C name={k} />
+    <C name={k} />
 );
+
+Component('app-root', class {
+    render() {
+        return html`<div class="${'class-name'}">${'test'}</div>`
+    }
+})

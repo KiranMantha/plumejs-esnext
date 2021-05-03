@@ -40,12 +40,13 @@ const Component = (sel, klass) => {
       this.__properties = {};
 
       for (const idx in klass.constructor.observedProperties) {
+        this.__properties[klass.constructor.observedProperties[idx]] = null;
         Object.defineProperty(this, klass.constructor.observedProperties[idx], {
           get: function () { return this.__properties[klass.constructor.observedProperties[idx]]; },
           set: function (value) {
             let oldValue = this.__properties[klass.constructor.observedProperties[idx]];
-            this.__properties[klass.constructor.observedProperties[idx]] = value;
             if (this.isConnected && typeof this._klass.onPropertyChanged === 'function') if (oldValue !== value) this._klass.onPropertyChanged(klass.constructor.observedProperties[idx], oldValue, value);
+            this.__properties[klass.constructor.observedProperties[idx]] = value;
           }
         });
       }
