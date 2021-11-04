@@ -1,75 +1,137 @@
-import { augmentor } from "augmentor";
-import instantiate from "./instance";
-import { render } from "./plume";
+import { instantiate } from './instantiate.js';
+import { componentRegistry } from './componentRegistry';
+import { render } from './html.js';
 
-const customElements = window.customElements;
+class Renderer {
+  shadowRoot;
+  update;
+  emitEvent;
+}
 
-const wrapper = fn => props => instantiate(fn, props);
+const COMPONENT_DATA_ATTR = 'data-compid';
 
-const Component = (sel, klass) => {
-  class __dummy extends HTMLElement {
-    _klass;
-    _shadow;
-    _props;
-    __properties;
+const transformCSS = (styles, selector) => {
+  if (styles) {
+    styles = selector + ' ' + styles.replace('}', ` } ${selector} `);
+  }
+  return styles;
+};
 
-    constructor(props) {
-      super();
-      //this._shadow = this.attachShadow({ mode: "open" }) : this;
-      this._shadow = this;
-      this._props = props;
-    }
+const createStyleTag = (content, where) => {
+  const tag = document.createElement('style');
+  tag.innerHTML = content;
+  return tag;
+};
 
-    _init() {
-      const _returnfn = this._klass.render.bind(this._klass);
-      render(this._shadow, _returnfn());
-    }
+const Component = (componentOptions, klass) => {
+  if (window.customElements.get(componentOptions.selector)) {
+    return;
+  }
 
-    _update = () => {
-      this._init();
-    };
+  // setting defaults
+  componentOptions.root = componentOptions.root || false;
+  componentOptions.styles = (componentOptions.styles || '').toString();
+  componentOptions.useShadow = componentOptions.useShadow || true;
 
-    /**
-     * __bindProperties()
-     * Internal method to bind properties and create a onPropertyChanged callback, also exposing an event of the same name
-     * use this callback or watch the event to be notified of property changes that are subscribed too
-    */
-    _bindProperties() {
-      if (!klass.constructor.observedProperties || !klass.constructor.observedProperties.length) return;
+  if (componentOptions.root && !componentRegistry.isRootNodeSet) {
+    componentRegistry.isRootNodeSet = true;
+    componentRegistry.globalStyles.replace(componentOptions.styles);
+    componentRegistry.globalStyleTag = createStyleTag(componentOptions.styles);
+    document.head.appendChild(componentRegistry.globalStyleTag);
+  } else if (componentOptions.root && componentRegistry.isRootNodeSet) {
+    throw Error(
+      'Cannot register duplicate root component in ' +
+        componentOptions.selector +
+        ' component'
+    );
+  }
 
-      this.__properties = {};
+  window.customElements.define(
+    componentOptions.selector,
+    class extends HTMLElement {
+      #klass;
+      #shadow;
+      #componentStyleTag;
 
-      for (const idx in klass.constructor.observedProperties) {
-        this.__properties[klass.constructor.observedProperties[idx]] = null;
-        Object.defineProperty(this, klass.constructor.observedProperties[idx], {
-          get: function () { return this.__properties[klass.constructor.observedProperties[idx]]; },
-          set: function (value) {
-            let oldValue = this.__properties[klass.constructor.observedProperties[idx]];
-            if (this.isConnected && typeof this._klass.onPropertyChanged === 'function') if (oldValue !== value) this._klass.onPropertyChanged(klass.constructor.observedProperties[idx], oldValue, value);
-            this.__properties[klass.constructor.observedProperties[idx]] = value;
-          }
+      constructor() {
+        super();
+        this.#shadow = this.attachShadow({ mode: 'open' });
+        this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
+          componentOptions.styles
+        );
+        this.update = this.update.bind(this);
+        this.emitEvent = this.emitEvent.bind(this);
+        this.setProps = this.setProps.bind(this);
+        this.getInstance = this.getInstance.bind(this);
+      }
+
+      update() {
+        render(this.#shadow, this.#klass.render.bind(this.#klass)());
+        // this.#shadow.insertBefore(
+        //   this.#componentStyleTag,
+        //   this.#shadow.childNodes[0]
+        // );
+        // this.#shadow.insertBefore(
+        //   componentRegistry.globalStyleTag,
+        //   this.#shadow.childNodes[0]
+        // );
+      }
+
+      emitEvent(eventName, data) {
+        const event = new CustomEvent(eventName, {
+          detail: data,
         });
+        this.dispatchEvent(event);
+      }
+
+      setProps(propsObj) {
+        for (const [key, value] of Object.entries(propsObj)) {
+          this.#klass[key] = value;
+        }
+        this.#klass.onPropsChanged && this.#klass.onPropsChanged();
+        this.update();
+      }
+
+      getInstance() {
+        return this.#klass;
+      }
+
+      emulateComponent() {
+        //if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
+        const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
+        const compiledCSS = transformCSS(
+          componentOptions.styles,
+          `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`
+        );
+        this.#componentStyleTag = createStyleTag(compiledCSS);
+        this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
+        //}
+      }
+
+      connectedCallback() {
+        //this.emulateComponent();
+        const fn = Array.isArray(klass) ? klass : [klass];
+        const rendererInstance = new Renderer();
+        rendererInstance.shadowRoot = this.#shadow;
+        rendererInstance.update = this.update;
+        rendererInstance.emitEvent = this.emitEvent;
+        this.#klass = instantiate(fn, rendererInstance);
+        this.#klass.beforeMount && this.#klass.beforeMount();
+        this.update();
+        this.#klass.mount && this.#klass.mount();
+      }
+
+      disconnectedCallback() {
+        this.#klass.unmount && this.#klass.unmount();
+        if (this.eventListenersMap) {
+          for (const [key, value] of Object.entries(this.eventListenersMap)) {
+            this.removeEventListener(key, value);
+          }
+        }
+        this.eventListenersMap = null;
       }
     }
-
-    connectedCallback() {
-      this._klass = augmentor(wrapper(klass))(this._props);
-      this._bindProperties();
-      this._klass["update"] = this._update.bind(this);
-      this._klass.beforeMount && this._klass.beforeMount();
-
-      this._update();
-      this._klass.mount && this._klass.mount();
-    }
-
-    disconnectedCallback() {
-      this.__properties = null;
-      this._klass.unmount && this._klass.unmount();
-    }
-  }
-  customElements.define(sel, __dummy);
-  return __dummy;
+  );
 };
 
 export { Component };
-

@@ -1,30 +1,22 @@
-import instantiate from "./instance";
-
-class ServiceResolver {
+const Injector = new class {
   _services = new Map();
 
-  constructor() {
-    return {
-      register: this.register.bind(this),
-      get: this.getService.bind(this)
-    }
-  }
-
-  register(name, func) {
-    if (name && func) {
-      if (!this._services.get(name)) {
-        this._services.set(name, func);
-      }
+  register(name, obj) {
+    if (!this._services.get(name)) {
+      this._services.set(name, obj);
     } else {
-      throw "error: Requires name and constructor to define service";
+      throw `${name} service already exists`;
     }
   }
 
   getService(name) {
-    return this._services.get(name);
+    const instance = this._services.get(name);
+    if (instance) {
+      return instance;
+    } else {
+      throw Error(`${name} is not a registered service.`);
+    }
   }
-}
+}();
 
-const Injector = new ServiceResolver();
-
-export default Injector;
+export { Injector };

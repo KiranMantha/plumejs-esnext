@@ -1,11 +1,18 @@
-import instantiate from "./instance";
-import Injector from "./injector";
+import { Injector } from './injector';
+import { instantiate } from './instantiate';
+import { isFunction, isObject } from './utils';
 
-const Service = (name, klass) => {
-  if (!name || !klass) return;
-  if (!Injector.get(name)) {
-    const serviceInstance = instantiate(klass);
-    Injector.register(name, serviceInstance);
+const Service = (name, func) => {
+  if (name && func) {
+    if (isFunction(func) || Array.isArray(func)) {
+      const fn = Array.isArray(func) ? func : [func];
+      const instance = instantiate(fn);
+      Injector.register(name, instance);
+    } else if(isObject(func)) {
+      Injector.register(name, func);
+    }
+  } else {
+    throw 'error: Requires name and (constructor or service names with constructor) to define service';
   }
 };
 
