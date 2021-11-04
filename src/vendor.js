@@ -1,1 +1,1 @@
-console.log('Hello World from vendor main file!');
+import 'construct-style-sheets-polyfill';

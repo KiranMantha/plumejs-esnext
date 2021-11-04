@@ -1,226 +1,184 @@
-// // Import stylesheets
-customElements.forcePolyfill = true;
-import "@webcomponents/custom-elements";
-import {
-    Component,
-    Service,
-    useRef
-} from "./lib/plume";
+//https://codeburst.io/angular-2-simple-infinite-scroller-directive-with-rxjs-observables-a989b12d4fb1
 
-// // Write Javascript code!
-const appDiv = document.getElementById("app");
-// appDiv.innerHTML = `<h1>JS Starter</h1>`;
+import styles from './base.scss';
+
+import {
+  Component,
+  Service,
+  html,
+  render,
+  registerRouterComponent,
+} from './lib';
+
+registerRouterComponent();
 
 Service(
-    "SampleService",
-    class {
-        log(s) {
-            console.log(s);
-        }
+  'testService',
+  class {
+    getGreeting() {
+      return 'hello world';
     }
+  }
 );
 
-// component("app-root", [
-//   "SampleService",
-//   "RouterService",
-//   class {
-//     greet = "hello world";
-//     fruits = ["apple", "orange", "grapes"];
-//     samplesrvc;
-//     routerSrvc;
-//     routes = [
-//       {
-//         path: "/contactus",
-//         template: "<app-contactus></app-contactus>",
-//         templatePath: () => import("./contact-us"),
-//         canActivate: () => {
-//           let key = localStorage.getItem("plumejs");
-//           if (!key) {
-//             this.routerSrvc.navigateTo("/home");
-//             return false;
-//           }
-//           return true;
-//         }
-//       },
-//       {
-//         path: "/about/:id",
-//         template: "<app-about></app-about>",
-//         templatePath: () => import("./about-us")
-//       }
-//     ];
+let TestComponent = [
+  'Renderer',
+  class {
+    constructor(renderer) {}
 
-//     static get observedProperties() { return []; };
-
-//     constructor(_samplesrvc, _routersrvc) {
-//       this.samplesrvc = _samplesrvc;
-//       this.routerSrvc = _routersrvc;
-//       _routersrvc.addRoutes(this.routes);
-//     }
-
-//     mount() {
-//       console.log("i was mounted");
-//     }
-
-//     unmount() {
-//       console.log("i was unmounted");
-//     }
-
-//     onPropertyChanged(propName, oldValue, newValue) {}
-
-//     enableContactusRoute() {
-//       window.localStorage.setItem(
-//         "plumejs",
-//         "now Contactus route is activated"
-//       );
-//     }
-
-//     disableContactusRoute() {
-//       window.localStorage.removeItem("plumejs");
-//     }
-
-//     log(s) {
-//       this.samplesrvc.log(s);
-//     }
-//     render() {
-//       return html`
-//         <h1>${this.greet}</h1>
-//         <button
-//           onclick=${this.enableContactusRoute}
-//           title="click contactus nav to check contactus route"
-//         >
-//           Enable contactus route
-//         </button>
-//         <button
-//           onclick=${this.disableContactusRoute}
-//           title="click contactus nav to check contactus route"
-//         >
-//           Disable contactus route
-//         </button>
-//         <button onclick=${() => this.routerSrvc.navigateTo("/contactus")}>
-//           go to contactus
-//         </button>
-//         <button onclick=${() => this.routerSrvc.navigateTo("/about/123")}>
-//           go to about with params
-//         </button>
-//         <dl>
-//           ${this.fruits.map(i => {
-//             return html`
-//               <dt
-//                 onclick=${() => {
-//                   this.log(i);
-//                 }}
-//               >
-//                 ${i}
-//               </dt>
-//             `;
-//           })}
-//         </dl>
-//         <router-outlet></router-outlet>
-//       `;
-//     }
-//   }
-// ]);
-
-// render(
-//   appDiv,
-//   html`
-//     <app-root></app-root>
-//   `
-// );
-
-// class A extends HTMLElement {
-//   constructor() {
-//     console.log(super());
-//     return new Proxy(this, {
-//       construct: (target, argumentsList) => {
-//         super();
-//         let foo = new target(...argumentsList);
-//         return foo;
-//       },
-//       get: (target, key) => {
-//         console.log('get property:', key)
-//         return target[key]
-//       }
-//     })
-//   }
-// }
-
-var C = Component("a-element", [
-    "SampleService",
-    class {
-        props = {};
-        inputEl = useRef(null);
-        constructor(sampleSrvc, props) {
-            console.log(sampleSrvc, props);
-            this.props = props;
-        }
-
-        mount() {
-            console.log('ref', this.inputEl);
-        }
-
-        trigger(e) {
-            console.log(e);
-        }
-
-        render() {
-            return (
-                <div ref={
-                    this.inputEl
-                } onclick={this.trigger.bind(this)}> {
-                        this.props.name.a
-                    } </div>);
-        }
-    }
-]);
-
-class A extends HTMLElement {
-    props = {};
-    constructor(props) {
-        super();
-        console.log("props", props);
-        this.props = props;
-        Object.setPrototypeOf(
-            this,
-            new Proxy(Object.create(HTMLElement.prototype), {
-                set: (target, key, value) => {
-                    console.log(target, key, value);
-                    return true;
-                }
-            })
-        );
+    emitDataToParent() {
+      this.renderer.emitEvent('customoutput', {
+        greet: 'greetings from child',
+      });
     }
 
-    connectedCallback() {
-        this.innerHTML = `
-          <h1>${this.props.a}</h1>
-        `;
-    }
-
-    disconnectedCallback() { }
-}
-
-//window.customElements.define("a-element", A);
-// const el = new A(1234);
-// window.el = el;
-// appDiv.appendChild(el);
-const k = {
-    a: 1234
-};
-// const el = new A(k);
-// window.el = el;
-// appDiv.appendChild(el);
-// appDiv.innerHTML = `<a-element name="${k}"></a-element>`;
-// window.appDiv = appDiv;
-
-const B = props => <div> {props.name.a} </div>;
-
-appDiv.appendChild(
-    <C name={k} />
-);
-
-Component('app-root', class {
     render() {
-        return html`<div class="${'class-name'}">${'test'}</div>`
+      return html`
+        <fieldset class="fieldset">
+          <legend>I'm child component</legend>
+          <button class="button  is-info is-light"
+            onclick="${() => {
+              this.emitDataToParent();
+            }}"
+          >
+            emit data from child to parent
+          </button>
+        </fieldset>
+      `;
     }
-})
+  },
+];
+
+let AppComponent = [
+  'testService',
+  'Router',
+  class {
+    greet;
+    divRef;
+    setClass = true;
+    tabsContainer;
+
+    routes = [
+      {
+        path: '',
+        redirectTo: '/home',
+      },
+      {
+        path: '/home',
+        template: '<app-items></app-items>',
+        templatePath: () => import('./app/items'),
+      },
+      {
+        path: '/persons',
+        template: '<app-persons></app-persons>',
+        templatePath: () => import('./app/persons'),
+      },
+      {
+        path: '/form',
+        template: '<app-sample-form></app-sample-form>',
+        templatePath: () => import('./app/form'),
+      },
+    ];
+
+    constructor(testService, routerSrvc) {
+      routerSrvc.registerRoutes(this.routes);
+      this.greet = testService.getGreeting();
+    }
+
+    toggleActiveTab() {
+      this.tabsContainer
+        .querySelectorAll('.is-active')[0]
+        .classList.remove('is-active');
+    }
+
+    navigate(e, path) {
+      e.preventDefault();
+      this.toggleActiveTab();
+      e.target.parentElement.classList.add('is-active');
+      this.routerSrvc.navigateTo(path);
+    }
+
+    listenFromChild(data) {
+      console.log(
+        'listening in parent component for data from child component: ',
+        data
+      );
+    }
+
+    render() {
+      return html`
+        <fieldset class="fieldset">
+          <legend>I'm parent component</legend>
+          <div class="tabs" style="margin-bottom: 20px;">
+            <ul ref=${(node) => {
+              this.tabsContainer = node;
+            }}>
+              <li class="is-active">
+                <a href="#" onclick=${(e) => this.navigate(e, '/home')}
+                  >Items Route</a>
+              </li>
+              <li>
+                <a href="#" onclick=${(e) => this.navigate(e, '/persons')}
+                  >Persons Route</a>
+              </li>
+              <li>
+                <a href="#" onclick=${(e) =>
+                  this.navigate(e, '/form')}>Form Route</a>
+              </li>
+            </ul>
+          </div>
+          <test-ele
+            oncustomoutput="${(e) => {
+              this.listenFromChild(e.detail);
+            }}"
+          ></test-ele>
+          <div
+            style="margin-top: 20px;"
+            ref="${(node) => {
+              this.divRef = node;
+            }}"
+            class="hello ${this.setClass ? 'world' : ''}"
+            data-adj="${this.setClass}"
+          >
+            ${this.greet}
+            <input
+              value="${this.greet}"
+              oninput="${(e) => console.log(e.target.value)}"
+            />
+
+            ${(() => {
+              if (this.setClass) {
+                return html`
+                  <div>loaded conditionally..</div>
+                `;
+              }
+            })()}
+            <ul>
+              ${[1, 2, 3].map((item) => {
+                return html`
+                  <li onclick="${() => console.log(item)}">
+                    ${item}
+                  </li>
+                `;
+              })}
+            </ul>
+          </div>
+          <fieldset class="fieldset">
+            <legend>router outlet</legend>
+            <router-outlet></router-outlet>
+          </fieldset>
+        </fieldset>
+      `;
+    }
+  },
+];
+
+Component({ selector: 'app-root', styles: styles, root: true }, AppComponent);
+Component({ selector: 'test-ele' }, TestComponent);
+
+render(
+  document.getElementById('test'),
+  html`
+    <app-root data-adj="${'hello world'}"></app-root>
+  `
+);

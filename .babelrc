@@ -3,19 +3,26 @@
     [
       "@babel/preset-env",
       {
-        "modules": false
+        "loose": true,
+        "targets": {
+          "edge": "79",
+          "firefox": "73",
+          "chrome": "73",
+          "safari": "15"
+        }
       }
     ]
   ],
   "plugins": [
     "@babel/plugin-syntax-dynamic-import",
-    //"@babel/plugin-syntax-jsx",
     [
       "@babel/plugin-proposal-class-properties",
       {
         "loose": true
       }
-    ]
+    ],
+    "@babel/plugin-transform-arrow-functions"
+    //"@babel/plugin-syntax-jsx",
     // [
     //   "@babel/plugin-transform-react-jsx",
     //   {
