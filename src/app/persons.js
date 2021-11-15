@@ -1,6 +1,6 @@
 import { Component, html, render } from '../lib';
 
-let PersonsComponent = class {
+class PersonsComponent {
   ulRef;
   personDetailsCompRef;
 
@@ -59,21 +59,19 @@ let PersonsComponent = class {
       ></app-person-details>
     `;
   }
-};
+}
 
-let PersonDetailsComponent = [
-  'Renderer',
-  class {
-    constructor(renderer) {}
-    personDetails;
+class PersonDetailsComponent {
+  constructor(renderer) {}
+  personDetails;
 
-    sendDataToParent() {
-      this.renderer.emitEvent('userclick', this.personDetails);
-    }
+  sendDataToParent() {
+    this.renderer.emitEvent('userclick', this.personDetails);
+  }
 
-    render() {
-      if (this.personDetails?.name) {
-        return html`
+  render() {
+    if (this.personDetails?.name) {
+      return html`
           <strong>Person Details</strong>
           <div>Name: ${this.personDetails.name}</div>
           <div>Company: ${this.personDetails.company.name}</div>
@@ -85,14 +83,16 @@ let PersonDetailsComponent = [
             click me and check console
           </button>
         `;
-      } else {
-        return html`
+    } else {
+      return html`
           <div></div>
         `;
-      }
     }
-  },
-];
+  }
+}
 
 Component({ selector: 'app-persons' }, PersonsComponent);
-Component({ selector: 'app-person-details' }, PersonDetailsComponent);
+Component(
+  { selector: 'app-person-details', deps: ['Renderer'] },
+  PersonDetailsComponent
+);

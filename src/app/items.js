@@ -1,53 +1,49 @@
-import { Component, html, render, useFormFields } from '../lib';
+import { Component, html, useFormFields } from '../lib';
 import axios from 'axios';
 
-let ItemsComponent = [
-  'Renderer',
-  class {
-    sheetFormFields;
-    changeHandler;
-    resetForm;
-    apiUrl =
-      'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
-    table;
-    personsList = [];
+class ItemsComponent {
+  sheetFormFields;
+  changeHandler;
+  resetForm;
+  apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
+  table;
+  personsList = [];
 
-    constructor(renderer) {}
+  constructor(renderer) {}
 
-    beforeMount() {
-      const { formFields, createChangeHandler, resetFormFields } =
-        useFormFields({
-          name: '',
-          age: '',
-          salary: '',
-        });
-      this.sheetFormFields = formFields;
-      this.changeHandler = createChangeHandler;
-      this.resetForm = resetFormFields;
-    }
+  beforeMount() {
+    const { formFields, createChangeHandler, resetFormFields } = useFormFields({
+      name: '',
+      age: '',
+      salary: '',
+    });
+    this.sheetFormFields = formFields;
+    this.changeHandler = createChangeHandler;
+    this.resetForm = resetFormFields;
+  }
 
-    mount() {
-      this.getData();
-    }
+  mount() {
+    this.getData();
+  }
 
-    submitForm(e) {
-      e.preventDefault();
-      axios.post(this.apiUrl, this.sheetFormFields).then((response) => {
-        this.personsList.push(...response.data);
-        this.resetForm();
-        this.renderer.update();
-      });
-    }
+  submitForm(e) {
+    e.preventDefault();
+    axios.post(this.apiUrl, this.sheetFormFields).then((response) => {
+      this.personsList.push(...response.data);
+      this.resetForm();
+      this.renderer.update();
+    });
+  }
 
-    getData() {
-      axios.get(this.apiUrl).then((response) => {
-        this.personsList = [...response.data];
-        this.renderer.update();
-      });
-    }
+  getData() {
+    axios.get(this.apiUrl).then((response) => {
+      this.personsList = [...response.data];
+      this.renderer.update();
+    });
+  }
 
-    render() {
-      return html`
+  render() {
+    return html`
         <form
           onsubmit=${(e) => {
             this.submitForm(e);
@@ -116,8 +112,7 @@ let ItemsComponent = [
         </tbody>
       </table>
       `;
-    }
-  },
-];
+  }
+}
 
-Component({ selector: 'app-items' }, ItemsComponent);
+Component({ selector: 'app-items', deps: ['Renderer'] }, ItemsComponent);
