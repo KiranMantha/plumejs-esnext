@@ -1,7 +1,7 @@
 import { Service } from '../service';
 import { StaticRouter } from './staticRouter';
 
-Service('Router', ['InternalRouter', class {
+class Router {
   getCurrentRoute;
   navigateTo;
   constructor(internalRouter) {
@@ -17,4 +17,6 @@ Service('Router', ['InternalRouter', class {
       throw Error('router.addRoutes: the parameter must be an array');
     }
   }
-}]);
+}
+
+Service({ name: 'Router', deps: ['InternalRouter'] }, Router);

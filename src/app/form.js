@@ -1,6 +1,6 @@
 import { Component, html, render, useFormFields } from '../lib';
 
-let FormComponent = class {
+class FormComponent {
   sampleformFields1;
   createChangeHandler1;
   formOutputRef1;

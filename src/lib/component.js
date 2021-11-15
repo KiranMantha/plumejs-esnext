@@ -1,6 +1,7 @@
 import { instantiate } from './instantiate.js';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
+import { CSS_SHEET_NOT_SUPPORTED } from './utils';
 
 class Renderer {
   shadowRoot;
@@ -9,6 +10,13 @@ class Renderer {
 }
 
 const COMPONENT_DATA_ATTR = 'data-compid';
+const DEFAULT_COMPONENT_OPTIONS = {
+  selector: '',
+  root: false,
+  styles: '',
+  useShadow: true,
+  deps: [],
+};
 
 const transformCSS = (styles, selector) => {
   if (styles) {
@@ -20,6 +28,7 @@ const transformCSS = (styles, selector) => {
 const createStyleTag = (content, where) => {
   const tag = document.createElement('style');
   tag.innerHTML = content;
+  where && where.appendChild(tag);
   return tag;
 };
 
@@ -28,21 +37,24 @@ const Component = (componentOptions, klass) => {
     return;
   }
 
-  // setting defaults
-  componentOptions.root = componentOptions.root || false;
-  componentOptions.styles = (componentOptions.styles || '').toString();
-  componentOptions.useShadow = componentOptions.useShadow || true;
+  // mapping with defaults
+  componentOptions = { ...DEFAULT_COMPONENT_OPTIONS, ...componentOptions };
+  componentOptions.styles = componentOptions.styles.toString();
 
   if (componentOptions.root && !componentRegistry.isRootNodeSet) {
     componentRegistry.isRootNodeSet = true;
-    componentRegistry.globalStyles.replace(componentOptions.styles);
-    componentRegistry.globalStyleTag = createStyleTag(componentOptions.styles);
-    document.head.appendChild(componentRegistry.globalStyleTag);
+    if (componentOptions.styles) {
+      componentRegistry.globalStyles.replace(componentOptions.styles);
+      componentRegistry.globalStyleTag = createStyleTag(
+        componentOptions.styles,
+        document.head
+      );
+    }
   } else if (componentOptions.root && componentRegistry.isRootNodeSet) {
     throw Error(
       'Cannot register duplicate root component in ' +
-        componentOptions.selector +
-        ' component'
+      componentOptions.selector +
+      ' component'
     );
   }
 
@@ -56,25 +68,60 @@ const Component = (componentOptions, klass) => {
       constructor() {
         super();
         this.#shadow = this.attachShadow({ mode: 'open' });
-        this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
-          componentOptions.styles
-        );
+        if (!CSS_SHEET_NOT_SUPPORTED) {
+          this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
+            componentOptions.styles
+          );
+        }
         this.update = this.update.bind(this);
         this.emitEvent = this.emitEvent.bind(this);
         this.setProps = this.setProps.bind(this);
         this.getInstance = this.getInstance.bind(this);
       }
 
+      emulateComponent() {
+        if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
+          const id =
+            new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
+          const compiledCSS = transformCSS(
+            componentOptions.styles,
+            `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`
+          );
+          this.#componentStyleTag = createStyleTag(compiledCSS);
+          this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
+        }
+      }
+
+      connectedCallback() {
+        this.emulateComponent();
+        const rendererInstance = new Renderer();
+        rendererInstance.shadowRoot = this.#shadow;
+        rendererInstance.update = this.update;
+        rendererInstance.emitEvent = this.emitEvent;
+        this.#klass = instantiate(
+          klass,
+          componentOptions.deps,
+          rendererInstance
+        );
+        this.#klass.beforeMount && this.#klass.beforeMount();
+        this.update();
+        this.#klass.mount && this.#klass.mount();
+      }
+
       update() {
         render(this.#shadow, this.#klass.render.bind(this.#klass)());
-        // this.#shadow.insertBefore(
-        //   this.#componentStyleTag,
-        //   this.#shadow.childNodes[0]
-        // );
-        // this.#shadow.insertBefore(
-        //   componentRegistry.globalStyleTag,
-        //   this.#shadow.childNodes[0]
-        // );
+        if (CSS_SHEET_NOT_SUPPORTED) {
+          componentOptions.styles &&
+            this.#shadow.insertBefore(
+              this.#componentStyleTag,
+              this.#shadow.childNodes[0]
+            );
+          componentRegistry.globalStyleTag &&
+            this.#shadow.insertBefore(
+              document.importNode(componentRegistry.globalStyleTag, true),
+              this.#shadow.childNodes[0]
+            );
+        }
       }
 
       emitEvent(eventName, data) {
@@ -94,31 +141,6 @@ const Component = (componentOptions, klass) => {
 
       getInstance() {
         return this.#klass;
-      }
-
-      emulateComponent() {
-        //if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-        const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
-        const compiledCSS = transformCSS(
-          componentOptions.styles,
-          `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`
-        );
-        this.#componentStyleTag = createStyleTag(compiledCSS);
-        this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
-        //}
-      }
-
-      connectedCallback() {
-        //this.emulateComponent();
-        const fn = Array.isArray(klass) ? klass : [klass];
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = this.#shadow;
-        rendererInstance.update = this.update;
-        rendererInstance.emitEvent = this.emitEvent;
-        this.#klass = instantiate(fn, rendererInstance);
-        this.#klass.beforeMount && this.#klass.beforeMount();
-        this.update();
-        this.#klass.mount && this.#klass.mount();
       }
 
       disconnectedCallback() {

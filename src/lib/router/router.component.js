@@ -3,46 +3,45 @@ import { Component } from '../component';
 import { Subscription } from 'rxjs';
 
 const registerRouterComponent = () => {
-  let RouterComponent = [
-    'InternalRouter',
-    'Renderer',
-    class {
-      _template = '';
-      _subscriptions = new Subscription();
-      update;
+  class RouterComponent {
+    #template = '';
+    #subscriptions = new Subscription();
+    update;
 
-      constructor(internalRouterSrvc, renderer) {}
+    constructor(internalRouterSrvc, renderer) { }
 
-      beforeMount() {
-        this._subscriptions.add(
-          this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-            this._template = tmpl;
-            this.renderer.update();
-          })
-        );
+    beforeMount() {
+      this.#subscriptions.add(
+        this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+          this.#template = tmpl;
+          this.renderer.update();
+        })
+      );
+    }
+
+    mount() {
+      let path = window.location.hash.replace(/^#/, '');
+      this.internalRouterSrvc.navigateTo(path);
+    }
+
+    unmount() {
+      this.#subscriptions.unsubscribe();
+    }
+
+    render() {
+      if (this.#template) {
+        const stringArray = [`${this.#template}`];
+        stringArray.raw = [`${this.#template}`];
+        return html(stringArray);
+      } else {
+        return html``;
       }
-
-      mount() {
-        let path = window.location.hash.replace(/^#/, '');
-        this.internalRouterSrvc.navigateTo(path);
-      }
-
-      unmount() {
-        this._subscriptions.unsubscribe();
-      }
-
-      render() {
-        if (this._template) {
-          const stringArray = [`${this._template}`];
-          stringArray.raw = [`${this._template}`];
-          return html(stringArray);
-        } else {
-          return html``;
-        }
-      }
-    },
-  ];
-  Component({ selector: 'router-outlet' }, RouterComponent);
+    }
+  }
+  Component(
+    { selector: 'router-outlet', deps: ['InternalRouter', 'Renderer'] },
+    RouterComponent
+  );
 };
 
 export { registerRouterComponent };

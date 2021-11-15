@@ -1,7 +1,5 @@
 //https://codeburst.io/angular-2-simple-infinite-scroller-directive-with-rxjs-observables-a989b12d4fb1
 
-import styles from './base.scss';
-
 import {
   Component,
   Service,
@@ -10,133 +8,138 @@ import {
   registerRouterComponent,
 } from './lib';
 
+import styles from './base.scss';
+
 registerRouterComponent();
 
-Service(
-  'testService',
-  class {
-    getGreeting() {
-      return 'hello world';
-    }
+class TestService {
+  getGreeting() {
+    return 'hello world';
   }
-);
+}
 
-let TestComponent = [
-  'Renderer',
-  class {
-    constructor(renderer) {}
+class TestComponent {
+  constructor(renderer) { }
 
-    emitDataToParent() {
-      this.renderer.emitEvent('customoutput', {
-        greet: 'greetings from child',
-      });
-    }
+  emitDataToParent() {
+    this.renderer.emitEvent('customoutput', {
+      greet: 'greetings from child',
+    });
+  }
 
-    render() {
-      return html`
+  render() {
+    return html`
         <fieldset class="fieldset">
           <legend>I'm child component</legend>
           <button class="button  is-info is-light"
             onclick="${() => {
-              this.emitDataToParent();
-            }}"
+        this.emitDataToParent();
+      }}"
           >
             emit data from child to parent
           </button>
         </fieldset>
       `;
-    }
-  },
-];
+  }
+}
 
-let AppComponent = [
-  'testService',
-  'Router',
-  class {
-    greet;
-    divRef;
-    setClass = true;
-    tabsContainer;
+class AppComponent {
+  greet;
+  divRef;
+  setClass = true;
+  tabsContainer;
+  routePath = '';
 
-    routes = [
-      {
-        path: '',
-        redirectTo: '/home',
-      },
-      {
-        path: '/home',
-        template: '<app-items></app-items>',
-        templatePath: () => import('./app/items'),
-      },
-      {
-        path: '/persons',
-        template: '<app-persons></app-persons>',
-        templatePath: () => import('./app/persons'),
-      },
-      {
-        path: '/form',
-        template: '<app-sample-form></app-sample-form>',
-        templatePath: () => import('./app/form'),
-      },
-    ];
+  routes = [
+    {
+      path: '',
+      redirectTo: '/home',
+    },
+    {
+      path: '/home',
+      template: '<app-items></app-items>',
+      templatePath: () => import('./app/items'),
+    },
+    {
+      path: '/persons',
+      template: '<app-persons></app-persons>',
+      templatePath: () => import('./app/persons'),
+    },
+    {
+      path: '/form',
+      template: '<app-sample-form></app-sample-form>',
+      templatePath: () => import('./app/form'),
+    },
+    {
+      path: '/calculator',
+      template: '<app-calculator></app-calculator>',
+      templatePath: () => import('./app/calculator'),
+    },
+  ];
 
-    constructor(testService, routerSrvc) {
-      routerSrvc.registerRoutes(this.routes);
-      this.greet = testService.getGreeting();
-    }
+  constructor(testService, routerSrvc) {
+    routerSrvc.registerRoutes(this.routes);
+    this.greet = testService.getGreeting();
+  }
 
-    toggleActiveTab() {
-      this.tabsContainer
-        .querySelectorAll('.is-active')[0]
-        .classList.remove('is-active');
-    }
+  toggleActiveTab() {
+    this.tabsContainer
+      .querySelectorAll('.is-active')[0]
+      .classList.remove('is-active');
+  }
 
-    navigate(e, path) {
-      e.preventDefault();
-      this.toggleActiveTab();
-      e.target.parentElement.classList.add('is-active');
-      this.routerSrvc.navigateTo(path);
-    }
+  navigate(e, path) {
+    e.preventDefault();
+    this.toggleActiveTab();
+    e.target.parentElement.classList.add('is-active');
+    this.routerSrvc.navigateTo(path);
+  }
 
-    listenFromChild(data) {
-      console.log(
-        'listening in parent component for data from child component: ',
-        data
-      );
-    }
+  listenFromChild(data) {
+    console.log(
+      'listening in parent component for data from child component: ',
+      data
+    );
+  }
 
-    render() {
-      return html`
+  render() {
+    return html`
         <fieldset class="fieldset">
           <legend>I'm parent component</legend>
           <div class="tabs" style="margin-bottom: 20px;">
             <ul ref=${(node) => {
-              this.tabsContainer = node;
-            }}>
-              <li class="is-active">
+        this.tabsContainer = node;
+      }}>
+              <li class="is-active ${this.routePath === '/home' ? 'is-active' : ''
+      }">
                 <a href="#" onclick=${(e) => this.navigate(e, '/home')}
                   >Items Route</a>
               </li>
-              <li>
+              <li class="${this.routePath === '/persons' ? 'is-active' : ''}">
                 <a href="#" onclick=${(e) => this.navigate(e, '/persons')}
                   >Persons Route</a>
               </li>
-              <li>
+              <li class="${this.routePath === '/form' ? 'is-active' : ''}">
                 <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/form')}>Form Route</a>
+        this.navigate(e, '/form')}>Form Route</a>
+              </li>
+              <li class="${this.routePath === '/calculator' ? 'is-active' : ''
+      }">
+                <a href="#" onclick=${(e) =>
+        this.navigate(e, '/calculator')}>Calculator Route</a>
               </li>
             </ul>
           </div>
           <test-ele
             oncustomoutput="${(e) => {
-              this.listenFromChild(e.detail);
-            }}"
+        this.listenFromChild(e.detail);
+      }}"
           ></test-ele>
           <div
             style="margin-top: 20px;"
             ref="${(node) => {
-              this.divRef = node;
-            }}"
+        this.divRef = node;
+      }}"
             class="hello ${this.setClass ? 'world' : ''}"
             data-adj="${this.setClass}"
           >
@@ -147,20 +150,20 @@ let AppComponent = [
             />
 
             ${(() => {
-              if (this.setClass) {
-                return html`
+        if (this.setClass) {
+          return html`
                   <div>loaded conditionally..</div>
                 `;
-              }
-            })()}
+        }
+      })()}
             <ul>
               ${[1, 2, 3].map((item) => {
-                return html`
+        return html`
                   <li onclick="${() => console.log(item)}">
                     ${item}
                   </li>
                 `;
-              })}
+      })}
             </ul>
           </div>
           <fieldset class="fieldset">
@@ -169,12 +172,20 @@ let AppComponent = [
           </fieldset>
         </fieldset>
       `;
-    }
-  },
-];
+  }
+}
 
-Component({ selector: 'app-root', styles: styles, root: true }, AppComponent);
-Component({ selector: 'test-ele' }, TestComponent);
+Service({ name: 'testService' }, TestService);
+Component({ selector: 'test-ele', deps: ['Renderer'] }, TestComponent);
+Component(
+  {
+    selector: 'app-root',
+    styles: styles,
+    root: true,
+    deps: ['testService', 'Router'],
+  },
+  AppComponent
+);
 
 render(
   document.getElementById('test'),
