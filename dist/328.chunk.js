@@ -1,8 +1,4 @@
-"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[328],{328:(e,l,s)=>{s.r(l);var i=s(746);(0,i.wA)({selector:"app-sample-form"},class{constructor(){this.sampleformFields1=void 0,this.createChangeHandler1=void 0,this.formOutputRef1=void 0,this.sampleformFields2=void 0,this.createChangeHandler2=void 0,this.formOutputRef2=void 0}beforeMount(){const e=(0,i.uA)({email:"test.email@sample.com",password:"1234",checkme:!0,option:"3",options:[]}),l=(0,i.uA)({name:"",age:""});this.sampleformFields1=e.formFields,this.createChangeHandler1=e.createChangeHandler,this.sampleformFields2=l.formFields,this.createChangeHandler2=l.createChangeHandler}submitForm1(e){e.preventDefault(),(0,i.sY)(this.formOutputRef1,i.dy`
-        <pre>${JSON.stringify(this.sampleformFields1,null,4)}</pre>
-      `)}submitForm2(e){e.preventDefault(),(0,i.sY)(this.formOutputRef2,i.dy`
-        <pre>${JSON.stringify(this.sampleformFields2,null,4)}</pre>
-      `)}render(){var e=this;return i.dy`
+"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[328],{328:(e,l,s)=>{s.r(l);var i=s(746);(0,i.wA)({selector:"app-sample-form"},class{constructor(){this.sampleformFields1=void 0,this.createChangeHandler1=void 0,this.formOutputRef1=void 0,this.sampleformFields2=void 0,this.createChangeHandler2=void 0,this.formOutputRef2=void 0}beforeMount(){[this.sampleformFields1,this.createChangeHandler1]=(0,i.uA)({email:"test.email@sample.com",password:"1234",checkme:!0,option:"3",options:[]}),[this.sampleformFields2,this.createChangeHandler2]=(0,i.uA)({name:"",age:""})}submitForm1(e){e.preventDefault(),(0,i.sY)(this.formOutputRef1,i.dy` <pre>${JSON.stringify(this.sampleformFields1,null,4)}</pre> `)}submitForm2(e){e.preventDefault(),(0,i.sY)(this.formOutputRef2,i.dy` <pre>${JSON.stringify(this.sampleformFields2,null,4)}</pre> `)}render(){var e=this;return i.dy`
       <h5 class="title is-5">sample form 1</h5>
       <form
         onsubmit=${function(l){e.submitForm1(l)}}
@@ -79,7 +75,9 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button is-info is-light" type="submit">Submit</button>
+            <button class="button is-info is-light" type="submit">
+              Submit
+            </button>
           </div>
         </div>
       </form>
@@ -116,7 +114,9 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button  is-info is-light" type="submit">Submit me too</button>
+            <button class="button  is-info is-light" type="submit">
+              Submit me too
+            </button>
           </div>
         </div>
       </form>
