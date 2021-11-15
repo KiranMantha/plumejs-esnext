@@ -1,14 +1,14 @@
-import { useState } from './useState';
+import { useState } from "./useState";
 
 const _getTargetValue = (target) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
-    case 'input':
-    case 'textarea': {
-      let nonTextElements = ['radio', 'checkbox'];
+    case "input":
+    case "textarea": {
+      let nonTextElements = ["radio", "checkbox"];
       if (nonTextElements.includes(target.type)) {
         targetValue = target.checked
-          ? target.value !== null && target.value !== 'on'
+          ? target.value !== null && target.value !== "on"
             ? target.value
             : true
           : false;
@@ -17,8 +17,8 @@ const _getTargetValue = (target) => {
       }
       break;
     }
-    case 'select': {
-      let one = target.type === 'select-one';
+    case "select": {
+      let one = target.type === "select-one";
       if (one) {
         targetValue = target.value;
       } else {
@@ -49,10 +49,10 @@ const useFormFields = (initialValues) => {
   };
   const resetFormFields = () => {
     for (const key of Object.keys(formFields)) {
-      formFields[key] = '';
+      formFields[key] = "";
     }
   };
-  return { formFields, createChangeHandler, resetFormFields };
+  return [formFields, createChangeHandler, resetFormFields];
 };
 
 export { useFormFields };

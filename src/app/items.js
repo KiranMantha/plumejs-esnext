@@ -1,25 +1,22 @@
-import { Component, html, useFormFields } from '../lib';
-import axios from 'axios';
+import { Component, html, useFormFields } from "../lib";
+import axios from "axios";
 
 class ItemsComponent {
   sheetFormFields;
   changeHandler;
   resetForm;
-  apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
+  apiUrl = "https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4";
   table;
   personsList = [];
 
   constructor(renderer) {}
 
   beforeMount() {
-    const { formFields, createChangeHandler, resetFormFields } = useFormFields({
-      name: '',
-      age: '',
-      salary: '',
+    [this.sheetFormFields, this.changeHandler, this.resetForm] = useFormFields({
+      name: "",
+      age: "",
+      salary: "",
     });
-    this.sheetFormFields = formFields;
-    this.changeHandler = createChangeHandler;
-    this.resetForm = resetFormFields;
   }
 
   mount() {
@@ -44,20 +41,20 @@ class ItemsComponent {
 
   render() {
     return html`
-        <form
-          onsubmit=${(e) => {
-            this.submitForm(e);
-          }}
-        >
+      <form
+        onsubmit=${(e) => {
+          this.submitForm(e);
+        }}
+      >
         <div class="field">
           <label class="label" for="exampleInputEmail1">Name</label>
           <div class="control">
             <input
               type="text"
               class="input"
-              id='name'
+              id="name"
               value=${this.sheetFormFields.name}
-              onchange=${this.changeHandler('name')}
+              onchange=${this.changeHandler("name")}
             />
           </div>
         </div>
@@ -67,9 +64,9 @@ class ItemsComponent {
             <input
               type="text"
               class="input"
-              id='age'
+              id="age"
               value=${this.sheetFormFields.age}
-              onchange=${this.changeHandler('age')}
+              onchange=${this.changeHandler("age")}
             />
           </div>
         </div>
@@ -79,40 +76,42 @@ class ItemsComponent {
             <input
               type="text"
               class="input"
-              id='salary'
+              id="salary"
               value=${this.sheetFormFields.salary}
-              onchange=${this.changeHandler('salary')}
+              onchange=${this.changeHandler("salary")}
             />
           </div>
         </div>
         <div class="field">
           <div class="control">
-            <button class="button  is-info is-light" type="submit">Submit</button>
+            <button class="button  is-info is-light" type="submit">
+              Submit
+            </button>
           </div>
         </div>
       </form>
       <table class="table is-hoverable">
         <thead>
-            <tr>
-              <td>Name</td>
-              <td>Age</td>
-              <td>Salary</td>
-            </tr>
+          <tr>
+            <td>Name</td>
+            <td>Age</td>
+            <td>Salary</td>
+          </tr>
         </thead>
         <tbody>
-        ${this.personsList.map((item) => {
-          return html`
-            <tr>
-              <td>${item.name}</td>
-              <td>${item.age}</td>
-              <td>${item.salary}</td>
-            </tr>
-          `;
-        })}
+          ${this.personsList.map((item) => {
+            return html`
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.age}</td>
+                <td>${item.salary}</td>
+              </tr>
+            `;
+          })}
         </tbody>
       </table>
-      `;
+    `;
   }
 }
 
-Component({ selector: 'app-items', deps: ['Renderer'] }, ItemsComponent);
+Component({ selector: "app-items", deps: ["Renderer"] }, ItemsComponent);
