@@ -1,4 +1,4 @@
-import { Component, html, render, useFormFields } from "../lib";
+import { Component, html, render, useFormFields } from '../lib';
 
 class FormComponent {
   sampleformFields1;
@@ -11,32 +11,26 @@ class FormComponent {
 
   beforeMount() {
     [this.sampleformFields1, this.createChangeHandler1] = useFormFields({
-      email: "test.email@sample.com",
-      password: "1234",
+      email: 'test.email@sample.com',
+      password: '1234',
       checkme: true,
-      option: "3",
-      options: [],
+      option: '3',
+      options: []
     });
     [this.sampleformFields2, this.createChangeHandler2] = useFormFields({
-      name: "",
-      age: "",
+      name: '',
+      age: ''
     });
   }
 
   submitForm1(e) {
     e.preventDefault();
-    render(
-      this.formOutputRef1,
-      html` <pre>${JSON.stringify(this.sampleformFields1, null, 4)}</pre> `
-    );
+    render(this.formOutputRef1, html` <pre>${JSON.stringify(this.sampleformFields1, null, 4)}</pre> `);
   }
 
   submitForm2(e) {
     e.preventDefault();
-    render(
-      this.formOutputRef2,
-      html` <pre>${JSON.stringify(this.sampleformFields2, null, 4)}</pre> `
-    );
+    render(this.formOutputRef2, html` <pre>${JSON.stringify(this.sampleformFields2, null, 4)}</pre> `);
   }
 
   render() {
@@ -57,7 +51,7 @@ class FormComponent {
               aria-describedby="emailHelp"
               placeholder="Enter email"
               value=${this.sampleformFields1.email}
-              onchange=${this.createChangeHandler1("email")}
+              onchange=${this.createChangeHandler1('email')}
             />
           </div>
         </div>
@@ -70,7 +64,7 @@ class FormComponent {
               id="exampleInputPassword1"
               placeholder="Password"
               value=${this.sampleformFields1.password}
-              onchange=${this.createChangeHandler1("password")}
+              onchange=${this.createChangeHandler1('password')}
             />
           </div>
         </div>
@@ -82,7 +76,7 @@ class FormComponent {
                 class="form-check-input"
                 id="exampleCheck1"
                 checked=${this.sampleformFields1.checkme}
-                onchange=${this.createChangeHandler1("checkme")}
+                onchange=${this.createChangeHandler1('checkme')}
               />
               Check me out
             </label>
@@ -92,10 +86,7 @@ class FormComponent {
           <label class="label">single select</label>
           <div class="control">
             <div class="select">
-              <select
-                value=${this.sampleformFields1.option}
-                onchange=${this.createChangeHandler1("option")}
-              >
+              <select value=${this.sampleformFields1.option} onchange=${this.createChangeHandler1('option')}>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -108,7 +99,7 @@ class FormComponent {
           <label class="label">multi select</label>
           <div class="control">
             <div class="select is-multiple">
-              <select multiple onchange=${this.createChangeHandler1("options")}>
+              <select multiple onchange=${this.createChangeHandler1('options')}>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -119,9 +110,7 @@ class FormComponent {
         </div>
         <div class="field">
           <div class="control">
-            <button class="button is-info is-light" type="submit">
-              Submit
-            </button>
+            <button class="button is-info is-light" type="submit">Submit</button>
           </div>
         </div>
       </form>
@@ -145,7 +134,7 @@ class FormComponent {
               class="input"
               id="name"
               value=${this.sampleformFields2.name}
-              onchange=${this.createChangeHandler2("name")}
+              onchange=${this.createChangeHandler2('name')}
             />
           </div>
         </div>
@@ -156,15 +145,13 @@ class FormComponent {
               class="input"
               id="age"
               value=${this.sampleformFields2.age}
-              onchange=${this.createChangeHandler2("age")}
+              onchange=${this.createChangeHandler2('age')}
             />
           </div>
         </div>
         <div class="field">
           <div class="control">
-            <button class="button  is-info is-light" type="submit">
-              Submit me too
-            </button>
+            <button class="button  is-info is-light" type="submit">Submit me too</button>
           </div>
         </div>
       </form>
@@ -177,4 +164,4 @@ class FormComponent {
   }
 }
 
-Component({ selector: "app-sample-form" }, FormComponent);
+Component({ selector: 'app-sample-form' }, FormComponent);

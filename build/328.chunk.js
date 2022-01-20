@@ -48,10 +48,7 @@
           <label class="label">single select</label>
           <div class="control">
             <div class="select">
-              <select
-                value=${this.sampleformFields1.option}
-                onchange=${this.createChangeHandler1("option")}
-              >
+              <select value=${this.sampleformFields1.option} onchange=${this.createChangeHandler1("option")}>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -75,9 +72,7 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button is-info is-light" type="submit">
-              Submit
-            </button>
+            <button class="button is-info is-light" type="submit">Submit</button>
           </div>
         </div>
       </form>
@@ -114,9 +109,7 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button  is-info is-light" type="submit">
-              Submit me too
-            </button>
+            <button class="button  is-info is-light" type="submit">Submit me too</button>
           </div>
         </div>
       </form>

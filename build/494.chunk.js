@@ -40,9 +40,7 @@
         </div>
         <div class="field">
           <div class="control">
-            <button class="button  is-info is-light" type="submit">
-              Submit
-            </button>
+            <button class="button  is-info is-light" type="submit">Submit</button>
           </div>
         </div>
       </form>

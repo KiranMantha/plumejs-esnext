@@ -9,7 +9,8 @@
           "firefox": "73",
           "chrome": "73",
           "safari": "15"
-        }
+        },
+        "shippedProposals": true
       }
     ]
   ],

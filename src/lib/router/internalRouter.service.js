@@ -7,7 +7,7 @@ import { fromEvent } from 'rxjs';
 class InternalRouter {
   #currentRoute = {
     path: '',
-    params: {},
+    params: {}
   };
   #template = new Subject();
 
@@ -56,10 +56,7 @@ class InternalRouter {
       return h.length > 0;
     });
     let routeArr = StaticRouter.routList.filter((route) => {
-      if (
-        route.Params.length === uParams.length &&
-        this._routeMatcher(route.Url, path)
-      ) {
+      if (route.Params.length === uParams.length && this._routeMatcher(route.Url, path)) {
         return route;
       } else if (route.Url === path) {
         return route;

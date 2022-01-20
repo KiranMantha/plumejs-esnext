@@ -48,10 +48,4 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
   }
 })();
 
-export {
-  isFunction,
-  isObject,
-  wrapIntoObservable,
-  getArgs,
-  CSS_SHEET_NOT_SUPPORTED,
-};
+export { isFunction, isObject, wrapIntoObservable, getArgs, CSS_SHEET_NOT_SUPPORTED };
