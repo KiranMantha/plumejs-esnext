@@ -6,7 +6,7 @@ const appconstants = {
   publicPath: '/',
   root: '../',
   sourceDir: '../src',
-  buildDir: '../dist',
+  buildDir: '../build',
 };
 
 module.exports = {

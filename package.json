@@ -2,11 +2,21 @@
 	"name": "plumejs-esnext",
 	"version": "2.0.0",
 	"private": true,
+	"files": ["dist"],
+	"main": "./dist/plume.umd.js",
+	"module": "./dist/plume.es.js",
+	"exports": {
+		".": {
+			"import": "./dist/plume.es.js",
+			"require": "./dist/plume.umd.js"
+		}
+	},
 	"scripts": {
-		"start": "npm run vite",
+		"start": "npm run vite:start",
 		"serve": "webpack-dev-server --config webpack/server.js",
-		"build": "webpack --config webpack/build.js",
-		"vite": "vite"
+		"build:bundle": "webpack --config webpack/build.js",
+		"build:lib": "vite build",
+		"vite:start": "vite"
 	},
 	"dependencies": {
 		"@picocss/pico": "^1.4.4",
