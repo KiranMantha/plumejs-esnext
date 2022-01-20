@@ -1,7 +1,7 @@
-const uhtml = (function(exports) {
+const uhtml = (function (exports) {
   'use strict';
 
-  var umap = function(_) {
+  var umap = function (_) {
     return {
       // About: get: _.get.bind(_)
       // It looks like WebKit/Safari didn't optimize bind at all,
@@ -25,23 +25,14 @@ const uhtml = (function(exports) {
   var trimEnd = /\s+$/;
 
   var isNode = function isNode(template, i) {
-    return (
-      0 < i-- &&
-      (node.test(template[i]) ||
-        (!notNode.test(template[i]) && isNode(template, i)))
-    );
+    return 0 < i-- && (node.test(template[i]) || (!notNode.test(template[i]) && isNode(template, i)));
   };
 
   var regular = function regular(original, name, extra) {
-    return empty.test(name)
-      ? original
-      : '<'
-          .concat(name)
-          .concat(extra.replace(trimEnd, ''), '></')
-          .concat(name, '>');
+    return empty.test(name) ? original : '<'.concat(name).concat(extra.replace(trimEnd, ''), '></').concat(name, '>');
   };
 
-  var instrument = function(template, prefix, svg) {
+  var instrument = function (template, prefix, svg) {
     var text = [];
     var length = template.length;
 
@@ -49,7 +40,7 @@ const uhtml = (function(exports) {
       var chunk = template[i - 1];
       text.push(
         attr.test(chunk) && isNode(template, i)
-          ? chunk.replace(attr, function(_, $1, $2) {
+          ? chunk.replace(attr, function (_, $1, $2) {
               return ''
                 .concat(prefix)
                 .concat(i - 1, '=')
@@ -157,7 +148,7 @@ const uhtml = (function(exports) {
    * @param {Node} [before] The optional node used as anchor to insert before.
    * @returns {Node[]} The same list of future children.
    */
-  var udomdiff = function(parentNode, a, b, get, before) {
+  var udomdiff = function (parentNode, a, b, get, before) {
     var bLength = b.length;
     var aEnd = a.length;
     var bEnd = bLength;
@@ -172,12 +163,7 @@ const uhtml = (function(exports) {
         // need to be added are not at the end, and in such case
         // the node to `insertBefore`, if the index is more than 0
         // must be retrieved, otherwise it's gonna be the first item.
-        var node =
-          bEnd < bLength
-            ? bStart
-              ? get(b[bStart - 1], -0).nextSibling
-              : get(b[bEnd - bStart], 0)
-            : before;
+        var node = bEnd < bLength ? (bStart ? get(b[bStart - 1], -0).nextSibling : get(b[bEnd - bStart], 0)) : before;
 
         while (bStart < bEnd) {
           parentNode.insertBefore(get(b[bStart++], 1), node);
@@ -186,8 +172,7 @@ const uhtml = (function(exports) {
       else if (bEnd === bStart) {
         while (aStart < aEnd) {
           // remove the node only if it's unknown or not live
-          if (!map || !map.has(a[aStart]))
-            parentNode.removeChild(get(a[aStart], -1));
+          if (!map || !map.has(a[aStart])) parentNode.removeChild(get(a[aStart], -1));
           aStart++;
         }
       } // same node: fast path
@@ -209,10 +194,7 @@ const uhtml = (function(exports) {
         // [1, 2, 3, 4, 5]
         // [1, 2, 3, 5, 6, 4]
         var _node = get(a[--aEnd], -1).nextSibling;
-        parentNode.insertBefore(
-          get(b[bStart++], 1),
-          get(a[aStart++], -1).nextSibling
-        );
+        parentNode.insertBefore(get(b[bStart++], 1), get(a[aStart++], -1).nextSibling);
         parentNode.insertBefore(get(b[--bEnd], 1), _node); // mark the future index as identical (yeah, it's dirty, but cheap 👍)
         // The main reason to do this, is that when a[aEnd] will be reached,
         // the loop will likely be on the fast path, as identical to b[bEnd].
@@ -246,11 +228,7 @@ const uhtml = (function(exports) {
 
             var sequence = 1;
 
-            while (
-              ++_i < aEnd &&
-              _i < bEnd &&
-              map.get(a[_i]) === index + sequence
-            ) {
+            while (++_i < aEnd && _i < bEnd && map.get(a[_i]) === index + sequence) {
               sequence++;
             } // effort decision here: if the sequence is longer than replaces
             // needed to reach such sequence, which would brings again this loop
@@ -273,10 +251,7 @@ const uhtml = (function(exports) {
             // moving both source and target indexes forward, hoping that some
             // similar node will be found later on, to go back to the fast path
             else {
-              parentNode.replaceChild(
-                get(b[bStart++], 1),
-                get(a[aStart++], -1)
-              );
+              parentNode.replaceChild(get(b[bStart++], 1), get(a[aStart++], -1));
             }
           } // otherwise move the source forward, 'cause there's nothing to do
           else aStart++;
@@ -291,12 +266,9 @@ const uhtml = (function(exports) {
   };
 
   var aria = function aria(node) {
-    return function(value) {
+    return function (value) {
       for (var key in value) {
-        node.setAttribute(
-          key === 'role' ? key : 'aria-'.concat(key),
-          value[key]
-        );
+        node.setAttribute(key === 'role' ? key : 'aria-'.concat(key), value[key]);
       }
     };
   };
@@ -304,7 +276,7 @@ const uhtml = (function(exports) {
     var oldValue,
       orphan = true;
     var attributeNode = document.createAttributeNS(null, name);
-    return function(newValue) {
+    return function (newValue) {
       if (oldValue !== newValue) {
         oldValue = newValue;
 
@@ -326,7 +298,7 @@ const uhtml = (function(exports) {
   };
   var data = function data(_ref) {
     var dataset = _ref.dataset;
-    return function(value) {
+    return function (value) {
       for (var key in value) {
         dataset[key] = value[key];
       }
@@ -335,32 +307,30 @@ const uhtml = (function(exports) {
   var event = function event(node, name) {
     var oldValue,
       type = name.slice(2);
-    if (!(name in node) && name.toLowerCase() in node)
-      type = type.toLowerCase();
-    return function(newValue) {
+    if (!(name in node) && name.toLowerCase() in node) type = type.toLowerCase();
+    return function (newValue) {
       var info = isArray(newValue) ? newValue : [newValue, false];
 
       if (oldValue !== info[0]) {
         if (oldValue) node.removeEventListener(type, oldValue, info[1]);
-        if ((oldValue = info[0]))
-          node.addEventListener(type, oldValue, info[1]);
+        if ((oldValue = info[0])) node.addEventListener(type, oldValue, info[1]);
       }
     };
   };
   var ref = function ref(node) {
-    return function(value) {
+    return function (value) {
       if (typeof value === 'function') value(node);
       else value.current = node;
     };
   };
   var setter = function setter(node, key) {
-    return function(value) {
+    return function (value) {
       node[key] = value;
     };
   };
   var text = function text(node) {
     var oldValue;
-    return function(newValue) {
+    return function (newValue) {
       if (oldValue != newValue) {
         oldValue = newValue;
         node.textContent = newValue == null ? '' : newValue;
@@ -369,24 +339,22 @@ const uhtml = (function(exports) {
   };
 
   /*! (c) Andrea Giammarchi - ISC */
-  var createContent = (function(document) {
+  var createContent = (function (document) {
     var FRAGMENT = 'fragment';
     var TEMPLATE = 'template';
     var HAS_CONTENT = 'content' in create(TEMPLATE);
     var createHTML = HAS_CONTENT
-      ? function(html) {
+      ? function (html) {
           var template = create(TEMPLATE);
           template.innerHTML = html;
           return template.content;
         }
-      : function(html) {
+      : function (html) {
           var content = create(FRAGMENT);
           var template = create(TEMPLATE);
           var childNodes = null;
 
-          if (
-            /^[^\S]*?<(col(?:group)?|t(?:head|body|foot|r|d|h))/i.test(html)
-          ) {
+          if (/^[^\S]*?<(col(?:group)?|t(?:head|body|foot|r|d|h))/i.test(html)) {
             var selector = RegExp.$1;
             template.innerHTML = '<table>' + html + '</table>';
             childNodes = template.querySelectorAll(selector);
@@ -421,8 +389,7 @@ const uhtml = (function(exports) {
     function createSVG(svg) {
       var content = create(FRAGMENT);
       var template = create('div');
-      template.innerHTML =
-        '<svg xmlns="http://www.w3.org/2000/svg">' + svg + '</svg>';
+      template.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg">' + svg + '</svg>';
       append(content, template.firstChild.childNodes);
       return content;
     }
@@ -459,7 +426,7 @@ const uhtml = (function(exports) {
   // hence without missing child nodes once re-cloned.
 
   var createFragment = IE
-    ? function(text, type) {
+    ? function (text, type) {
         return importNode.call(document, createContent(text, type), true);
       }
     : createContent; // IE11 and old Edge have a different createTreeWalker signature that
@@ -467,10 +434,10 @@ const uhtml = (function(exports) {
   // to guarantee the TreeWalker doesn't show warnings and, ultimately, works
 
   var createWalker = IE
-    ? function(fragment) {
+    ? function (fragment) {
         return createTreeWalker.call(document, fragment, 1 | 128, null, false);
       }
-    : function(fragment) {
+    : function (fragment) {
         return createTreeWalker.call(document, fragment, 1 | 128);
       };
 
@@ -538,8 +505,7 @@ const uhtml = (function(exports) {
 
             if (newValue.length === 0) nodes = diff(comment, nodes, []);
             // or diffed, if these contains nodes or "wires"
-            else if (typeof newValue[0] === 'object')
-              nodes = diff(comment, nodes, newValue);
+            else if (typeof newValue[0] === 'object') nodes = diff(comment, nodes, newValue);
             // in all other cases the content is stringified as is
             else anyContent(String(newValue));
             break;
@@ -551,13 +517,7 @@ const uhtml = (function(exports) {
 
           if ('ELEMENT_NODE' in newValue && oldValue !== newValue) {
             oldValue = newValue;
-            nodes = diff(
-              comment,
-              nodes,
-              newValue.nodeType === 11
-                ? slice.call(newValue.childNodes)
-                : [newValue]
-            );
+            nodes = diff(comment, nodes, newValue.nodeType === 11 ? slice.call(newValue.childNodes) : [newValue]);
           }
       }
     };
@@ -703,10 +663,7 @@ const uhtml = (function(exports) {
         } // if the node was a style or a textarea one, check its content
         // and if it is <!--isµX--> then update tex-only this node
 
-        if (
-          /^(?:style|textarea)$/i.test(node.tagName) &&
-          node.textContent.trim() === '<!--'.concat(search, '-->')
-        ) {
+        if (/^(?:style|textarea)$/i.test(node.tagName) && node.textContent.trim() === '<!--'.concat(search, '-->')) {
           nodes.push({
             type: 'text',
             path: createPath(node)
@@ -727,8 +684,7 @@ const uhtml = (function(exports) {
   // its details such as the fragment with all nodes, and updates info.
 
   var mapUpdates = function mapUpdates(type, template) {
-    var _ref =
-        cache.get(template) || cache.set(template, mapTemplate(type, template)),
+    var _ref = cache.get(template) || cache.set(template, mapTemplate(type, template)),
       content = _ref.content,
       nodes = _ref.nodes; // clone deeply the fragment
 
@@ -757,8 +713,7 @@ const uhtml = (function(exports) {
     // and the type this unroll should resolve, create a new entry
     // assigning a new content fragment and the list of updates.
 
-    if (!entry || entry.template !== template || entry.type !== type)
-      info.entry = entry = createEntry(type, template);
+    if (!entry || entry.template !== template || entry.type !== type) info.entry = entry = createEntry(type, template);
     var _entry = entry,
       content = _entry.content,
       updates = _entry.updates,
@@ -784,12 +739,10 @@ const uhtml = (function(exports) {
       var hole = values[i]; // each Hole gets unrolled and re-assigned as value
       // so that domdiff will deal with a node/wire, not with a hole
 
-      if (hole instanceof Hole)
-        values[i] = unroll(stack[i] || (stack[i] = createCache()), hole);
+      if (hole instanceof Hole) values[i] = unroll(stack[i] || (stack[i] = createCache()), hole);
       // arrays are recursively resolved so that each entry will contain
       // also a DOM node or a wire, hence it can be diffed if/when needed
-      else if (isArray(hole))
-        unrollValues(stack[i] || (stack[i] = createCache()), hole, hole.length);
+      else if (isArray(hole)) unrollValues(stack[i] || (stack[i] = createCache()), hole, hole.length);
       // if the value is nothing special, the stack doesn't need to retain data
       // this is useful also to cleanup previously retained data, if the value
       // was a Hole, or an Array, but not anymore, i.e.:
@@ -826,14 +779,8 @@ const uhtml = (function(exports) {
     // the template and its interpolations right away
 
     var fixed = function fixed(cache) {
-      return function(template) {
-        for (
-          var _len = arguments.length,
-            values = new Array(_len > 1 ? _len - 1 : 0),
-            _key = 1;
-          _key < _len;
-          _key++
-        ) {
+      return function (template) {
+        for (var _len = arguments.length, values = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
           values[_key - 1] = arguments[_key];
         }
 
@@ -848,11 +795,9 @@ const uhtml = (function(exports) {
     return defineProperties(
       // non keyed operations are recognized as instance of Hole
       // during the "unroll", recursively resolved and updated
-      function(template) {
+      function (template) {
         for (
-          var _len2 = arguments.length,
-            values = new Array(_len2 > 1 ? _len2 - 1 : 0),
-            _key2 = 1;
+          var _len2 = arguments.length, values = new Array(_len2 > 1 ? _len2 - 1 : 0), _key2 = 1;
           _key2 < _len2;
           _key2++
         ) {
@@ -878,9 +823,7 @@ const uhtml = (function(exports) {
           // nodes present at the root level and, of course, their child nodes
           value: function value(template) {
             for (
-              var _len3 = arguments.length,
-                values = new Array(_len3 > 1 ? _len3 - 1 : 0),
-                _key3 = 1;
+              var _len3 = arguments.length, values = new Array(_len3 > 1 ? _len3 - 1 : 0), _key3 = 1;
               _key3 < _len3;
               _key3++
             ) {

@@ -20,7 +20,7 @@ export class StaticRouter {
 
   static getParamCount(p) {
     let pc = 0;
-    p.forEach(k => {
+    p.forEach((k) => {
       if (k.indexOf(':') >= 0) {
         pc += 1;
       }
@@ -38,17 +38,14 @@ export class StaticRouter {
       redirectTo: '',
       canActivate: () => true
     };
-    obj.Params = r.path.split('/').filter(h => {
+    obj.Params = r.path.split('/').filter((h) => {
       return h.length > 0;
     });
     obj.Url = r.path;
     obj.Template = '';
     obj.redirectTo = r.redirectTo;
     if (r.template) {
-      if (!r.templatePath)
-        throw Error(
-          'templatePath is required in route if template is mentioned.'
-        );
+      if (!r.templatePath) throw Error('templatePath is required in route if template is mentioned.');
       obj.Template = r.template;
       obj.TemplatePath = r.templatePath;
     }

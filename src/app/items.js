@@ -1,11 +1,11 @@
-import { Component, html, useFormFields } from "../lib";
-import axios from "axios";
+import { Component, html, useFormFields } from '../lib';
+import axios from 'axios';
 
 class ItemsComponent {
   sheetFormFields;
   changeHandler;
   resetForm;
-  apiUrl = "https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4";
+  apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
   table;
   personsList = [];
 
@@ -13,9 +13,9 @@ class ItemsComponent {
 
   beforeMount() {
     [this.sheetFormFields, this.changeHandler, this.resetForm] = useFormFields({
-      name: "",
-      age: "",
-      salary: "",
+      name: '',
+      age: '',
+      salary: ''
     });
   }
 
@@ -54,7 +54,7 @@ class ItemsComponent {
               class="input"
               id="name"
               value=${this.sheetFormFields.name}
-              onchange=${this.changeHandler("name")}
+              onchange=${this.changeHandler('name')}
             />
           </div>
         </div>
@@ -66,7 +66,7 @@ class ItemsComponent {
               class="input"
               id="age"
               value=${this.sheetFormFields.age}
-              onchange=${this.changeHandler("age")}
+              onchange=${this.changeHandler('age')}
             />
           </div>
         </div>
@@ -78,15 +78,13 @@ class ItemsComponent {
               class="input"
               id="salary"
               value=${this.sheetFormFields.salary}
-              onchange=${this.changeHandler("salary")}
+              onchange=${this.changeHandler('salary')}
             />
           </div>
         </div>
         <div class="field">
           <div class="control">
-            <button class="button  is-info is-light" type="submit">
-              Submit
-            </button>
+            <button class="button  is-info is-light" type="submit">Submit</button>
           </div>
         </div>
       </form>
@@ -114,4 +112,4 @@ class ItemsComponent {
   }
 }
 
-Component({ selector: "app-items", deps: ["Renderer"] }, ItemsComponent);
+Component({ selector: 'app-items', deps: ['Renderer'] }, ItemsComponent);

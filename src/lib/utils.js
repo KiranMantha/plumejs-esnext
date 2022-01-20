@@ -17,18 +17,27 @@ const wrapIntoObservable = (value) => {
   return of(value);
 };
 
-function getArgs(func) {
-  return Function.toString
-    .call(func)
-    .replace(/[/][/].*$/gm, '') // strip single-line comments
-    .replace(/\s+/g, '') // strip white space
-    .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments
-    .split('){', 1)[0]
-    .replace(/^[^(]*[(]/, '') // extract the parameters
-    .replace(/=[^,]+/g, '') // strip any ES6 defaults
-    .split(',')
-    .filter(Boolean); // split & filter [""]
-}
+// will work for es5 functions transpiled by webpack
+// function getArgs(func) {
+//   return Function.toString
+//     .call(func)
+//     .replace(/[/][/].*$/gm, '') // strip single-line comments
+//     .replace(/\s+/g, '') // strip white space
+//     .replace(/[/][*][^/*]*[*][/]/g, '') // strip multi-line comments
+//     .split('){', 1)[0]
+//     .replace(/^[^(]*[(]/, '') // extract the parameters
+//     .replace(/=[^,]+/g, '') // strip any ES6 defaults
+//     .split(',')
+//     .filter(Boolean); // split & filter [""]
+// }
+
+const getArgs = (func) => {
+  const result = func.toString().split(/constructor\s*[^\(]*\(\s*([^\)]*)\)/m);
+  if (result.length === 3) {
+    return result[1].split(',').map((a) => a.trim());
+  }
+  return [];
+};
 
 const CSS_SHEET_NOT_SUPPORTED = (() => {
   try {
@@ -39,10 +48,4 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
   }
 })();
 
-export {
-  isFunction,
-  isObject,
-  wrapIntoObservable,
-  getArgs,
-  CSS_SHEET_NOT_SUPPORTED,
-};
+export { isFunction, isObject, wrapIntoObservable, getArgs, CSS_SHEET_NOT_SUPPORTED };

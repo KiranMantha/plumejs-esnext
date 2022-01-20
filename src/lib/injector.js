@@ -1,4 +1,4 @@
-const Injector = new class {
+const Injector = new (class {
   _services = new Map();
 
   register(name, obj) {
@@ -17,6 +17,6 @@ const Injector = new class {
       throw Error(`${name} is not a registered service.`);
     }
   }
-}();
+})();
 
 export { Injector };

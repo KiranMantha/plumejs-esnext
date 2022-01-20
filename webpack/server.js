@@ -13,8 +13,8 @@ module.exports = merge(baseConfig, {
     historyApiFallback: {
       rewrites: [
         { from: /^\/$/, to: '/' },
-        { from: /./, to: '/' },
-      ],
-    },
-  },
+        { from: /./, to: '/' }
+      ]
+    }
+  }
 });

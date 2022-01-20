@@ -1,0 +1,28 @@
+.actions {
+  display: flex;
+
+  button {
+    width: auto;
+    margin-left: 10px;
+  }
+}
+
+.editor,
+.preview {
+  display: none;
+  height: 500px;
+  font-size: 100%;
+  overflow: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 20px;
+
+  &.show {
+    display: block;
+  }
+}
+
+.editor {
+  resize: none;
+  width: 100%;
+}

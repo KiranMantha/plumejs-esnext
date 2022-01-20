@@ -8,7 +8,7 @@ const registerRouterComponent = () => {
     #subscriptions = new Subscription();
     update;
 
-    constructor(internalRouterSrvc, renderer) { }
+    constructor(internalRouterSrvc, renderer) {}
 
     beforeMount() {
       this.#subscriptions.add(
@@ -38,10 +38,7 @@ const registerRouterComponent = () => {
       }
     }
   }
-  Component(
-    { selector: 'router-outlet', deps: ['InternalRouter', 'Renderer'] },
-    RouterComponent
-  );
+  Component({ selector: 'router-outlet', deps: ['InternalRouter', 'Renderer'] }, RouterComponent);
 };
 
 export { registerRouterComponent };
