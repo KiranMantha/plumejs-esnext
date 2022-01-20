@@ -75,3 +75,6 @@ to bundle your application
     </ul>
 </nav>
 ```
+
+# Useful links:
+https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
