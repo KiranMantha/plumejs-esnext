@@ -200,7 +200,6 @@ const { html, render } = (() => {
 const Injector = new (_a = class {
   constructor() {
     __privateAdd(this, _weakMap, void 0);
-    console.log("injector loaded");
     __privateSet(this, _weakMap, new WeakMap());
   }
   register(klass, instance) {
@@ -208,7 +207,7 @@ const Injector = new (_a = class {
       __privateGet(this, _weakMap).set(klass, instance);
     } else {
       console.error(klass);
-      throw `service already exists`;
+      throw "service already exists";
     }
   }
   getService(klass) {
@@ -217,7 +216,7 @@ const Injector = new (_a = class {
       return instance;
     } else {
       console.error(klass);
-      throw `service is not a registered service.`;
+      throw "service is not a registered service.";
     }
   }
   clear() {
@@ -401,7 +400,6 @@ const SERVICE_OPTIONS_DEFAULTS = {
   deps: []
 };
 const Service = (...args) => {
-  console.log("service args", args);
   let options = __spreadValues({}, SERVICE_OPTIONS_DEFAULTS);
   let klass;
   if (args[0].hasOwnProperty("deps")) {

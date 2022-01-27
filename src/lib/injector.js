@@ -5,7 +5,6 @@
 const Injector = new (class {
   #weakMap;
   constructor() {
-    console.log('injector loaded');
     this.#weakMap = new WeakMap();
   }
 
@@ -19,7 +18,7 @@ const Injector = new (class {
       this.#weakMap.set(klass, instance);
     } else {
       console.error(klass);
-      throw `service already exists`;
+      throw 'service already exists';
     }
   }
 
@@ -34,7 +33,7 @@ const Injector = new (class {
       return instance;
     } else {
       console.error(klass);
-      throw `service is not a registered service.`;
+      throw 'service is not a registered service.';
     }
   }
 

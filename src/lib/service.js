@@ -3,7 +3,7 @@ import { Injector } from './injector';
 import { instantiate } from './instantiate';
 
 const SERVICE_OPTIONS_DEFAULTS = {
-  deps: [],
+  deps: []
 };
 
 /**
@@ -12,7 +12,6 @@ const SERVICE_OPTIONS_DEFAULTS = {
  * @param {Function} args[1]
  */
 const Service = (...args) => {
-  console.log('service args', args);
   let options = { ...SERVICE_OPTIONS_DEFAULTS };
   let klass;
   if (args[0].hasOwnProperty('deps')) {
