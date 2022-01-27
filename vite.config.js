@@ -9,7 +9,8 @@ export default defineConfig({
     lib: {
       entry: path.resolve(__dirname, 'src/lib/index.js'),
       name: 'PlumeJS',
-      fileName: (format) => `plume.${format}.js`
+      fileName: (format) => `plume.${format}.js`,
+      formats: ['es', 'umd', 'iife']
     }
   },
   server: {

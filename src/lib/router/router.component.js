@@ -1,22 +1,23 @@
-import { html } from '../html';
-import { Component } from '../component';
-import { Subscription } from 'rxjs';
+// @flow
+import { InternalRouter } from './internalRouter.service';
+import { Component, Renderer, html } from '../index';
 
 const registerRouterComponent = () => {
   class RouterComponent {
     #template = '';
-    #subscriptions = new Subscription();
+    #subscriptions;
     update;
 
     constructor(internalRouterSrvc, renderer) {}
 
     beforeMount() {
-      this.#subscriptions.add(
-        this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+      this.#subscriptions = this.internalRouterSrvc
+        .getTemplate()
+        .subscribe((tmpl) => {
           this.#template = tmpl;
           this.renderer.update();
-        })
-      );
+        });
+      this.internalRouterSrvc.startHashChange();
     }
 
     mount() {
@@ -25,7 +26,8 @@ const registerRouterComponent = () => {
     }
 
     unmount() {
-      this.#subscriptions.unsubscribe();
+      this.#subscriptions();
+      this.internalRouterSrvc.stopHashChange();
     }
 
     render() {
@@ -38,7 +40,10 @@ const registerRouterComponent = () => {
       }
     }
   }
-  Component({ selector: 'router-outlet', deps: ['InternalRouter', 'Renderer'] }, RouterComponent);
+  Component(
+    { selector: 'router-outlet', deps: [InternalRouter, Renderer] },
+    RouterComponent
+  );
 };
 
 export { registerRouterComponent };

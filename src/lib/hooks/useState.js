@@ -1,3 +1,4 @@
+// @flow
 import { isFunction } from '../utils';
 
 const useState = (obj) => {

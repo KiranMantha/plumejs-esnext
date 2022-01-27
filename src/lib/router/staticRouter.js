@@ -1,5 +1,6 @@
+// @flow
 export class StaticRouter {
-  static routList = [];
+  static routeList = [];
   static checkParams(up, r) {
     let pmc = 0,
       po = {},
@@ -36,7 +37,7 @@ export class StaticRouter {
       ParamCount: 0,
       IsRegistered: false,
       redirectTo: '',
-      canActivate: () => true
+      canActivate: () => true,
     };
     obj.Params = r.path.split('/').filter((h) => {
       return h.length > 0;
@@ -45,12 +46,21 @@ export class StaticRouter {
     obj.Template = '';
     obj.redirectTo = r.redirectTo;
     if (r.template) {
-      if (!r.templatePath) throw Error('templatePath is required in route if template is mentioned.');
+      if (!r.templatePath)
+        throw Error(
+          'templatePath is required in route if template is mentioned.'
+        );
       obj.Template = r.template;
       obj.TemplatePath = r.templatePath;
     }
     if (r.canActivate) obj.canActivate = r.canActivate;
     obj.ParamCount = StaticRouter.getParamCount(obj.Params);
-    StaticRouter.routList.push(obj);
+    StaticRouter.routeList.push(obj);
+  }
+
+  static preloadRoutes() {
+    for (const route of StaticRouter.routeList) {
+      route.TemplatePath && route.TemplatePath();
+    }
   }
 }

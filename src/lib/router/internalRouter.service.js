@@ -1,20 +1,27 @@
-import { Subject } from 'rxjs';
-import { wrapIntoObservable } from '../utils';
+// @flow
 import { Service } from '../service';
+import { fromNativeEvent } from '../utils';
 import { StaticRouter } from './staticRouter';
-import { fromEvent } from 'rxjs';
+import { wrapIntoObservable, SubjectObs } from './observable-util';
 
-class InternalRouter {
+export class InternalRouter {
   #currentRoute = {
     path: '',
-    params: {}
+    routeParams: new Map(),
+    queryParams: new Map(),
+    state: {},
   };
-  #template = new Subject();
+  #template = new SubjectObs();
+  #unSubscribeHashEvent;
 
-  constructor() {
-    fromEvent(window, 'hashchange').subscribe(() => {
-      this._registerOnHashChange();
+  startHashChange() {
+    this.#unSubscribeHashEvent = fromNativeEvent(window, 'hashchange', () => {
+      this.#registerOnHashChange();
     });
+  }
+
+  stopHashChange() {
+    this.#unSubscribeHashEvent();
   }
 
   getTemplate() {
@@ -25,24 +32,24 @@ class InternalRouter {
     return this.#currentRoute;
   }
 
-  navigateTo(path = '') {
+  navigateTo(path = '', state) {
     if (path) {
       let windowHash = window.location.hash.replace(/^#/, '');
       if (windowHash === path) {
-        this._navigateTo(path);
+        this.#navigateTo(path, state);
       }
       window.location.hash = '#' + path;
     } else {
-      this._navigateTo(path);
+      this.#navigateTo(path, state);
     }
   }
 
-  _registerOnHashChange() {
+  #registerOnHashChange() {
     const path = window.location.hash.replace(/^#/, '');
-    this._navigateTo(path);
+    this.#navigateTo(path, null);
   }
 
-  _routeMatcher(route, path) {
+  #routeMatcher(route, path) {
     if (route) {
       let _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
       return path.match(_matcher);
@@ -51,12 +58,15 @@ class InternalRouter {
     }
   }
 
-  _navigateTo(path) {
+  #navigateTo(path, state) {
     let uParams = path.split('/').filter((h) => {
       return h.length > 0;
     });
-    let routeArr = StaticRouter.routList.filter((route) => {
-      if (route.Params.length === uParams.length && this._routeMatcher(route.Url, path)) {
+    let routeArr = StaticRouter.routeList.filter((route) => {
+      if (
+        route.Params.length === uParams.length &&
+        this.#routeMatcher(route.Url, path)
+      ) {
         return route;
       } else if (route.Url === path) {
         return route;
@@ -65,11 +75,17 @@ class InternalRouter {
     let routeItem = routeArr.length > 0 ? routeArr[0] : null;
     if (routeItem) {
       this.#currentRoute.path = path;
+      this.#currentRoute.state = { ...(state || {}) };
       wrapIntoObservable(routeItem.canActivate()).subscribe((val) => {
         if (!val) return;
         let _params = StaticRouter.checkParams(uParams, routeItem);
         if (Object.keys(_params).length > 0 || path) {
-          this.#currentRoute.params = _params;
+          this.#currentRoute.routeParams = new Map(Object.entries(_params));
+          const entries = window.location.hash.split('?')[1]
+            ? new URLSearchParams(window.location.hash.split('?')[1]).entries()
+            : [];
+          this.#currentRoute.queryParams = new Map(entries);
+
           if (!routeItem.IsRegistered) {
             if (routeItem.TemplatePath) {
               wrapIntoObservable(routeItem.TemplatePath()).subscribe((res) => {
@@ -88,4 +104,4 @@ class InternalRouter {
   }
 }
 
-Service({ name: 'InternalRouter' }, InternalRouter);
+Service(InternalRouter);
