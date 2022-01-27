@@ -1,21 +1,7 @@
-import { from, of } from 'rxjs';
+// @flow
 
 const isFunction = (value) => typeof value === 'function';
 const isObject = (value) => value !== null && typeof value === 'object';
-const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
-const isPromise = (obj) => !!obj && typeof obj.then === 'function';
-
-const wrapIntoObservable = (value) => {
-  if (isObservable(value)) {
-    return value;
-  }
-
-  if (isPromise(value)) {
-    return from(Promise.resolve(value));
-  }
-
-  return of(value);
-};
 
 // will work for es5 functions transpiled by webpack
 // function getArgs(func) {
@@ -48,4 +34,26 @@ const CSS_SHEET_NOT_SUPPORTED = (() => {
   }
 })();
 
-export { isFunction, isObject, wrapIntoObservable, getArgs, CSS_SHEET_NOT_SUPPORTED };
+/**
+ * register event on targeted dom node
+ * @param {HTMLElement} target
+ * @param {string} eventName
+ * @param {Function} onNext
+ * @param {boolean} options
+ * @return {Function} unsubscribe
+ */
+const fromNativeEvent = (target, eventName, onNext, options = false) => {
+  target.addEventListener(eventName, onNext, options);
+  const unsubscribe = () => {
+    target.removeEventListener(eventName, onNext, options);
+  };
+  return unsubscribe;
+};
+
+export {
+  isFunction,
+  isObject,
+  getArgs,
+  CSS_SHEET_NOT_SUPPORTED,
+  fromNativeEvent,
+};

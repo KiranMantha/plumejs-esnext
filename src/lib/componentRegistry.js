@@ -1,3 +1,4 @@
+// @flow
 const componentRegistry = new (class {
   globalStyles;
   globalStyleTag;
@@ -12,7 +13,7 @@ const componentRegistry = new (class {
   getComputedCss(styles = '') {
     let csoArray = [];
     const defaultStyles = new CSSStyleSheet();
-    defaultStyles.insertRule(':host { display: block; }');
+    defaultStyles.insertRule(`:host { display: block; }`);
     csoArray = [this.globalStyles, defaultStyles];
     if (styles) {
       const sheet = new CSSStyleSheet();
@@ -23,4 +24,4 @@ const componentRegistry = new (class {
   }
 })();
 
-export { componentRegistry };
+export {componentRegistry };

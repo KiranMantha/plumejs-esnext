@@ -1,22 +1,47 @@
+// @flow
 import { Service } from '../service';
 import { StaticRouter } from './staticRouter';
+import { InternalRouter } from './internalRouter.service';
 
-class Router {
-  getCurrentRoute;
-  navigateTo;
-  constructor(internalRouter) {
-    this.getCurrentRoute = internalRouter.getCurrentRoute.bind(internalRouter);
-    this.navigateTo = internalRouter.navigateTo.bind(internalRouter);
+export class Router {
+  constructor(internalRouter) {}
+
+  /**
+   * @returns {{ path: string, routeParams: Map<string, string>, queryParams: Map<string, string>, state: Object }} CurrentRoute
+   */
+  getCurrentRoute() {
+    return this.internalRouter.getCurrentRoute();
   }
-  registerRoutes(routes) {
+
+  /**
+   * navigates to predefined route
+   * @param {string} path
+   * @param {Object} state
+   */
+  navigateTo(path, state) {
+    this.internalRouter.navigateTo(path, state);
+  }
+
+  /**
+   * type that defines route structure
+   * @typedef  Route
+   */
+
+  /**
+   * register routes for routing
+   * @param {{path: string, template: string, templatePath: () => Promise, redirectTo: string, canActivate: () => (boolean | Observable<boolean> | Promise<boolean>)}[]} routes
+   * @param {boolean} preloadRoutes
+   */
+  registerRoutes(routes, preloadRoutes = false) {
     if (Array.isArray(routes)) {
       for (let route of routes) {
         StaticRouter.formatRoute(route);
       }
+      preloadRoutes && StaticRouter.preloadRoutes();
     } else {
       throw Error('router.addRoutes: the parameter must be an array');
     }
   }
 }
 
-Service({ name: 'Router', deps: ['InternalRouter'] }, Router);
+Service({ deps: [InternalRouter] }, Router);

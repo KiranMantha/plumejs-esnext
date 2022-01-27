@@ -1,3 +1,4 @@
+// @flow
 import { useState } from './useState';
 
 const _getTargetValue = (target) => {
@@ -7,20 +8,27 @@ const _getTargetValue = (target) => {
     case 'textarea': {
       let nonTextElements = ['radio', 'checkbox'];
       if (nonTextElements.includes(target.type)) {
-        targetValue = target.checked ? (target.value !== null && target.value !== 'on' ? target.value : true) : false;
+        targetValue = target.checked
+          ? target.value !== null && target.value !== 'on'
+            ? target.value
+            : true
+          : false;
       } else {
         targetValue = target.value;
       }
       break;
     }
     case 'select': {
-      let one = target.type === 'select-one';
-      if (one) {
-        targetValue = target.value;
-      } else {
-        let options = Array.from(target.options);
-        targetValue = [...options].filter((option) => option.selected).map((option) => option.value);
-      }
+      const one = target.type === 'select-one';
+      const options = Array.from(target.options);
+      const value = [...options]
+        .filter((option) => option.selected)
+        .map(
+          (option) =>
+            option.value ??
+            (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ')
+        );
+      targetValue = one ? value[0] : value;
       break;
     }
     default: {
@@ -31,6 +39,11 @@ const _getTargetValue = (target) => {
   return targetValue;
 };
 
+/**
+ * hook to maintain form state
+ * @param {Object} initialValues
+ * @returns [ Object, (key) => (event) => void, () => void ]
+ */
 const useFormFields = (initialValues) => {
   let [formFields, setFormFields] = useState(initialValues);
   const createChangeHandler = (key) => (e) => {

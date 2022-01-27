@@ -1,4 +1,6 @@
-import { Component, html, useFormFields } from '../lib';
+// @flow
+import { Component, html, useFormFields, Renderer } from '../lib';
+import { Router } from '../lib/router';
 import axios from 'axios';
 
 class ItemsComponent {
@@ -9,50 +11,57 @@ class ItemsComponent {
   table;
   personsList = [];
 
-  constructor(renderer) {}
+  constructor(renderer, routerSrvc) {}
 
   beforeMount() {
     [this.sheetFormFields, this.changeHandler, this.resetForm] = useFormFields({
       name: '',
       age: '',
-      salary: ''
+      salary: '',
     });
   }
 
   mount() {
+    console.table(this.routerSrvc.getCurrentRoute());
     this.getData();
   }
 
   submitForm(e) {
     e.preventDefault();
-    axios.post(this.apiUrl, this.sheetFormFields).then((response) => {
-      this.personsList.push(...response.data);
-      this.resetForm();
-      this.renderer.update();
-    });
+    axios
+      .post(this.apiUrl, this.sheetFormFields)
+      .then((response) => response.data)
+      .then((persons) => {
+        this.personsList.push(...persons);
+        this.resetForm();
+        this.renderer.update();
+      });
   }
 
   getData() {
-    axios.get(this.apiUrl).then((response) => {
-      this.personsList = [...response.data];
-      this.renderer.update();
-    });
+    axios
+      .get(this.apiUrl)
+      .then((response) => response.data)
+      .then((persons) => {
+        this.personsList = [...persons];
+        this.renderer.update();
+      });
   }
 
   render() {
     return html`
-      <form
-        onsubmit=${(e) => {
-          this.submitForm(e);
-        }}
-      >
+        <form
+          onsubmit=${(e) => {
+            this.submitForm(e);
+          }}
+        >
         <div class="field">
           <label class="label" for="exampleInputEmail1">Name</label>
           <div class="control">
             <input
               type="text"
               class="input"
-              id="name"
+              id='name'
               value=${this.sheetFormFields.name}
               onchange=${this.changeHandler('name')}
             />
@@ -64,7 +73,7 @@ class ItemsComponent {
             <input
               type="text"
               class="input"
-              id="age"
+              id='age'
               value=${this.sheetFormFields.age}
               onchange=${this.changeHandler('age')}
             />
@@ -76,7 +85,7 @@ class ItemsComponent {
             <input
               type="text"
               class="input"
-              id="salary"
+              id='salary'
               value=${this.sheetFormFields.salary}
               onchange=${this.changeHandler('salary')}
             />
@@ -90,26 +99,26 @@ class ItemsComponent {
       </form>
       <table class="table is-hoverable">
         <thead>
-          <tr>
-            <td>Name</td>
-            <td>Age</td>
-            <td>Salary</td>
-          </tr>
+            <tr>
+              <td>Name</td>
+              <td>Age</td>
+              <td>Salary</td>
+            </tr>
         </thead>
         <tbody>
-          ${this.personsList.map((item) => {
-            return html`
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.age}</td>
-                <td>${item.salary}</td>
-              </tr>
-            `;
-          })}
+        ${this.personsList.map((item) => {
+          return html`
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.age}</td>
+              <td>${item.salary}</td>
+            </tr>
+          `;
+        })}
         </tbody>
       </table>
-    `;
+      `;
   }
 }
 
-Component({ selector: 'app-items', deps: ['Renderer'] }, ItemsComponent);
+Component({ selector: 'app-items', deps: [Renderer, Router] }, ItemsComponent);
