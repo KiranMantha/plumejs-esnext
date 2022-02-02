@@ -20,7 +20,7 @@ const { html, render } = (() => {
       '<': '&lt;',
       '>': '&gt;',
       '(': '%28',
-      ')': '%29',
+      ')': '%29'
     };
     let str = JSON.stringify(data);
     const replaceTag = (tag) => tagsToReplace[tag] || tag;
@@ -38,9 +38,7 @@ const { html, render } = (() => {
 
     while (i--) {
       option = options[i];
-      const value =
-        option.getAttribute('value') ??
-        (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
+      const value = option.getAttribute('value') ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ');
       if ((option.selected = values.indexOf(value) > -1)) {
         optionSet = true;
       }
@@ -59,23 +57,24 @@ const { html, render } = (() => {
   };
 
   const _bindFragments = (fragment, values) => {
-    const elementsWalker = document.createTreeWalker(
-      fragment,
-      NodeFilter.SHOW_ELEMENT,
-      null
-    );
+    const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode();
     while (node) {
       if (node.hasAttributes()) {
-        const customAttributes = Array.from(node.attributes).filter((attr) =>
-          attributeRegex.test(attr.nodeName)
-        );
+        const customAttributes = Array.from(node.attributes).filter((attr) => attributeRegex.test(attr.nodeName));
         for (const { nodeName, nodeValue } of customAttributes) {
           const i = attributeRegex.exec(nodeName)[1];
           switch (true) {
             case /^on+/.test(nodeValue): {
               const eventName = nodeValue.slice(2).toLowerCase();
-              node.addEventListener(eventName, values[i]);
+              node.removeEventListener(eventName, values[i]);
+              if (eventName !== 'bindprops') {
+                node.addEventListener(eventName, values[i]);
+              } else {
+                node.addEventListener(eventName, (event) => {
+                  event.detail.setProps(values[i]());
+                });
+              }
               break;
             }
             case /ref/.test(nodeValue): {
@@ -127,18 +126,12 @@ const { html, render } = (() => {
   };
 
   const _replaceInsertNodeComments = (fragment, values) => {
-    const commentsWalker = document.createTreeWalker(
-      fragment,
-      NodeFilter.SHOW_COMMENT,
-      null
-    );
+    const commentsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_COMMENT, null);
     let node = commentsWalker.nextNode(),
       match;
     while (node) {
       if ((match = insertNodeRegex.exec(node.data))) {
-        const nodesList = Array.isArray(values[match[1]])
-          ? values[match[1]]
-          : [values[match[1]]];
+        const nodesList = Array.isArray(values[match[1]]) ? values[match[1]] : [values[match[1]]];
         node.replaceWith(...nodesList);
         commentsWalker.currentNode = fragment;
       }
@@ -163,8 +156,7 @@ const { html, render } = (() => {
       if (isAttributeRegex.test(result) && isNodeRegex.test(result)) {
         result = result.replace(
           isAttributeRegex,
-          (_, $1, $2) =>
-            `${attributePrefix}${i - 1}=${$2 || '"'}${$1}${$2 ? '' : '"'}`
+          (_, $1, $2) => `${attributePrefix}${i - 1}=${$2 || '"'}${$1}${$2 ? '' : '"'}`
         );
         isAttributePart = true;
       }
