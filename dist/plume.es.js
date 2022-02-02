@@ -93,7 +93,14 @@ const { html, render } = (() => {
           switch (true) {
             case /^on+/.test(nodeValue): {
               const eventName = nodeValue.slice(2).toLowerCase();
-              node.addEventListener(eventName, values[i]);
+              node.removeEventListener(eventName, values[i]);
+              if (eventName !== "bindprops") {
+                node.addEventListener(eventName, values[i]);
+              } else {
+                node.addEventListener(eventName, (event) => {
+                  event.detail.setProps(values[i]());
+                });
+              }
               break;
             }
             case /ref/.test(nodeValue): {
@@ -367,6 +374,7 @@ const Component = (componentOptions, klass) => {
       __privateGet(this, _klass).beforeMount && __privateGet(this, _klass).beforeMount();
       this.update();
       __privateGet(this, _klass).mount && __privateGet(this, _klass).mount();
+      this.emitEvent("bindprops", { setProps: this.setProps }, false);
     }
     update() {
       render(__privateGet(this, _shadow), __privateGet(this, _klass).render.bind(__privateGet(this, _klass))());
