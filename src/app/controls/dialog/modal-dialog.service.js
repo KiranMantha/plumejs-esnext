@@ -1,4 +1,12 @@
-import { Service } from '../../../lib';
+import { Service, fromNativeEvent, html } from '../../../lib';
+
+const DEFAULT_MODAL_PROPS = {
+  modalTitle: '',
+  hideDefaultCloseButton: false,
+  preventBackdropClose: true,
+  preventEsc: false,
+  renderTemplate: () => html``
+};
 
 export class DialogService {
   alert(message) {
@@ -10,11 +18,12 @@ export class DialogService {
   }
 
   modal(props) {
+    const _props = { ...DEFAULT_MODAL_PROPS, ...props };
     const element = this.#createComponent('app-modal-dialog', {
         modalData: {
-          title: props.modalTitle,
-          hideDefaultCloseButton: props.hideDefaultCloseButton,
-          bodyTemplate: props.renderTemplate()
+          title: _props.modalTitle,
+          hideDefaultCloseButton: _props.hideDefaultCloseButton,
+          bodyTemplate: _props.renderTemplate()
         }
       }),
       instance = element.getInstance();
@@ -24,6 +33,32 @@ export class DialogService {
         this.#removeComponent(element);
       }
     });
+
+    if (!_props.preventBackdropClose) {
+      const unsubscribe = fromNativeEvent(
+        element,
+        'click',
+        (event) => {
+          const rect = element.getBoundingClientRect();
+          const isInDialog =
+            rect.top <= event.clientY &&
+            event.clientY <= rect.top + rect.height &&
+            rect.left <= event.clientX &&
+            event.clientX <= rect.left + rect.width;
+          if (!isInDialog) {
+            instance.close();
+            unsubscribe();
+          }
+        },
+        { once: true }
+      );
+    }
+
+    if (_props.preventEsc) {
+      fromNativeEvent(instance.dialogRef, 'cancel', (event) => {
+        event.preventDefault();
+      });
+    }
 
     return {
       close: instance.close.bind(instance),

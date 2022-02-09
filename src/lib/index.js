@@ -8,3 +8,4 @@ export { Component, Renderer } from './component';
 export { Service } from './service';
 export { registerRouterComponent } from './router';
 export { useState, useFormFields } from './hooks';
+export { fromNativeEvent } from './utils';

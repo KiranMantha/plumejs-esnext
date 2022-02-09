@@ -63,6 +63,8 @@ class ControlsComponent {
     const modal = this.dialogService.modal({
       modalTitle: 'Hello World',
       hideDefaultCloseButton: false,
+      preventBackdropClose: true,
+      preventEsc: false,
       renderTemplate: () => html`<p>i'm inside a modal</p>`
     });
 
