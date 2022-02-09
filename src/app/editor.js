@@ -24,15 +24,26 @@ class Editor {
 
   render() {
     return html`
-      <button onclick=${() => {
-        this.editOrPreview();
-      }}>Edit / Preview</button>
-      <textarea ref=${(node) => {
-        this.editorNode = node;
-      }} class='editor show' placeholder='write your post here..'></textarea>
-      <div ref=${(node) => {
-        this.previewNode = node;
-      }} class='preview'></div>
+      <button
+        onclick=${() => {
+          this.editOrPreview();
+        }}
+      >
+        Edit / Preview
+      </button>
+      <textarea
+        ref=${(node) => {
+          this.editorNode = node;
+        }}
+        class="editor show"
+        placeholder="write your post here.."
+      ></textarea>
+      <div
+        ref=${(node) => {
+          this.previewNode = node;
+        }}
+        class="preview"
+      ></div>
     `;
   }
 }

@@ -1,7 +1,7 @@
-var augmentorWrapper = (function(exports) {
-  "use strict";
+var augmentorWrapper = (function (exports) {
+  'use strict';
 
-  var compat = typeof cancelAnimationFrame === "function";
+  var compat = typeof cancelAnimationFrame === 'function';
   var cAF = compat ? cancelAnimationFrame : clearTimeout;
   var rAF = compat ? requestAnimationFrame : setTimeout;
   function reraf(limit) {
@@ -38,7 +38,7 @@ var augmentorWrapper = (function(exports) {
     }
   }
 
-  var umap = function(_) {
+  var umap = function (_) {
     return {
       // About: get: _.get.bind(_)
       // It looks like WebKit/Safari didn't optimize bind at all,
@@ -85,7 +85,7 @@ var augmentorWrapper = (function(exports) {
   var contextual = function contextual(fn) {
     var check = true;
     var context = null;
-    var augmented = augmentor(function() {
+    var augmented = augmentor(function () {
       return fn.apply(context, arguments);
     });
     return function hook() {
@@ -113,7 +113,7 @@ var augmentorWrapper = (function(exports) {
   };
 
   var getValue = function getValue(value, f) {
-    return typeof f == "function" ? f(value) : f;
+    return typeof f == 'function' ? f(value) : f;
   };
 
   var useReducer = function useReducer(reducer, value, init, options) {
@@ -128,7 +128,7 @@ var augmentorWrapper = (function(exports) {
     ref.args = args;
 
     if (i === length) {
-      var fn = typeof init === "function";
+      var fn = typeof init === 'function';
 
       var _ref = (fn ? options : init) || options || defaults,
         asy = _ref.async,
@@ -137,7 +137,7 @@ var augmentorWrapper = (function(exports) {
       ref.$ = fn ? init(value) : getValue(void 0, value);
       ref._ = asy ? updates.get(hook) || updates.set(hook, reraf()) : hookdate;
 
-      ref.f = function(value) {
+      ref.f = function (value) {
         var $value = reducer(ref.$, value);
 
         if (always || ref.$ !== $value) {
@@ -202,7 +202,7 @@ var augmentorWrapper = (function(exports) {
   var stop = function stop() {};
 
   var createEffect = function createEffect(asy) {
-    return function(effect, guards) {
+    return function (effect, guards) {
       var i = state.i++;
       var _state3 = state,
         hook = _state3.hook,
@@ -256,7 +256,7 @@ var augmentorWrapper = (function(exports) {
   };
 
   var dropEffect = function dropEffect(hook) {
-    (effects.get(hook) || []).forEach(function(info) {
+    (effects.get(hook) || []).forEach(function (info) {
       var clean = info.clean,
         stop = info.stop;
       stop();
@@ -289,7 +289,7 @@ var augmentorWrapper = (function(exports) {
     return stack[i].$;
   };
   var useCallback = function useCallback(fn, guards) {
-    return useMemo(function() {
+    return useMemo(function () {
       return fn;
     }, guards);
   }; // useRef

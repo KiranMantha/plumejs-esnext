@@ -6,21 +6,21 @@ class ControlsComponent {
     options: [
       {
         label: 'Option 1',
-        value: 'o1',
+        value: 'o1'
       },
       {
         label: 'Option 2',
         value: 'o2',
-        selected: true,
+        selected: true
       },
       {
         label: 'Option 3',
-        value: 'o3',
+        value: 'o3'
       },
       {
         label: 'Option 4',
-        value: 'o4',
-      },
+        value: 'o4'
+      }
     ],
     multiple: true,
     enableFilter: true,
@@ -33,11 +33,11 @@ class ControlsComponent {
       } else {
         return options.map((item) => item.label).join(', ');
       }
-    },
+    }
   };
   mount() {
     this.dropdownComp.setProps({
-      dropdownOptions: this.dropdownOptions,
+      dropdownOptions: this.dropdownOptions
     });
   }
   render() {
@@ -45,7 +45,7 @@ class ControlsComponent {
       <button onclick=${() => {
         this.dropdownOptions.resetDropdown = true;
         this.dropdownComp.setProps({
-          dropdownOptions: this.dropdownOptions,
+          dropdownOptions: this.dropdownOptions
         });
       }}>reset</button>
       <ui-dropdown 

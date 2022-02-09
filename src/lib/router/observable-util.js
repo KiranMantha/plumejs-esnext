@@ -4,7 +4,7 @@ const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 const ofObs = (input) => ({
   subscribe: (fn) => {
     fn(input);
-  },
+  }
 });
 
 const fromPromiseObs = (input) => ({
@@ -12,13 +12,13 @@ const fromPromiseObs = (input) => ({
     Promise.resolve(input).then((value) => {
       fn(value);
     });
-  },
+  }
 });
 
 class SubjectObs {
   asObservable() {
     return {
-      subscribe: (fn) => this.subscribe(fn),
+      subscribe: (fn) => this.subscribe(fn)
     };
   }
 

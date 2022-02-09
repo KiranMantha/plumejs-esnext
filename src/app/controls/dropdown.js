@@ -8,7 +8,7 @@ const defaultDropdownOptions = {
   buttonText: null,
   enableFilter: false,
   disable: false,
-  resetDropdown: false,
+  resetDropdown: false
 };
 
 class DropdownComponent {
@@ -26,17 +26,15 @@ class DropdownComponent {
     if (this.dropdownOptions.options.length) {
       this.dropdownOptions = {
         ...defaultDropdownOptions,
-        ...this.dropdownOptions,
+        ...this.dropdownOptions
       };
       const { multiple, resetDropdown } = this.dropdownOptions;
       if (!!resetDropdown) {
         this._selectedOptions = [];
-        this.dropdownOptions.options = this.dropdownOptions.options.map(
-          (option) => {
-            option.selected = false;
-            return option;
-          }
-        );
+        this.dropdownOptions.options = this.dropdownOptions.options.map((option) => {
+          option.selected = false;
+          return option;
+        });
       }
       this.#isMultiSelect = multiple;
       this.#getSummaryText();
@@ -53,17 +51,13 @@ class DropdownComponent {
     } else {
       // update selected options
       this.dropdownOptions.options[index].selected = isChecked;
-      this.#selectedOptions = this.dropdownOptions.options.filter(
-        (item) => !!item.selected
-      );
+      this.#selectedOptions = this.dropdownOptions.options.filter((item) => !!item.selected);
 
       //get button text
       if (this.dropdownOptions.buttonText) {
         selectedText = this.dropdownOptions.buttonText(this.#selectedOptions);
       } else if (this.#selectedOptions.length) {
-        selectedText = this.#selectedOptions
-          .map((item) => item.label)
-          .join(', ');
+        selectedText = this.#selectedOptions.map((item) => item.label).join(', ');
       } else {
         selectedText = this.dropdownOptions.defaultText;
       }
@@ -72,18 +66,14 @@ class DropdownComponent {
     //set button text and emit selected options
     this.#summaryNode.textContent = selectedText;
     this.renderer.emitEvent('optionselected', {
-      option: !this.#isMultiSelect ? selectedOption : this.#selectedOptions,
+      option: !this.#isMultiSelect ? selectedOption : this.#selectedOptions
     });
   }
 
   #getSummaryText() {
-    this.#selectedOptions = this.dropdownOptions.options.filter(
-      (item) => !!item.selected
-    );
+    this.#selectedOptions = this.dropdownOptions.options.filter((item) => !!item.selected);
     if (this.#isMultiSelect) {
-      this.#summaryText =
-        this.#selectedOptions.map((item) => item.label).join(',') ||
-        this.dropdownOptions.defaultText;
+      this.#summaryText = this.#selectedOptions.map((item) => item.label).join(',') || this.dropdownOptions.defaultText;
     } else {
       if (this.#selectedOptions.length) {
         this.#summaryText = this.#selectedOptions[0].label;
@@ -98,27 +88,28 @@ class DropdownComponent {
     const items = this.dropdownOptions.options.map((item, index) => {
       return html`
         <li>
-            <input name="select"
-              id="id-${index}" 
-              type="${this.#isMultiSelect ? 'checkbox' : 'radio'}"
-              checked=${!!item.selected}
-              onchange=${(e) => {
-                this.onOptionSelected(e.target.checked, item, index);
-              }} 
-            />
-          <label for="id-${index}">
-            ${item.label}
-          </label>
+          <input
+            name="select"
+            id="id-${index}"
+            type="${this.#isMultiSelect ? 'checkbox' : 'radio'}"
+            checked=${!!item.selected}
+            onchange=${(e) => {
+              this.onOptionSelected(e.target.checked, item, index);
+            }}
+          />
+          <label for="id-${index}"> ${item.label} </label>
         </li>
       `;
     });
     if (this.dropdownOptions.enableFilter) {
-      const filterNode = html`
-        <li class='filter'>
-          <input type='search' oninput=${(e) => {
+      const filterNode = html` <li class="filter">
+        <input
+          type="search"
+          oninput=${(e) => {
             this.#filterList(e);
-          }}/>
-        </li>`;
+          }}
+        />
+      </li>`;
       items.unshift(filterNode);
     }
     return items;
@@ -145,8 +136,7 @@ class DropdownComponent {
     if (this.#detailsNode.open) {
       let t;
       const scrollTop = (
-        ((t = document.documentElement) || (t = document.body.parentNode)) &&
-        typeof t.scrollTop == 'number'
+        ((t = document.documentElement) || (t = document.body.parentNode)) && typeof t.scrollTop == 'number'
           ? t
           : document.body
       ).scrollTop;
@@ -167,9 +157,9 @@ class DropdownComponent {
   render() {
     if (this.dropdownOptions.options.length) {
       return html`
-        <details 
+        <details
           role="dropdown"
-          class="${this.dropdownOptions.disable ? 'disabled' : ''}" 
+          class="${this.dropdownOptions.disable ? 'disabled' : ''}"
           ref=${(node) => {
             this.#detailsNode = node;
           }}
@@ -180,22 +170,23 @@ class DropdownComponent {
           <summary
             ref=${(node) => {
               this.#summaryNode = node;
-            }}>${this.#summaryText}
+            }}
+          >
+            ${this.#summaryText}
           </summary>
-          <ul ref=${(node) => {
-            this.#optionsContainerNode = node;
-          }}>
+          <ul
+            ref=${(node) => {
+              this.#optionsContainerNode = node;
+            }}
+          >
             ${this.#buildItems()}
           </ul>
         </details>
-    `;
+      `;
     } else {
       return html`<div></div>`;
     }
   }
 }
 
-Component(
-  { selector: 'ui-dropdown', styles: dropdownStyles, deps: [Renderer] },
-  DropdownComponent
-);
+Component({ selector: 'ui-dropdown', styles: dropdownStyles, deps: [Renderer] }, DropdownComponent);

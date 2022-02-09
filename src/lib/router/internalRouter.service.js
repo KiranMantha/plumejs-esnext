@@ -9,7 +9,7 @@ export class InternalRouter {
     path: '',
     routeParams: new Map(),
     queryParams: new Map(),
-    state: {},
+    state: {}
   };
   #template = new SubjectObs();
   #unSubscribeHashEvent;
@@ -63,10 +63,7 @@ export class InternalRouter {
       return h.length > 0;
     });
     let routeArr = StaticRouter.routeList.filter((route) => {
-      if (
-        route.Params.length === uParams.length &&
-        this.#routeMatcher(route.Url, path)
-      ) {
+      if (route.Params.length === uParams.length && this.#routeMatcher(route.Url, path)) {
         return route;
       } else if (route.Url === path) {
         return route;
