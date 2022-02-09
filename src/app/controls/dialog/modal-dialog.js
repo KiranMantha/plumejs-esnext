@@ -35,6 +35,8 @@ class Dialog {
 }
 
 class ModalDialog extends Dialog {
+  ObservedProperties = ['modalData'];
+
   modalData;
   #modalClosedPromise;
   #resolveModalClose;
@@ -94,46 +96,9 @@ class ModalDialog extends Dialog {
 }
 
 class AlertDialog extends Dialog {
-  alert = '';
+  ObservedProperties = ['alertOptions'];
 
-  constructor() {
-    super();
-  }
-
-  onConfirm() {
-    this.resolveUserInput(true);
-    this.dialogRef.close();
-    this.resolveDialogActions(true);
-  }
-
-  render() {
-    if (!this.alert) {
-      return html``;
-    } else {
-      return html`
-        <dialog
-          ref=${(node) => {
-            this.dialogRef = node;
-          }}
-        >
-          <section>${this.alert}</section>
-          <menu>
-            <button
-              onclick=${() => {
-                this.onConfirm();
-              }}
-            >
-              Ok
-            </button>
-          </menu>
-        </dialog>
-      `;
-    }
-  }
-}
-
-class ConfirmDialog extends Dialog {
-  alert;
+  alertOptions;
 
   constructor() {
     super();
@@ -151,39 +116,54 @@ class ConfirmDialog extends Dialog {
     this.resolveDialogActions(true);
   }
 
-  render() {
-    if (!this.alert) {
-      return html``;
+  renderActionButtons() {
+    if (this.alertOptions.isAlert) {
+      return html`
+        <button
+          onclick=${() => {
+            this.onConfirm();
+          }}
+        >
+          Ok
+        </button>
+      `;
     } else {
+      return html`
+        <button
+          onclick=${() => {
+            this.onCancel();
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          onclick=${() => {
+            this.onConfirm();
+          }}
+        >
+          Ok
+        </button>
+      `;
+    }
+  }
+
+  render() {
+    if (this.alertOptions) {
       return html`
         <dialog
           ref=${(node) => {
             this.dialogRef = node;
           }}
         >
-          <section>${this.alert}</section>
-          <menu>
-            <button
-              onclick=${() => {
-                this.onCancel();
-              }}
-            >
-              Cancel
-            </button>
-            <button
-              onclick=${() => {
-                this.onConfirm();
-              }}
-            >
-              Ok
-            </button>
-          </menu>
+          <section>${this.alertOptions.message}</section>
+          <menu> ${this.renderActionButtons()} </menu>
         </dialog>
       `;
+    } else {
+      return html``;
     }
   }
 }
 
 Component({ selector: 'app-alert-dialog' }, AlertDialog);
-Component({ selector: 'app-confirm-dialog' }, ConfirmDialog);
 Component({ selector: 'app-modal-dialog' }, ModalDialog);

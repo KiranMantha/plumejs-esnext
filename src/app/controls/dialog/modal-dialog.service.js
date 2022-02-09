@@ -10,11 +10,11 @@ const DEFAULT_MODAL_PROPS = {
 
 export class DialogService {
   alert(message) {
-    return this.#prompt('app-alert-dialog', message);
+    return this.#prompt(message, true);
   }
 
   confirm(message) {
-    return this.#prompt('app-confirm-dialog', message);
+    return this.#prompt(message, false);
   }
 
   modal(props) {
@@ -77,9 +77,9 @@ export class DialogService {
     document.body.removeChild(element);
   }
 
-  #prompt(selector, message) {
-    const element = this.#createComponent(selector, {
-        alert: message
+  #prompt(message, isAlert) {
+    const element = this.#createComponent('app-alert-dialog', {
+        alertOptions: { message, isAlert }
       }),
       instance = element.getInstance();
     instance.showModal();
