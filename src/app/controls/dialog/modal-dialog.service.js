@@ -35,23 +35,18 @@ export class DialogService {
     });
 
     if (!_props.preventBackdropClose) {
-      const unsubscribe = fromNativeEvent(
-        element,
-        'click',
-        (event) => {
-          const rect = element.getBoundingClientRect();
-          const isInDialog =
-            rect.top <= event.clientY &&
-            event.clientY <= rect.top + rect.height &&
-            rect.left <= event.clientX &&
-            event.clientX <= rect.left + rect.width;
-          if (!isInDialog) {
-            instance.close();
-            unsubscribe();
-          }
-        },
-        { once: true }
-      );
+      const rect = instance.dialogRef.getBoundingClientRect();
+      const unsubscribe = fromNativeEvent(instance.dialogRef, 'click', (event) => {
+        const isInDialog =
+          rect.top <= event.clientY &&
+          event.clientY <= rect.top + rect.height &&
+          rect.left <= event.clientX &&
+          event.clientX <= rect.left + rect.width;
+        if (!isInDialog) {
+          instance.close();
+          unsubscribe();
+        }
+      });
     }
 
     if (_props.preventEsc) {
