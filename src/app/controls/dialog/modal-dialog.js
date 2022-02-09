@@ -2,16 +2,16 @@ import { Component, html } from '../../../lib';
 
 class Dialog {
   dialogRef;
-  userInput;
-  dialogActions;
+  #userInput;
+  #dialogActions;
   resolveDialogActions;
   resolveUserInput;
 
   constructor() {
-    this.userInput = new Promise((resolve) => {
+    this.#userInput = new Promise((resolve) => {
       this.resolveUserInput = resolve;
     });
-    this.dialogActions = new Promise((resolve) => {
+    this.#dialogActions = new Promise((resolve) => {
       this.resolveDialogActions = resolve;
     });
   }
@@ -20,22 +20,30 @@ class Dialog {
     this.dialogRef.showModal();
     return this.userInput;
   }
+
+  getUserInput() {
+    return this.#userInput;
+  }
+
+  getDialogActions() {
+    return this.#dialogActions;
+  }
 }
 
 class ModalDialog extends Dialog {
   modalData;
-  #closed;
-  #resolveClose;
+  #modalClosedPromise;
+  #resolveModalClose;
 
   constructor() {
     super();
-    this.#closed = new Promise((resolve) => {
-      this.#resolveClose = resolve;
+    this.#modalClosedPromise = new Promise((resolve) => {
+      this.#resolveModalClose = resolve;
     });
   }
 
   afterClosed() {
-    return this.#closed;
+    return this.#modalClosedPromise;
   }
 
   close() {
@@ -43,7 +51,7 @@ class ModalDialog extends Dialog {
   }
 
   onDialogClosed() {
-    this.#resolveClose();
+    this.#resolveModalClose();
     this.resolveDialogActions(true);
   }
 

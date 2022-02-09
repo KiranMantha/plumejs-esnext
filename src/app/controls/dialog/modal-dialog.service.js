@@ -28,7 +28,7 @@ export class DialogService {
       }),
       instance = element.getInstance();
     instance.showModal();
-    instance.dialogActions.then((close) => {
+    instance.getDialogActions().then((close) => {
       if (close) {
         this.#removeComponent(element);
       }
@@ -83,15 +83,13 @@ export class DialogService {
       }),
       instance = element.getInstance();
     instance.showModal();
-    instance.dialogActions.then((close) => {
+    instance.getDialogActions().then((close) => {
       if (close) {
         this.#removeComponent(element);
       }
     });
     return {
-      getUserInput: () => {
-        return instance.userInput;
-      }
+      getUserInput: instance.getUserInput.bind(instance)
     };
   }
 }
