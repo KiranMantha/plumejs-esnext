@@ -21,6 +21,10 @@ class Dialog {
     return this.userInput;
   }
 
+  close() {
+    this.dialogRef.close();
+  }
+
   getUserInput() {
     return this.#userInput;
   }
@@ -46,10 +50,6 @@ class ModalDialog extends Dialog {
     return this.#modalClosedPromise;
   }
 
-  close() {
-    this.dialogRef.close();
-  }
-
   onDialogClosed() {
     this.#resolveModalClose();
     this.resolveDialogActions(true);
@@ -63,7 +63,7 @@ class ModalDialog extends Dialog {
         <button
           class="btn-close"
           onclick=${() => {
-            this.dialogRef.close();
+            this.close();
           }}
         >
           &times;
