@@ -1,4 +1,5 @@
 import { Component, html } from '../../lib';
+import { DialogService } from './dialog/modal-dialog.service';
 
 class ControlsComponent {
   dropdownComp;
@@ -35,11 +36,41 @@ class ControlsComponent {
       }
     }
   };
+
+  constructor(dialogService) {}
+
   mount() {
     this.dropdownComp.setProps({
       dropdownOptions: this.dropdownOptions
     });
   }
+
+  showAlert() {
+    const _alert = this.dialogService.alert('hello world');
+    _alert.getUserInput().then((v) => {
+      console.log(v);
+    });
+  }
+
+  showConfirm() {
+    const _confirm = this.dialogService.confirm('hello world');
+    _confirm.getUserInput().then((v) => {
+      console.log(v);
+    });
+  }
+
+  showModal() {
+    const modal = this.dialogService.modal({
+      modalTitle: 'Hello World',
+      hideDefaultCloseButton: false,
+      renderTemplate: () => html`<p>i'm inside a modal</p>`
+    });
+
+    modal.afterClosed().then(() => {
+      console.log('modal closed');
+    });
+  }
+
   render() {
     return html`
       <button onclick=${() => {
@@ -61,8 +92,19 @@ class ControlsComponent {
       <div style="display: flex; align-items: center;">
         Switch: <input type='checkbox' role='switch'></input>
       </div>
+      <div>
+        <button onclick=${() => {
+          this.showAlert();
+        }}>show alert</button>
+        <button onclick=${() => {
+          this.showConfirm();
+        }}>show confirm</button>
+        <button onclick=${() => {
+          this.showModal();
+        }}>show modal</button>
+      </div>
     `;
   }
 }
 
-Component({ selector: 'app-controls' }, ControlsComponent);
+Component({ selector: 'app-controls', deps: [DialogService] }, ControlsComponent);
