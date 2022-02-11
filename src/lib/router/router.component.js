@@ -11,12 +11,10 @@ const registerRouterComponent = () => {
     constructor(internalRouterSrvc, renderer) {}
 
     beforeMount() {
-      this.#subscriptions = this.internalRouterSrvc
-        .getTemplate()
-        .subscribe((tmpl) => {
-          this.#template = tmpl;
-          this.renderer.update();
-        });
+      this.#subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+        this.#template = tmpl;
+        this.renderer.update();
+      });
       this.internalRouterSrvc.startHashChange();
     }
 
@@ -40,10 +38,7 @@ const registerRouterComponent = () => {
       }
     }
   }
-  Component(
-    { selector: 'router-outlet', deps: [InternalRouter, Renderer] },
-    RouterComponent
-  );
+  Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] }, RouterComponent);
 };
 
 export { registerRouterComponent };

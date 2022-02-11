@@ -7,34 +7,25 @@ class PersonsComponent {
   personDetailsCompRef;
 
   mount() {
-    render(
-      this.ulRef,
-      html`
-        loading
-      `
-    );
+    render(this.ulRef, html` loading `);
     axios
       .get('https://jsonplaceholder.typicode.com/users')
       .then((response) => response.data)
       .then((users) => {
         let nodes = users.map((user) => {
           return html`
-          <li class="is-clickable"
-            onclick="${() => {
-              this.loadPersonDetails(user);
-            }}"
-          >
-            ${user.name}
-          </li>
-        `;
+            <li
+              class="is-clickable"
+              onclick="${() => {
+                this.loadPersonDetails(user);
+              }}"
+            >
+              ${user.name}
+            </li>
+          `;
         });
 
-        render(
-          this.ulRef,
-          html`
-            ${nodes}
-          `
-        );
+        render(this.ulRef, html` ${nodes} `);
       });
   }
 
@@ -49,9 +40,11 @@ class PersonsComponent {
   render() {
     return html`
       <h3>Persons route</h3>
-      <ul ref="${(ref) => {
-        this.ulRef = ref;
-      }}"></ul>
+      <ul
+        ref="${(ref) => {
+          this.ulRef = ref;
+        }}"
+      ></ul>
       <app-person-details
         ref="${(node) => {
           this.personDetailsCompRef = node;
@@ -75,27 +68,23 @@ class PersonDetailsComponent {
   render() {
     if (this.personDetails?.name) {
       return html`
-          <strong>Person Details</strong>
-          <div>Name: ${this.personDetails.name}</div>
-          <div>Company: ${this.personDetails.company.name}</div>
-          <button class="button is-info is-light"
-            onclick="${() => {
-              this.sendDataToParent();
-            }}"
-          >
-            click me and check console
-          </button>
-        `;
+        <strong>Person Details</strong>
+        <div>Name: ${this.personDetails.name}</div>
+        <div>Company: ${this.personDetails.company.name}</div>
+        <button
+          class="button is-info is-light"
+          onclick="${() => {
+            this.sendDataToParent();
+          }}"
+        >
+          click me and check console
+        </button>
+      `;
     } else {
-      return html`
-          <div></div>
-        `;
+      return html` <div></div> `;
     }
   }
 }
 
 Component({ selector: 'app-persons' }, PersonsComponent);
-Component(
-  { selector: 'app-person-details', deps: [Renderer] },
-  PersonDetailsComponent
-);
+Component({ selector: 'app-person-details', deps: [Renderer] }, PersonDetailsComponent);

@@ -50,10 +50,4 @@ const fromNativeEvent = (target, eventName, onNext, options = false) => {
   return unsubscribe;
 };
 
-export {
-  isFunction,
-  isObject,
-  getArgs,
-  CSS_SHEET_NOT_SUPPORTED,
-  fromNativeEvent,
-};
+export { isFunction, isObject, getArgs, CSS_SHEET_NOT_SUPPORTED, fromNativeEvent };

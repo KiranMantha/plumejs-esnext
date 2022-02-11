@@ -37,7 +37,7 @@ export class StaticRouter {
       ParamCount: 0,
       IsRegistered: false,
       redirectTo: '',
-      canActivate: () => true,
+      canActivate: () => true
     };
     obj.Params = r.path.split('/').filter((h) => {
       return h.length > 0;
@@ -46,10 +46,7 @@ export class StaticRouter {
     obj.Template = '';
     obj.redirectTo = r.redirectTo;
     if (r.template) {
-      if (!r.templatePath)
-        throw Error(
-          'templatePath is required in route if template is mentioned.'
-        );
+      if (!r.templatePath) throw Error('templatePath is required in route if template is mentioned.');
       obj.Template = r.template;
       obj.TemplatePath = r.templatePath;
     }

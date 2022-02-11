@@ -16,32 +16,22 @@ class FormComponent {
       password: '1234',
       checkme: true,
       option: '',
-      options: ['2', '4'],
+      options: ['2', '4']
     });
     [this.sampleformFields2, this.createChangeHandler2] = useFormFields({
       name: '',
-      age: '',
+      age: ''
     });
   }
 
   submitForm1(e) {
     e.preventDefault();
-    render(
-      this.formOutputRef1,
-      html`
-        <pre>${JSON.stringify(this.sampleformFields1, null, 4)}</pre>
-      `
-    );
+    render(this.formOutputRef1, html` <pre>${JSON.stringify(this.sampleformFields1, null, 4)}</pre> `);
   }
 
   submitForm2(e) {
     e.preventDefault();
-    render(
-      this.formOutputRef2,
-      html`
-        <pre>${JSON.stringify(this.sampleformFields2, null, 4)}</pre>
-      `
-    );
+    render(this.formOutputRef2, html` <pre>${JSON.stringify(this.sampleformFields2, null, 4)}</pre> `);
   }
 
   render() {
@@ -97,10 +87,7 @@ class FormComponent {
           <label class="label">single select</label>
           <div class="control">
             <div class="select">
-              <select
-                value=${this.sampleformFields1.option}
-                onchange=${this.createChangeHandler1('option')}
-              >
+              <select value=${this.sampleformFields1.option} onchange=${this.createChangeHandler1('option')}>
                 <option>Select</option>
                 <option>1</option>
                 <option>2</option>
@@ -114,9 +101,7 @@ class FormComponent {
           <label class="label">multi select</label>
           <div class="control">
             <div class="select is-multiple">
-              <select multiple value=${
-                this.sampleformFields1.options
-              } onchange=${this.createChangeHandler1('options')}>
+              <select multiple value=${this.sampleformFields1.options} onchange=${this.createChangeHandler1('options')}>
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>

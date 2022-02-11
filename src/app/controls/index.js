@@ -1,3 +1,3 @@
 import './dropdown';
-import './modal-dialog';
+import './dialog/modal-dialog';
 import './controls';
