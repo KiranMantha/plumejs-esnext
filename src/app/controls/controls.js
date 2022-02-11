@@ -1,5 +1,27 @@
-import { Component, html } from '../../lib';
+import { Component, html, Renderer } from '../../lib';
 import { DialogService } from './dialog/modal-dialog.service';
+
+class NestedModal {
+  constructor(renderer) {}
+  closeModal() {
+    this.renderer.emitEvent('closenestedmodal');
+  }
+
+  render() {
+    return html`
+      i'm in a nested modal.
+      <div>
+        <button
+          onclick=${() => {
+            this.closeModal();
+          }}
+        >
+          close this modal
+        </button>
+      </div>
+    `;
+  }
+}
 
 class ControlsComponent {
   dropdownComp;
@@ -65,11 +87,30 @@ class ControlsComponent {
       hideDefaultCloseButton: false,
       preventBackdropClose: false,
       preventEsc: false,
-      renderTemplate: () => html`<p>i'm inside a modal</p>`
+      renderTemplate: () => html`<p>i'm inside a modal</p>
+        <button
+          onclick=${() => {
+            this.showNestedModal();
+          }}
+        >
+          open nested modal
+        </button> `
     });
 
     modal.afterClosed().then(() => {
       console.log('modal closed');
+    });
+  }
+
+  showNestedModal() {
+    const modal = this.dialogService.modal({
+      hideDefaultCloseButton: true,
+      renderTemplate: () =>
+        html`<app-nested-modal
+          onclosenestedmodal=${() => {
+            modal.close();
+          }}
+        ></app-nested-modal>`
     });
   }
 
@@ -109,4 +150,5 @@ class ControlsComponent {
   }
 }
 
+Component({ selector: 'app-nested-modal', deps: [Renderer] }, NestedModal);
 Component({ selector: 'app-controls', deps: [DialogService] }, ControlsComponent);
