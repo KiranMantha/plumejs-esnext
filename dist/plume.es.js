@@ -285,7 +285,7 @@ const componentRegistry = new class {
   getComputedCss(styles = "") {
     let csoArray = [];
     const defaultStyles = new CSSStyleSheet();
-    defaultStyles.insertRule(`:host { display: block; }`);
+    defaultStyles.insertRule(":host { display: block; }");
     csoArray = [this.globalStyles, defaultStyles];
     if (styles) {
       const sheet = new CSSStyleSheet();
@@ -738,4 +738,4 @@ const useFormFields = (initialValues) => {
   };
   return [formFields, createChangeHandler, resetFormFields];
 };
-export { Component, Renderer, Service, html, registerRouterComponent, render, useFormFields, useState };
+export { Component, Renderer, Service, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };
