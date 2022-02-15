@@ -89,9 +89,6 @@ const Component = (componentOptions, klass) => {
         if (!CSS_SHEET_NOT_SUPPORTED) {
           this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(componentOptions.styles);
         }
-        this.update = this.update.bind(this);
-        this.emitEvent = this.emitEvent.bind(this);
-        this.setProps = this.setProps.bind(this);
         this.getInstance = this.getInstance.bind(this);
       }
 
@@ -108,17 +105,17 @@ const Component = (componentOptions, klass) => {
         this.emulateComponent();
         const rendererInstance = new Renderer();
         rendererInstance.shadowRoot = this.#shadow;
-        rendererInstance.update = this.update;
-        rendererInstance.emitEvent = this.emitEvent;
+        rendererInstance.update = () => this.update;
+        rendererInstance.emitEvent = () => this.emitEvent;
         this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
         this.#klass.beforeMount && this.#klass.beforeMount();
         this.update();
         this.#klass.mount && this.#klass.mount();
-        this.emitEvent('bindprops', { setProps: this.setProps }, false);
+        this.emitEvent('bindprops', { setProps: () => this.setProps }, false);
       }
 
       update() {
-        render(this.#shadow, this.#klass.render.bind(this.#klass)());
+        render(this.#shadow, (() => this.#klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
           componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
           componentRegistry.globalStyleTag &&

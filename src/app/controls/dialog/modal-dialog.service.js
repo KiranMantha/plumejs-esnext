@@ -56,8 +56,8 @@ export class DialogService {
     }
 
     return {
-      close: instance.close.bind(instance),
-      afterClosed: instance.afterClosed.bind(instance)
+      close: () => instance.close(),
+      afterClosed: () => instance.afterClosed()
     };
   }
 
@@ -84,7 +84,7 @@ export class DialogService {
       }
     });
     return {
-      getUserInput: instance.getUserInput.bind(instance)
+      getUserInput: () => instance.getUserInput()
     };
   }
 }
