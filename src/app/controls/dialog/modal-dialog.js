@@ -1,5 +1,13 @@
 import { Component, html } from '../../../lib';
 
+function promisify() {
+  let resolver;
+  const promise = new Promise((resolve) => {
+    resolver = resolve;
+  });
+  return [promise, resolver];
+}
+
 class Dialog {
   dialogRef;
   #userInput;
@@ -8,12 +16,8 @@ class Dialog {
   resolveUserInput;
 
   constructor() {
-    this.#userInput = new Promise((resolve) => {
-      this.resolveUserInput = resolve;
-    });
-    this.#dialogActions = new Promise((resolve) => {
-      this.resolveDialogActions = resolve;
-    });
+    [this.#userInput, this.resolveUserInput] = promisify();
+    [this.#dialogActions, this.resolveDialogActions] = promisify();
   }
 
   showModal() {
@@ -43,9 +47,7 @@ class ModalDialog extends Dialog {
 
   constructor() {
     super();
-    this.#modalClosedPromise = new Promise((resolve) => {
-      this.#resolveModalClose = resolve;
-    });
+    [this.#modalClosedPromise, this.#resolveModalClose] = promisify();
   }
 
   afterClosed() {
