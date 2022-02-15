@@ -108,8 +108,8 @@ const Component = (componentOptions, klass) => {
         rendererInstance.update = () => {
           this.update();
         };
-        rendererInstance.emitEvent = () => {
-          this.emitEvent();
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.emitEvent(eventName, data);
         };
         this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
         this.#klass.beforeMount && this.#klass.beforeMount();
@@ -118,8 +118,8 @@ const Component = (componentOptions, klass) => {
         this.emitEvent(
           'bindprops',
           {
-            setProps: () => {
-              this.setProps();
+            setProps: (propsObj) => {
+              this.setProps(propsObj);
             }
           },
           false
