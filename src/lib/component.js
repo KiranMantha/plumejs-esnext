@@ -105,13 +105,25 @@ const Component = (componentOptions, klass) => {
         this.emulateComponent();
         const rendererInstance = new Renderer();
         rendererInstance.shadowRoot = this.#shadow;
-        rendererInstance.update = () => this.update;
-        rendererInstance.emitEvent = () => this.emitEvent;
+        rendererInstance.update = () => {
+          this.update();
+        };
+        rendererInstance.emitEvent = () => {
+          this.emitEvent();
+        };
         this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
         this.#klass.beforeMount && this.#klass.beforeMount();
         this.update();
         this.#klass.mount && this.#klass.mount();
-        this.emitEvent('bindprops', { setProps: () => this.setProps }, false);
+        this.emitEvent(
+          'bindprops',
+          {
+            setProps: () => {
+              this.setProps();
+            }
+          },
+          false
+        );
       }
 
       update() {
