@@ -351,9 +351,6 @@ const Component = (componentOptions, klass) => {
       if (!CSS_SHEET_NOT_SUPPORTED) {
         __privateGet(this, _shadow).adoptedStyleSheets = componentRegistry.getComputedCss(componentOptions.styles);
       }
-      this.update = this.update.bind(this);
-      this.emitEvent = this.emitEvent.bind(this);
-      this.setProps = this.setProps.bind(this);
       this.getInstance = this.getInstance.bind(this);
     }
     emulateComponent() {
@@ -368,16 +365,24 @@ const Component = (componentOptions, klass) => {
       this.emulateComponent();
       const rendererInstance = new Renderer();
       rendererInstance.shadowRoot = __privateGet(this, _shadow);
-      rendererInstance.update = this.update;
-      rendererInstance.emitEvent = this.emitEvent;
+      rendererInstance.update = () => {
+        this.update();
+      };
+      rendererInstance.emitEvent = (eventName, data) => {
+        this.emitEvent(eventName, data);
+      };
       __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
       __privateGet(this, _klass).beforeMount && __privateGet(this, _klass).beforeMount();
       this.update();
       __privateGet(this, _klass).mount && __privateGet(this, _klass).mount();
-      this.emitEvent("bindprops", { setProps: this.setProps }, false);
+      this.emitEvent("bindprops", {
+        setProps: (propsObj) => {
+          this.setProps(propsObj);
+        }
+      }, false);
     }
     update() {
-      render(__privateGet(this, _shadow), __privateGet(this, _klass).render.bind(__privateGet(this, _klass))());
+      render(__privateGet(this, _shadow), (() => __privateGet(this, _klass).render())());
       if (CSS_SHEET_NOT_SUPPORTED) {
         componentOptions.styles && __privateGet(this, _shadow).insertBefore(__privateGet(this, _componentStyleTag), __privateGet(this, _shadow).childNodes[0]);
         componentRegistry.globalStyleTag && __privateGet(this, _shadow).insertBefore(document.importNode(componentRegistry.globalStyleTag, true), __privateGet(this, _shadow).childNodes[0]);
