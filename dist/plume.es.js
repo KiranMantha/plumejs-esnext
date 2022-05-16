@@ -818,4 +818,4 @@ class Validators {
     };
   }
 }
-export { Component, Renderer, Service, Validators, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };
+export { Component, Renderer, Router, Service, Validators, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };

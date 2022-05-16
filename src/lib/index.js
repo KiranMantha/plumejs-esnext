@@ -6,6 +6,6 @@
 export { html, render } from './html';
 export { Component, Renderer } from './component';
 export { Service } from './service';
-export { registerRouterComponent } from './router';
+export { registerRouterComponent, Router } from './router';
 export { useState, useFormFields, Validators } from './hooks';
 export { fromNativeEvent } from './utils';
