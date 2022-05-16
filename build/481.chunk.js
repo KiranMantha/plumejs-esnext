@@ -1,4 +1,4 @@
-"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[481],{7481:(e,s,n)=>{n.r(s);var t=n(6530),o=n(9669),i=n.n(o);(0,t.wA)({selector:"app-persons"},class{constructor(){this.ulRef=void 0,this.personDetailsCompRef=void 0}mount(){var e=this;(0,t.sY)(this.ulRef,t.dy` loading `),i().get("https://jsonplaceholder.typicode.com/users").then((function(e){return e.data})).then((function(s){let n=s.map((function(s){return t.dy`
+"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[481],{7481:(e,s,n)=>{n.r(s);var t=n(8975),o=n(9669),i=n.n(o);(0,t.wA)({selector:"app-persons"},class{constructor(){this.ulRef=void 0,this.personDetailsCompRef=void 0}mount(){var e=this;(0,t.sY)(this.ulRef,t.dy` loading `),i().get("https://jsonplaceholder.typicode.com/users").then((function(e){return e.data})).then((function(s){let n=s.map((function(s){return t.dy`
             <li
               class="is-clickable"
               onclick="${function(){e.loadPersonDetails(s)}}"

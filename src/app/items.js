@@ -1,10 +1,10 @@
 // @flow
-import { Component, html, useFormFields, Renderer } from '../lib';
+import { Component, html, useFormFields, Renderer, Validators } from '../lib';
 import { Router } from '../lib/router';
 import axios from 'axios';
 
 class ItemsComponent {
-  sheetFormFields;
+  sheetForm;
   changeHandler;
   resetForm;
   apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
@@ -14,10 +14,10 @@ class ItemsComponent {
   constructor(renderer, routerSrvc) {}
 
   beforeMount() {
-    [this.sheetFormFields, this.changeHandler, this.resetForm] = useFormFields({
-      name: '',
-      age: '',
-      salary: ''
+    [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
+      name: ['', Validators.required],
+      age: ['', Validators.required],
+      salary: ['', Validators.required]
     });
   }
 
@@ -26,10 +26,18 @@ class ItemsComponent {
     this.getData();
   }
 
+  getErrorSummary() {
+    console.log(this.sheetForm.errors);
+  }
+
   submitForm(e) {
     e.preventDefault();
+    if (!this.sheetForm.valid) {
+      this.getErrorSummary();
+      return;
+    }
     axios
-      .post(this.apiUrl, this.sheetFormFields)
+      .post(this.apiUrl, this.sheetForm.value)
       .then((response) => response.data)
       .then((persons) => {
         this.personsList.push(...persons);
@@ -62,7 +70,7 @@ class ItemsComponent {
               type="text"
               class="input"
               id="name"
-              value=${this.sheetFormFields.name}
+              value=${this.sheetForm.get('name').value}
               onchange=${this.changeHandler('name')}
             />
           </div>
@@ -74,7 +82,7 @@ class ItemsComponent {
               type="text"
               class="input"
               id="age"
-              value=${this.sheetFormFields.age}
+              value=${this.sheetForm.get('age').value}
               onchange=${this.changeHandler('age')}
             />
           </div>
@@ -86,7 +94,7 @@ class ItemsComponent {
               type="text"
               class="input"
               id="salary"
-              value=${this.sheetFormFields.salary}
+              value=${this.sheetForm.get('salary').value}
               onchange=${this.changeHandler('salary')}
             />
           </div>

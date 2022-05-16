@@ -40,7 +40,7 @@ var __privateMethod = (obj, member, method) => {
   __accessCheck(obj, member, "access private method");
   return method;
 };
-var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn;
+var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn, _controls, _errors;
 const { html, render } = (() => {
   const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
   const isNodeRegex = /<[a-z][^>]+$/i;
@@ -726,21 +726,96 @@ const _getTargetValue = (target) => {
   }
   return targetValue;
 };
+class Form {
+  constructor(controls) {
+    __privateAdd(this, _controls, void 0);
+    __privateAdd(this, _errors, new Map());
+    __privateSet(this, _controls, controls);
+  }
+  get errors() {
+    return __privateGet(this, _errors);
+  }
+  get valid() {
+    return __privateGet(this, _errors).size ? false : true;
+  }
+  get value() {
+    const values = {};
+    for (const [key, value] of Object.entries(__privateGet(this, _controls))) {
+      values[key] = value.value;
+    }
+    return values;
+  }
+  get(controlName) {
+    return __privateGet(this, _controls)[controlName];
+  }
+  checkValidity() {
+    __privateGet(this, _errors).clear();
+    for (const key in __privateGet(this, _controls)) {
+      const value = __privateGet(this, _controls)[key].value;
+      const validators = __privateGet(this, _controls)[key].validators;
+      __privateGet(this, _controls)[key].errors = null;
+      for (const validator of validators) {
+        const validity = validator(value);
+        if (validity !== null) {
+          if (__privateGet(this, _errors).has(key)) {
+            __privateGet(this, _errors).set(key, __spreadValues(__spreadValues({}, __privateGet(this, _errors).get(key)), validity));
+            __privateGet(this, _controls)[key].errors = __spreadValues(__spreadValues({}, __privateGet(this, _controls)[key].errors), validity);
+          } else {
+            __privateGet(this, _errors).set(key, validity);
+            __privateGet(this, _controls)[key].errors = validity;
+          }
+        }
+      }
+    }
+  }
+  reset() {
+    for (const key in __privateGet(this, _controls)) {
+      __privateGet(this, _controls)[key].value = "";
+    }
+    __privateGet(this, _errors).clear();
+  }
+}
+_controls = new WeakMap();
+_errors = new WeakMap();
 const useFormFields = (initialValues) => {
-  let [formFields, setFormFields] = useState(initialValues);
+  const controls = {};
+  for (const [key, value] of Object.entries(initialValues)) {
+    const val = Array.isArray(value) ? value : [value];
+    controls[key] = {
+      value: val.shift(),
+      validators: val
+    };
+  }
+  const form = new Form(controls);
   const createChangeHandler = (key) => (e) => {
-    let target = e.target;
-    const value = _getTargetValue(target);
-    setFormFields(() => {
-      formFields[key] = value;
-      return formFields;
-    });
+    const value = _getTargetValue(e.target);
+    form.get(key).value = value;
+    form.checkValidity();
   };
   const resetFormFields = () => {
-    for (const key of Object.keys(formFields)) {
-      formFields[key] = "";
-    }
+    form.reset();
   };
-  return [formFields, createChangeHandler, resetFormFields];
+  return [form, createChangeHandler, resetFormFields];
 };
-export { Component, Renderer, Service, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };
+class Validators {
+  static required(value) {
+    return value.length ? null : { required: true };
+  }
+  static min(length) {
+    return (value) => {
+      return value.length >= length ? null : { minLength: { requiredLength: length } };
+    };
+  }
+  static max(length) {
+    return (value) => {
+      return value.length <= length ? null : { maxLength: { requiredLength: length } };
+    };
+  }
+  static pattern(expression) {
+    return (value) => {
+      const regex = new RegExp(expression);
+      return regex.test(value) ? null : { pattern: true };
+    };
+  }
+}
+export { Component, Renderer, Service, Validators, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };
