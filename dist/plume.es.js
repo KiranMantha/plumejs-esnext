@@ -40,7 +40,7 @@ var __privateMethod = (obj, member, method) => {
   __accessCheck(obj, member, "access private method");
   return method;
 };
-var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn, _controls, _errors;
+var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn, _initialValues, _controls, _errors;
 const { html, render } = (() => {
   const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
   const isNodeRegex = /<[a-z][^>]+$/i;
@@ -727,15 +727,18 @@ const _getTargetValue = (target) => {
   return targetValue;
 };
 class Form {
-  constructor(controls) {
+  constructor(initialValues, controls) {
+    __privateAdd(this, _initialValues, void 0);
     __privateAdd(this, _controls, void 0);
     __privateAdd(this, _errors, new Map());
+    __privateSet(this, _initialValues, initialValues);
     __privateSet(this, _controls, controls);
   }
   get errors() {
     return __privateGet(this, _errors);
   }
   get valid() {
+    this.checkValidity();
     return __privateGet(this, _errors).size ? false : true;
   }
   get value() {
@@ -768,29 +771,31 @@ class Form {
       }
     }
   }
-  reset() {
+  reset(obj = {}) {
     for (const key in __privateGet(this, _controls)) {
-      __privateGet(this, _controls)[key].value = "";
+      __privateGet(this, _controls)[key].value = obj[key] || __privateGet(this, _initialValues)[key];
     }
     __privateGet(this, _errors).clear();
   }
 }
+_initialValues = new WeakMap();
 _controls = new WeakMap();
 _errors = new WeakMap();
 const useFormFields = (initialValues) => {
   const controls = {};
+  const clonedValues = {};
   for (const [key, value] of Object.entries(initialValues)) {
     const val = Array.isArray(value) ? value : [value];
     controls[key] = {
       value: val.shift(),
       validators: val
     };
+    clonedValues[key] = controls[key].value;
   }
-  const form = new Form(controls);
+  const form = new Form(clonedValues, controls);
   const createChangeHandler = (key) => (e) => {
     const value = _getTargetValue(e.target);
     form.get(key).value = value;
-    form.checkValidity();
   };
   const resetFormFields = () => {
     form.reset();

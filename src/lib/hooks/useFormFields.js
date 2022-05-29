@@ -1,5 +1,4 @@
 // @flow
-
 const _getTargetValue = (target) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -31,10 +30,12 @@ const _getTargetValue = (target) => {
 };
 
 class Form {
+  #initialValues;
   #controls;
   #errors = new Map();
 
-  constructor(controls) {
+  constructor(initialValues, controls) {
+    this.#initialValues = initialValues;
     this.#controls = controls;
   }
 
@@ -43,6 +44,7 @@ class Form {
   }
 
   get valid() {
+    this.checkValidity();
     return this.#errors.size ? false : true;
   }
 
@@ -82,9 +84,9 @@ class Form {
     }
   }
 
-  reset() {
+  reset(obj = {}) {
     for (const key in this.#controls) {
-      this.#controls[key].value = '';
+      this.#controls[key].value = obj[key] || this.#initialValues[key];
     }
     this.#errors.clear();
   }
@@ -97,6 +99,7 @@ class Form {
  */
 const useFormFields = (initialValues) => {
   const controls = {};
+  const clonedValues = {};
 
   for (const [key, value] of Object.entries(initialValues)) {
     const val = Array.isArray(value) ? value : [value];
@@ -104,14 +107,14 @@ const useFormFields = (initialValues) => {
       value: val.shift(),
       validators: val
     };
+    clonedValues[key] = controls[key].value;
   }
 
-  const form = new Form(controls);
+  const form = new Form(clonedValues, controls);
 
   const createChangeHandler = (key) => (e) => {
     const value = _getTargetValue(e.target);
     form.get(key).value = value;
-    form.checkValidity();
   };
 
   const resetFormFields = () => {
