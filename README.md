@@ -14,7 +14,14 @@ yarn build
 
 to bundle your application
 
+## CDN links
+
+- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/dist/plume.es.js) version
+- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/dist/plume.iife.js) version
+- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/dist/plume.umd.js) version
+
 #### navigation for simple css
+
 ```html
 <header>
     <nav>
@@ -36,6 +43,7 @@ to bundle your application
 ```
 
 #### navigation for pico css
+
 ```html
 <nav class="tabs" style="margin-bottom: 20px;">
     <ul>
@@ -77,4 +85,5 @@ to bundle your application
 ```
 
 # Useful links:
+
 https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
