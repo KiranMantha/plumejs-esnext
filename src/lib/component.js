@@ -29,20 +29,12 @@ class Renderer {
   }
 }
 
-const COMPONENT_DATA_ATTR = 'data-compid';
 const DEFAULT_COMPONENT_OPTIONS = {
   selector: '',
   root: false,
   styles: '',
-  useShadow: true,
-  deps: []
-};
-
-const transformCSS = (styles, selector) => {
-  if (styles) {
-    styles = selector + ' ' + styles.replace('}', ` } ${selector} `);
-  }
-  return styles;
+  deps: [],
+  standalone: false
 };
 
 const createStyleTag = (content, where) => {
@@ -97,10 +89,7 @@ const Component = (componentOptions, klass) => {
 
       emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          const id = new Date().getTime() + Math.floor(Math.random() * 1000 + 1);
-          const compiledCSS = transformCSS(componentOptions.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
           this.#componentStyleTag = createStyleTag(compiledCSS);
-          this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
         }
       }
 
@@ -121,11 +110,12 @@ const Component = (componentOptions, klass) => {
         render(this.#shadow, this.#klass.render.bind(this.#klass)());
         if (CSS_SHEET_NOT_SUPPORTED) {
           componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
-          componentRegistry.globalStyleTag &&
+          if(componentRegistry.globalStyleTag && !componentOptions.standalone) {
             this.#shadow.insertBefore(
               document.importNode(componentRegistry.globalStyleTag, true),
               this.#shadow.childNodes[0]
             );
+          }
         }
       }
 
