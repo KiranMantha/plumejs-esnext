@@ -1,19 +1,5 @@
 var __defProp = Object.defineProperty;
-var __getOwnPropSymbols = Object.getOwnPropertySymbols;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __propIsEnum = Object.prototype.propertyIsEnumerable;
 var __defNormalProp = (obj, key, value) => key in obj ? __defProp(obj, key, { enumerable: true, configurable: true, writable: true, value }) : obj[key] = value;
-var __spreadValues = (a, b) => {
-  for (var prop in b || (b = {}))
-    if (__hasOwnProp.call(b, prop))
-      __defNormalProp(a, prop, b[prop]);
-  if (__getOwnPropSymbols)
-    for (var prop of __getOwnPropSymbols(b)) {
-      if (__propIsEnum.call(b, prop))
-        __defNormalProp(a, prop, b[prop]);
-    }
-  return a;
-};
 var __publicField = (obj, key, value) => {
   __defNormalProp(obj, typeof key !== "symbol" ? key + "" : key, value);
   return value;
@@ -207,7 +193,7 @@ const { html, render } = (() => {
 const Injector = new (_a = class {
   constructor() {
     __privateAdd(this, _weakMap, void 0);
-    __privateSet(this, _weakMap, new WeakMap());
+    __privateSet(this, _weakMap, /* @__PURE__ */ new WeakMap());
   }
   register(klass, instance) {
     if (!__privateGet(this, _weakMap).get(klass)) {
@@ -227,7 +213,7 @@ const Injector = new (_a = class {
     }
   }
   clear() {
-    __privateSet(this, _weakMap, new WeakMap());
+    __privateSet(this, _weakMap, /* @__PURE__ */ new WeakMap());
   }
 }, _weakMap = new WeakMap(), _a)();
 const isFunction = (value) => typeof value === "function";
@@ -305,19 +291,12 @@ class Renderer {
     return { name: "Renderer" };
   }
 }
-const COMPONENT_DATA_ATTR = "data-compid";
 const DEFAULT_COMPONENT_OPTIONS = {
   selector: "",
   root: false,
   styles: "",
-  useShadow: true,
-  deps: []
-};
-const transformCSS = (styles, selector) => {
-  if (styles) {
-    styles = selector + " " + styles.replace("}", ` } ${selector} `);
-  }
-  return styles;
+  deps: [],
+  standalone: false
 };
 const createStyleTag = (content, where) => {
   const tag = document.createElement("style");
@@ -330,7 +309,7 @@ const Component = (componentOptions, klass) => {
   if (window.customElements.get(componentOptions.selector)) {
     return;
   }
-  componentOptions = __spreadValues(__spreadValues({}, DEFAULT_COMPONENT_OPTIONS), componentOptions);
+  componentOptions = { ...DEFAULT_COMPONENT_OPTIONS, ...componentOptions };
   componentOptions.styles = componentOptions.styles.toString();
   if (componentOptions.root && !componentRegistry.isRootNodeSet) {
     componentRegistry.isRootNodeSet = true;
@@ -358,10 +337,7 @@ const Component = (componentOptions, klass) => {
     }
     emulateComponent() {
       if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-        const id = new Date().getTime() + Math.floor(Math.random() * 1e3 + 1);
-        const compiledCSS = transformCSS(componentOptions.styles, `[${COMPONENT_DATA_ATTR}="${id.toString()}"]`);
         __privateSet(this, _componentStyleTag, createStyleTag(compiledCSS));
-        this.setAttribute(COMPONENT_DATA_ATTR, id.toString());
       }
     }
     connectedCallback() {
@@ -380,7 +356,9 @@ const Component = (componentOptions, klass) => {
       render(__privateGet(this, _shadow), __privateGet(this, _klass).render.bind(__privateGet(this, _klass))());
       if (CSS_SHEET_NOT_SUPPORTED) {
         componentOptions.styles && __privateGet(this, _shadow).insertBefore(__privateGet(this, _componentStyleTag), __privateGet(this, _shadow).childNodes[0]);
-        componentRegistry.globalStyleTag && __privateGet(this, _shadow).insertBefore(document.importNode(componentRegistry.globalStyleTag, true), __privateGet(this, _shadow).childNodes[0]);
+        if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
+          __privateGet(this, _shadow).insertBefore(document.importNode(componentRegistry.globalStyleTag, true), __privateGet(this, _shadow).childNodes[0]);
+        }
       }
     }
     emitEvent(eventName, data) {
@@ -408,10 +386,10 @@ const SERVICE_OPTIONS_DEFAULTS = {
   deps: []
 };
 const Service = (...args) => {
-  let options = __spreadValues({}, SERVICE_OPTIONS_DEFAULTS);
+  let options = { ...SERVICE_OPTIONS_DEFAULTS };
   let klass;
   if (args[0].hasOwnProperty("deps")) {
-    options = __spreadValues(__spreadValues({}, SERVICE_OPTIONS_DEFAULTS), args[0]);
+    options = { ...SERVICE_OPTIONS_DEFAULTS, ...args[0] };
     klass = args[1];
   } else {
     klass = args[0];
@@ -529,8 +507,8 @@ class InternalRouter {
     __privateAdd(this, _navigateTo);
     __privateAdd(this, _currentRoute, {
       path: "",
-      routeParams: new Map(),
-      queryParams: new Map(),
+      routeParams: /* @__PURE__ */ new Map(),
+      queryParams: /* @__PURE__ */ new Map(),
       state: {}
     });
     __privateAdd(this, _template, new SubjectObs());
@@ -594,7 +572,7 @@ navigateTo_fn = function(path, state) {
   let routeItem = routeArr.length > 0 ? routeArr[0] : null;
   if (routeItem) {
     __privateGet(this, _currentRoute).path = path;
-    __privateGet(this, _currentRoute).state = __spreadValues({}, state || {});
+    __privateGet(this, _currentRoute).state = { ...state || {} };
     wrapIntoObservable(routeItem.canActivate()).subscribe((val) => {
       if (!val)
         return;
