@@ -93,4 +93,5 @@ plume.iife.js   11.89 KiB / gzip: 4.78 KiB
 
 # Useful links:
 
-https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
+1. https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
+2. https://typicode.github.io/husky/#/?id=install

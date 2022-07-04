@@ -20,7 +20,13 @@
 		"build:bundle": "webpack --config webpack/build.js",
 		"build:lib": "vite build",
 		"vite:start": "vite",
-		"lint": "eslint . --ext .js --fix"
+		"lint": "eslint . --ext .js --fix",
+		"prepare": "husky install"
+	},
+	"husky": {
+		"hooks": {
+			"pre-commit": "npm run lint"
+		}
 	},
 	"dependencies": {
 		"@picocss/pico": "^1.4.4",
@@ -46,6 +52,7 @@
 		"eslint-plugin-prettier": "^4.0.0",
 		"html-loader": "^3.0.0",
 		"html-webpack-plugin": "^5.5.0",
+		"husky": "^8.0.1",
 		"prettier": "^2.5.1",
 		"sass": "^1.43.4",
 		"sass-loader": "^12.3.0",
