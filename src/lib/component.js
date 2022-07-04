@@ -46,7 +46,7 @@ const createStyleTag = (content, where) => {
 
 /**
  * Register a webcomponent with supplied tag and ES6 class
- * @param {{ selector: string, root: boolean, styles: string, deps: Function[] }} componentOptions
+ * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
 const Component = (componentOptions, klass) => {
@@ -62,10 +62,17 @@ const Component = (componentOptions, klass) => {
     componentRegistry.isRootNodeSet = true;
     if (componentOptions.styles) {
       componentRegistry.globalStyles.replace(componentOptions.styles);
-      componentRegistry.globalStyleTag = createStyleTag(componentOptions.styles, document.head);
+      componentRegistry.globalStyleTag = createStyleTag(
+        componentOptions.styles,
+        document.head
+      );
     }
   } else if (componentOptions.root && componentRegistry.isRootNodeSet) {
-    throw Error('Cannot register duplicate root component in ' + componentOptions.selector + ' component');
+    throw Error(
+      'Cannot register duplicate root component in ' +
+      componentOptions.selector +
+      ' component'
+    );
   }
 
   window.customElements.define(
@@ -79,17 +86,17 @@ const Component = (componentOptions, klass) => {
         super();
         this.#shadow = this.attachShadow({ mode: 'open' });
         if (!CSS_SHEET_NOT_SUPPORTED) {
-          this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(componentOptions.styles);
+          this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
+            componentOptions.styles,
+            componentOptions.standalone
+          );
         }
-        this.update = this.update.bind(this);
-        this.emitEvent = this.emitEvent.bind(this);
-        this.setProps = this.setProps.bind(this);
         this.getInstance = this.getInstance.bind(this);
       }
 
       emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          this.#componentStyleTag = createStyleTag(compiledCSS);
+          this.#componentStyleTag = createStyleTag(componentOptions.styles);
         }
       }
 
@@ -97,20 +104,40 @@ const Component = (componentOptions, klass) => {
         this.emulateComponent();
         const rendererInstance = new Renderer();
         rendererInstance.shadowRoot = this.#shadow;
-        rendererInstance.update = this.update;
-        rendererInstance.emitEvent = this.emitEvent;
-        this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
+        rendererInstance.update = () => {
+          this.update();
+        };
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.emitEvent(eventName, data);
+        };
+        this.#klass = instantiate(
+          klass,
+          componentOptions.deps,
+          rendererInstance
+        );
         this.#klass.beforeMount && this.#klass.beforeMount();
         this.update();
         this.#klass.mount && this.#klass.mount();
-        this.emitEvent('bindprops', { setProps: this.setProps }, false);
+        this.emitEvent(
+          'bindprops',
+          {
+            setProps: (propsObj) => {
+              this.setProps(propsObj);
+            },
+          },
+          false
+        );
       }
 
       update() {
-        render(this.#shadow, this.#klass.render.bind(this.#klass)());
+        render(this.#shadow, (() => this.#klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
-          if(componentRegistry.globalStyleTag && !componentOptions.standalone) {
+          componentOptions.styles &&
+            this.#shadow.insertBefore(
+              this.#componentStyleTag,
+              this.#shadow.childNodes[0]
+            );
+          if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
             this.#shadow.insertBefore(
               document.importNode(componentRegistry.globalStyleTag, true),
               this.#shadow.childNodes[0]

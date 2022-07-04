@@ -76,5 +76,12 @@ to bundle your application
 </nav>
 ```
 
+# Bundles
+```cmd
+plume.es.js   26.11 KiB / gzip: 6.64 KiB
+plume.umd.js   12.08 KiB / gzip: 4.85 KiB
+plume.iife.js   11.89 KiB / gzip: 4.78 KiB
+```
+
 # Useful links:
 https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./

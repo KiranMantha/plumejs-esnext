@@ -26,7 +26,7 @@ var __privateMethod = (obj, member, method) => {
   __accessCheck(obj, member, "access private method");
   return method;
 };
-var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn;
+var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn, _initialValues, _controls, _errors, _checkValidity, checkValidity_fn;
 const { html, render } = (() => {
   const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
   const isNodeRegex = /<[a-z][^>]+$/i;
@@ -265,8 +265,13 @@ const componentRegistry = new class {
     __publicField(this, "globalStyleTag");
     __publicField(this, "style_registry");
     __publicField(this, "isRootNodeSet");
-    this.globalStyles = new CSSStyleSheet();
+    try {
+      this.globalStyles = new CSSStyleSheet();
+    } catch (e) {
+      this.globalStyles = "";
+    }
     this.isRootNodeSet = false;
+    this.globalStyleTag = null;
   }
   getComputedCss(styles = "") {
     let csoArray = [];
@@ -328,32 +333,37 @@ const Component = (componentOptions, klass) => {
       __privateAdd(this, _componentStyleTag, void 0);
       __privateSet(this, _shadow, this.attachShadow({ mode: "open" }));
       if (!CSS_SHEET_NOT_SUPPORTED) {
-        __privateGet(this, _shadow).adoptedStyleSheets = componentRegistry.getComputedCss(componentOptions.styles);
+        __privateGet(this, _shadow).adoptedStyleSheets = componentRegistry.getComputedCss(componentOptions.styles, componentOptions.standalone);
       }
-      this.update = this.update.bind(this);
-      this.emitEvent = this.emitEvent.bind(this);
-      this.setProps = this.setProps.bind(this);
       this.getInstance = this.getInstance.bind(this);
     }
     emulateComponent() {
       if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-        __privateSet(this, _componentStyleTag, createStyleTag(compiledCSS));
+        __privateSet(this, _componentStyleTag, createStyleTag(componentOptions.styles));
       }
     }
     connectedCallback() {
       this.emulateComponent();
       const rendererInstance = new Renderer();
       rendererInstance.shadowRoot = __privateGet(this, _shadow);
-      rendererInstance.update = this.update;
-      rendererInstance.emitEvent = this.emitEvent;
+      rendererInstance.update = () => {
+        this.update();
+      };
+      rendererInstance.emitEvent = (eventName, data) => {
+        this.emitEvent(eventName, data);
+      };
       __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
       __privateGet(this, _klass).beforeMount && __privateGet(this, _klass).beforeMount();
       this.update();
       __privateGet(this, _klass).mount && __privateGet(this, _klass).mount();
-      this.emitEvent("bindprops", { setProps: this.setProps }, false);
+      this.emitEvent("bindprops", {
+        setProps: (propsObj) => {
+          this.setProps(propsObj);
+        }
+      }, false);
     }
     update() {
-      render(__privateGet(this, _shadow), __privateGet(this, _klass).render.bind(__privateGet(this, _klass))());
+      render(__privateGet(this, _shadow), (() => __privateGet(this, _klass).render())());
       if (CSS_SHEET_NOT_SUPPORTED) {
         componentOptions.styles && __privateGet(this, _shadow).insertBefore(__privateGet(this, _componentStyleTag), __privateGet(this, _shadow).childNodes[0]);
         if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
@@ -699,21 +709,106 @@ const _getTargetValue = (target) => {
   }
   return targetValue;
 };
+class Form {
+  constructor(initialValues, controls) {
+    __privateAdd(this, _checkValidity);
+    __privateAdd(this, _initialValues, void 0);
+    __privateAdd(this, _controls, void 0);
+    __privateAdd(this, _errors, /* @__PURE__ */ new Map());
+    __privateSet(this, _initialValues, initialValues);
+    __privateSet(this, _controls, controls);
+  }
+  get errors() {
+    return __privateGet(this, _errors);
+  }
+  get valid() {
+    __privateMethod(this, _checkValidity, checkValidity_fn).call(this);
+    return __privateGet(this, _errors).size ? false : true;
+  }
+  get value() {
+    const values = {};
+    for (const [key, value] of Object.entries(__privateGet(this, _controls))) {
+      values[key] = value.value;
+    }
+    return values;
+  }
+  get(controlName) {
+    return __privateGet(this, _controls)[controlName];
+  }
+  reset(obj = {}) {
+    for (const key in __privateGet(this, _controls)) {
+      __privateGet(this, _controls)[key].value = obj[key] || __privateGet(this, _initialValues)[key];
+    }
+    __privateGet(this, _errors).clear();
+  }
+}
+_initialValues = new WeakMap();
+_controls = new WeakMap();
+_errors = new WeakMap();
+_checkValidity = new WeakSet();
+checkValidity_fn = function() {
+  __privateGet(this, _errors).clear();
+  for (const key in __privateGet(this, _controls)) {
+    const value = __privateGet(this, _controls)[key].value;
+    const validators = __privateGet(this, _controls)[key].validators;
+    __privateGet(this, _controls)[key].errors = null;
+    for (const validator of validators) {
+      const validity = validator(value);
+      if (validity !== null) {
+        if (__privateGet(this, _errors).has(key)) {
+          __privateGet(this, _errors).set(key, { ...__privateGet(this, _errors).get(key), ...validity });
+          __privateGet(this, _controls)[key].errors = {
+            ...__privateGet(this, _controls)[key].errors,
+            ...validity
+          };
+        } else {
+          __privateGet(this, _errors).set(key, validity);
+          __privateGet(this, _controls)[key].errors = validity;
+        }
+      }
+    }
+  }
+};
 const useFormFields = (initialValues) => {
-  let [formFields, setFormFields] = useState(initialValues);
+  const controls = {};
+  const clonedValues = {};
+  for (const [key, value] of Object.entries(initialValues)) {
+    const val = Array.isArray(value) ? value : [value];
+    controls[key] = {
+      value: val.shift(),
+      validators: val
+    };
+    clonedValues[key] = controls[key].value;
+  }
+  const form = new Form(clonedValues, controls);
   const createChangeHandler = (key) => (e) => {
-    let target = e.target;
-    const value = _getTargetValue(target);
-    setFormFields(() => {
-      formFields[key] = value;
-      return formFields;
-    });
+    const value = _getTargetValue(e.target);
+    form.get(key).value = value;
   };
   const resetFormFields = () => {
-    for (const key of Object.keys(formFields)) {
-      formFields[key] = "";
-    }
+    form.reset();
   };
-  return [formFields, createChangeHandler, resetFormFields];
+  return [form, createChangeHandler, resetFormFields];
 };
-export { Component, Renderer, Service, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };
+class Validators {
+  static required(value) {
+    return value.length ? null : { required: true };
+  }
+  static min(length) {
+    return (value) => {
+      return value.length >= length ? null : { minLength: { requiredLength: length } };
+    };
+  }
+  static max(length) {
+    return (value) => {
+      return value.length <= length ? null : { maxLength: { requiredLength: length } };
+    };
+  }
+  static pattern(expression) {
+    return (value) => {
+      const regex = new RegExp(expression);
+      return regex.test(value) ? null : { pattern: true };
+    };
+  }
+}
+export { Component, Renderer, Service, Validators, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };

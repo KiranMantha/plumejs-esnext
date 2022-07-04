@@ -7,5 +7,5 @@ export { html, render } from './html';
 export { Component, Renderer } from './component';
 export { Service } from './service';
 export { registerRouterComponent } from './router';
-export { useState, useFormFields } from './hooks';
+export { useState, useFormFields, Validators } from './hooks';
 export { fromNativeEvent } from './utils';
