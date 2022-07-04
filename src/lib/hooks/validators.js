@@ -5,13 +5,17 @@ export class Validators {
 
   static min(length) {
     return (value) => {
-      return value.length >= length ? null : { minLength: { requiredLength: length } };
+      return value.length >= length
+        ? null
+        : { minLength: { requiredLength: length } };
     };
   }
 
   static max(length) {
     return (value) => {
-      return value.length <= length ? null : { maxLength: { requiredLength: length } };
+      return value.length <= length
+        ? null
+        : { maxLength: { requiredLength: length } };
     };
   }
 

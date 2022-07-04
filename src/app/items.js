@@ -10,8 +10,9 @@ class ItemsComponent {
   apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
   table;
   personsList = [];
+  errorsRef;
 
-  constructor(renderer, routerSrvc) {}
+  constructor(renderer, routerSrvc) { }
 
   beforeMount() {
     [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
@@ -28,10 +29,16 @@ class ItemsComponent {
 
   getErrorSummary() {
     console.log(this.sheetForm.errors);
+    this.errorsRef.innerHTML = JSON.stringify(
+      Object.fromEntries(this.sheetForm.errors),
+      null,
+      4
+    ).trim();
   }
 
   submitForm(e) {
     e.preventDefault();
+    this.errorsRef.innerHTML = '';
     if (!this.sheetForm.valid) {
       this.getErrorSummary();
       return;
@@ -41,7 +48,7 @@ class ItemsComponent {
       .then((response) => response.data)
       .then((persons) => {
         this.personsList.push(...persons);
-        this.resetForm();
+        this.sheetForm.reset();
         this.renderer.update();
       });
   }
@@ -58,18 +65,24 @@ class ItemsComponent {
 
   render() {
     return html`
-      <form
-        onsubmit=${(e) => {
-          this.submitForm(e);
-        }}
-      >
+    <section>
+        <pre>
+          <code ref=${(node) => {
+        this.errorsRef = node;
+      }}></code>
+        </pre>
+        <form
+          onsubmit=${(e) => {
+        this.submitForm(e);
+      }}
+        >
         <div class="field">
           <label class="label" for="exampleInputEmail1">Name</label>
           <div class="control">
             <input
               type="text"
               class="input"
-              id="name"
+              id='name'
               value=${this.sheetForm.get('name').value}
               onchange=${this.changeHandler('name')}
             />
@@ -81,7 +94,7 @@ class ItemsComponent {
             <input
               type="text"
               class="input"
-              id="age"
+              id='age'
               value=${this.sheetForm.get('age').value}
               onchange=${this.changeHandler('age')}
             />
@@ -93,7 +106,7 @@ class ItemsComponent {
             <input
               type="text"
               class="input"
-              id="salary"
+              id='salary'
               value=${this.sheetForm.get('salary').value}
               onchange=${this.changeHandler('salary')}
             />
@@ -105,27 +118,28 @@ class ItemsComponent {
           </div>
         </div>
       </form>
-      <table class="table is-hoverable">
+      <table class="table-bordered">
         <thead>
-          <tr>
-            <td>Name</td>
-            <td>Age</td>
-            <td>Salary</td>
-          </tr>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Salary</th>
+            </tr>
         </thead>
         <tbody>
-          ${this.personsList.map((item) => {
-            return html`
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.age}</td>
-                <td>${item.salary}</td>
-              </tr>
-            `;
-          })}
+        ${this.personsList.map((item) => {
+        return html`
+            <tr>
+              <td>${item.name}</td>
+              <td>${item.age}</td>
+              <td>${item.salary}</td>
+            </tr>
+          `;
+      })}
         </tbody>
       </table>
-    `;
+      </section>
+      `;
   }
 }
 

@@ -6,8 +6,13 @@ const componentRegistry = new (class {
   isRootNodeSet;
 
   constructor() {
-    this.globalStyles = new CSSStyleSheet();
+    try {
+      this.globalStyles = new CSSStyleSheet();
+    } catch (e) {
+      this.globalStyles = '';
+    }
     this.isRootNodeSet = false;
+    this.globalStyleTag = null;
   }
 
   getComputedCss(styles = '') {
