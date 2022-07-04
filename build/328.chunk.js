@@ -1,4 +1,8 @@
-"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[328],{1328:(e,l,s)=>{s.r(l);var a=s(8975);(0,a.wA)({selector:"app-sample-form"},class{constructor(){this.sampleform1=void 0,this.createChangeHandler1=void 0,this.formOutputRef1=void 0,this.sampleform2=void 0,this.createChangeHandler2=void 0,this.formOutputRef2=void 0}beforeMount(){[this.sampleform1,this.createChangeHandler1]=(0,a.uA)({email:"test.email@sample.com",password:"1234",checkme:!0,option:"",options:[["2","4"]]}),[this.sampleform2,this.createChangeHandler2]=(0,a.uA)({name:"",age:""})}submitForm1(e){e.preventDefault(),(0,a.sY)(this.formOutputRef1,a.dy` <pre>${JSON.stringify(this.sampleform1.value,null,4)}</pre> `)}submitForm2(e){e.preventDefault(),(0,a.sY)(this.formOutputRef2,a.dy` <pre>${JSON.stringify(this.sampleform2.value,null,4)}</pre> `)}render(){var e=this;return a.dy`
+"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[328],{1328:(e,l,a)=>{a.r(l);var s=a(8975);(0,s.wA)({selector:"app-sample-form",deps:[s.Th]},class{constructor(e){this.sampleform1=void 0,this.createChangeHandler1=void 0,this.formOutputRef1=void 0,this.sampleform2=void 0,this.createChangeHandler2=void 0,this.formOutputRef2=void 0}beforeMount(){[this.sampleform1,this.createChangeHandler1]=(0,s.uA)({email:"test.email@sample.com",password:"1234",checkme:!0,option:"",options:[["2","4"]]}),[this.sampleform2,this.createChangeHandler2]=(0,s.uA)({name:"",age:""})}submitForm1(e){e.preventDefault(),(0,s.sY)(this.formOutputRef1,s.dy`
+        <pre>${JSON.stringify(this.sampleform1.value,null,4)}</pre>
+      `)}submitForm2(e){e.preventDefault(),(0,s.sY)(this.formOutputRef2,s.dy`
+        <pre>${JSON.stringify(this.sampleform2.value,null,4)}</pre>
+      `)}render(){var e=this;return s.dy`
       <h5 class="title is-5">sample form 1</h5>
       <form
         onsubmit=${function(l){e.submitForm1(l)}}
@@ -48,12 +52,15 @@
           <label class="label">single select</label>
           <div class="control">
             <div class="select">
-              <select value=${this.sampleform1.get("option").value} onchange=${this.createChangeHandler1("option")}>
-                <option>Select</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
+              <select
+                value=${this.sampleform1.get("option").value}
+                onchange=${this.createChangeHandler1("option")}
+              >
+                <option value=''>Select</option>
+                <option value='1'>1</option>
+                <option value='2'>2</option>
+                <option value='3'>3</option>
+                <option value='4'>4</option>
               </select>
             </div>
           </div>
@@ -77,6 +84,9 @@
         </div>
         <div class="field">
           <div class="control">
+              <button onclick=${function(l){l.preventDefault(),e.sampleform1.reset(),console.log(e.sampleform1),e.renderer.update()}}>
+                Reset
+              </button>
             <button class="button is-info is-light" type="submit">Submit</button>
           </div>
         </div>
