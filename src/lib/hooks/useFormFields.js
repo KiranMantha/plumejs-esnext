@@ -6,11 +6,7 @@ const _getTargetValue = (target) => {
     case 'textarea': {
       let nonTextElements = ['radio', 'checkbox'];
       if (nonTextElements.includes(target.type)) {
-        targetValue = target.checked
-          ? target.value !== null && target.value !== 'on'
-            ? target.value
-            : true
-          : false;
+        targetValue = target.checked ? (target.value !== null && target.value !== 'on' ? target.value : true) : false;
       } else {
         targetValue = target.value;
       }
@@ -21,11 +17,7 @@ const _getTargetValue = (target) => {
       const options = Array.from(target.options);
       const value = [...options]
         .filter((option) => option.selected)
-        .map(
-          (option) =>
-            option.value ??
-            (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ')
-        );
+        .map((option) => option.value ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' '));
       targetValue = one ? value[0] : value;
       break;
     }

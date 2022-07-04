@@ -62,17 +62,10 @@ const Component = (componentOptions, klass) => {
     componentRegistry.isRootNodeSet = true;
     if (componentOptions.styles) {
       componentRegistry.globalStyles.replace(componentOptions.styles);
-      componentRegistry.globalStyleTag = createStyleTag(
-        componentOptions.styles,
-        document.head
-      );
+      componentRegistry.globalStyleTag = createStyleTag(componentOptions.styles, document.head);
     }
   } else if (componentOptions.root && componentRegistry.isRootNodeSet) {
-    throw Error(
-      'Cannot register duplicate root component in ' +
-      componentOptions.selector +
-      ' component'
-    );
+    throw Error('Cannot register duplicate root component in ' + componentOptions.selector + ' component');
   }
 
   window.customElements.define(
@@ -110,11 +103,7 @@ const Component = (componentOptions, klass) => {
         rendererInstance.emitEvent = (eventName, data) => {
           this.emitEvent(eventName, data);
         };
-        this.#klass = instantiate(
-          klass,
-          componentOptions.deps,
-          rendererInstance
-        );
+        this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
         this.#klass.beforeMount && this.#klass.beforeMount();
         this.update();
         this.#klass.mount && this.#klass.mount();
@@ -132,11 +121,7 @@ const Component = (componentOptions, klass) => {
       update() {
         render(this.#shadow, (() => this.#klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles &&
-            this.#shadow.insertBefore(
-              this.#componentStyleTag,
-              this.#shadow.childNodes[0]
-            );
+          componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
           if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
             this.#shadow.insertBefore(
               document.importNode(componentRegistry.globalStyleTag, true),

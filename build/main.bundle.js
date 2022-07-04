@@ -9,8 +9,8 @@
         </button>
       </fieldset>
     `}}),(0,e.wA)({selector:"app-root",styles:x.Z,root:!0,deps:[_,t.F]},class{constructor(e,t){var r=this;this.greet=void 0,this.divRef=void 0,this.setClass=!0,this.tabsContainer=void 0,this.routePath="",this.routes=[{path:"",redirectTo:"/home"},{path:"/home",template:"<app-items></app-items>",templatePath:function(){return Promise.all([n.e(669),n.e(494)]).then(n.bind(n,1494))}},{path:"/persons",template:"<app-persons></app-persons>",templatePath:function(){return Promise.all([n.e(669),n.e(481)]).then(n.bind(n,7481))},canActivate:function(){return new w((function(e){setTimeout((function(){localStorage.getItem("@plumejs/core")?e.next(!0):(r.routerSrvc.navigateTo("/home"),e.next(!1)),e.complete()}),10)}))}},{path:"/form",template:"<app-sample-form></app-sample-form>",templatePath:function(){return n.e(328).then(n.bind(n,1328))}},{path:"/calculator/:id",template:"<app-calculator></app-calculator>",templatePath:function(){return n.e(551).then(n.bind(n,6551))}},{path:"/controls",template:"<app-controls></app-controls>",templatePath:function(){return n.e(309).then(n.bind(n,1309))}},{path:"/nested-table",template:"<app-nested-table></app-nested-table>",templatePath:function(){return n.e(518).then(n.bind(n,5518))}},{path:"/editor",template:"<app-editor></app-editor>",templatePath:function(){return Promise.all([n.e(980),n.e(1)]).then(n.bind(n,7001))}}],t.registerRoutes(this.routes,!1),this.greet=e.getGreeting()}beforeMount(){this.routePath=this.routerSrvc.getCurrentRoute().path,console.log("routePath",this.routePath)}toggleActiveTab(){var e;null==(e=this.tabsContainer.querySelectorAll(".is-active")[0])||e.classList.remove("is-active")}navigate(e,t,r){e.preventDefault(),this.routerSrvc.navigateTo(t,r)}listenFromChild(e){console.log("listening in parent component for data from child component: ",e)}enablePersonsRoute(){window.localStorage.setItem("@plumejs/core","now persons route is activated")}disablePersonsRoute(){window.localStorage.removeItem("@plumejs/core")}render(){var t=this;return e.dy`
-      <div class='layout'>
-        <header class='layout'>
+      <div class="layout">
+        <header class="layout">
           <nav>
             <ul>
               <li>
@@ -23,7 +23,11 @@
                 <a href="#" onclick=${function(e){return t.navigate(e,"/form")}}>Sample Form</a>
               </li>
               <li>
-                <a href="#" onclick=${function(e){return t.navigate(e,"/calculator/123",{name:"kiran"})}}>Calculator</a>
+                <a
+                  href="#"
+                  onclick=${function(e){return t.navigate(e,"/calculator/123",{name:"kiran"})}}
+                  >Calculator</a
+                >
               </li>
               <li>
                 <a href="#" onclick=${function(e){return t.navigate(e,"/controls")}}>Controls</a>
@@ -51,25 +55,20 @@
               data-adj="${this.setClass}"
             >
               ${this.greet}
-              <input
-                value="${this.greet}"
-                oninput="${function(e){return console.log(e.target.value)}}"
-              />
+              <input value="${this.greet}" oninput="${function(e){return console.log(e.target.value)}}" />
 
-              ${function(){if(t.setClass)return e.dy`
-                    <div>loaded conditionally..</div>
-                  `}()}
+              ${function(){if(t.setClass)return e.dy` <div>loaded conditionally..</div> `}()}
               <ul>
-                ${[1,2,3].map((function(t){return e.dy`
-                    <li onclick="${function(){return console.log(t)}}">
-                      ${t}
-                    </li>
-                  `}))}
+                ${[1,2,3].map((function(t){return e.dy` <li onclick="${function(){return console.log(t)}}">${t}</li> `}))}
               </ul>
             </div>
             <div>
-              <button onclick=${this.enablePersonsRoute} title='click persons nav to check persons route'>Enable Persons route</button>
-              <button onclick=${this.disablePersonsRoute} title='click persons nav to check persons route'>Disable Persons route</button>
+              <button onclick=${this.enablePersonsRoute} title="click persons nav to check persons route">
+                Enable Persons route
+              </button>
+              <button onclick=${this.disablePersonsRoute} title="click persons nav to check persons route">
+                Disable Persons route
+              </button>
             </div>
             <fieldset class="fieldset">
               <legend>router outlet</legend>

@@ -159,39 +159,37 @@ class AppComponent {
 
   render() {
     return html`
-      <div class='layout'>
-        <header class='layout'>
+      <div class="layout">
+        <header class="layout">
           <nav>
             <ul>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/home')}>Items Route</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/home')}>Items Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/persons')}>Persons Route</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/persons')}>Persons Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/form')}>Sample Form</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/form')}>Sample Form</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/calculator/123', {
-                    name: 'kiran',
-                  })}>Calculator</a>
+                <a
+                  href="#"
+                  onclick=${(e) =>
+                    this.navigate(e, '/calculator/123', {
+                      name: 'kiran'
+                    })}
+                  >Calculator</a
+                >
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/controls')}>Controls</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/controls')}>Controls</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/nested-table')}>Nested Table</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/nested-table')}>Nested Table</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/editor')}>Editor</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
               </li>
             </ul>
           </nav>
@@ -214,35 +212,26 @@ class AppComponent {
               data-adj="${this.setClass}"
             >
               ${this.greet}
-              <input
-                value="${this.greet}"
-                oninput="${(e) => console.log(e.target.value)}"
-              />
+              <input value="${this.greet}" oninput="${(e) => console.log(e.target.value)}" />
 
               ${(() => {
                 if (this.setClass) {
-                  return html`
-                    <div>loaded conditionally..</div>
-                  `;
+                  return html` <div>loaded conditionally..</div> `;
                 }
               })()}
               <ul>
                 ${[1, 2, 3].map((item) => {
-                  return html`
-                    <li onclick="${() => console.log(item)}">
-                      ${item}
-                    </li>
-                  `;
+                  return html` <li onclick="${() => console.log(item)}">${item}</li> `;
                 })}
               </ul>
             </div>
             <div>
-              <button onclick=${
-                this.enablePersonsRoute
-              } title='click persons nav to check persons route'>Enable Persons route</button>
-              <button onclick=${
-                this.disablePersonsRoute
-              } title='click persons nav to check persons route'>Disable Persons route</button>
+              <button onclick=${this.enablePersonsRoute} title="click persons nav to check persons route">
+                Enable Persons route
+              </button>
+              <button onclick=${this.disablePersonsRoute} title="click persons nav to check persons route">
+                Disable Persons route
+              </button>
             </div>
             <fieldset class="fieldset">
               <legend>router outlet</legend>
