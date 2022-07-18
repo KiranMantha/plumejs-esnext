@@ -59,7 +59,7 @@ class AppComponent {
       templatePath: () => import('./app/items')
     },
     {
-      path: '/persons',
+      path: '/persons/:id/:name',
       template: '<app-persons></app-persons>',
       templatePath: () => import('./app/persons'),
       canActivate: () => {
@@ -167,7 +167,7 @@ class AppComponent {
                 <a href="#" onclick=${(e) => this.navigate(e, '/home')}>Items Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/persons')}>Persons Route</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/persons/123/testuser?a=123')}>Persons Route</a>
               </li>
               <li>
                 <a href="#" onclick=${(e) => this.navigate(e, '/form')}>Sample Form</a>

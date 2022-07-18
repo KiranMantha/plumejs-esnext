@@ -412,30 +412,30 @@ const Service = (...args) => {
   }
 };
 const _StaticRouter = class {
-  static checkParams(up, r) {
-    let pmc = 0, po = {}, pc = r.ParamCount;
-    for (let i = 0; i < up.length; i++) {
-      var rtParam = r.Params[i];
-      if (rtParam.indexOf(":") >= 0) {
-        po[rtParam.split(":")[1]] = up[i];
-        pmc += 1;
+  static checkParams(urlParams, routeItem) {
+    let paramMapCount = 0, paramsObject = {}, paramCount = routeItem.ParamCount;
+    for (let i = 0; i < urlParams.length; i++) {
+      var routeParam = routeItem.Params[i];
+      if (routeParam.indexOf(":") >= 0) {
+        paramsObject[routeParam.split(":")[1]] = urlParams[i].split("?")[0];
+        paramMapCount += 1;
       }
     }
-    if (pmc === pc) {
-      return po;
+    if (paramMapCount === paramCount) {
+      return paramsObject;
     }
     return {};
   }
-  static getParamCount(p) {
-    let pc = 0;
-    p.forEach((k) => {
-      if (k.indexOf(":") >= 0) {
-        pc += 1;
+  static getParamCount(params) {
+    let paramCount = 0;
+    params.forEach((param) => {
+      if (param.indexOf(":") >= 0) {
+        paramCount += 1;
       }
     });
-    return pc;
+    return paramCount;
   }
-  static formatRoute(r) {
+  static formatRoute(route) {
     let obj = {
       Params: {},
       Url: "",
@@ -445,20 +445,20 @@ const _StaticRouter = class {
       redirectTo: "",
       canActivate: () => true
     };
-    obj.Params = r.path.split("/").filter((h) => {
-      return h.length > 0;
+    obj.Params = route.path.split("/").filter((str) => {
+      return str.length > 0;
     });
-    obj.Url = r.path;
+    obj.Url = route.path;
     obj.Template = "";
-    obj.redirectTo = r.redirectTo;
-    if (r.template) {
-      if (!r.templatePath)
+    obj.redirectTo = route.redirectTo;
+    if (route.template) {
+      if (!route.templatePath)
         throw Error("templatePath is required in route if template is mentioned.");
-      obj.Template = r.template;
-      obj.TemplatePath = r.templatePath;
+      obj.Template = route.template;
+      obj.TemplatePath = route.templatePath;
     }
-    if (r.canActivate)
-      obj.canActivate = r.canActivate;
+    if (route.canActivate)
+      obj.canActivate = route.canActivate;
     obj.ParamCount = _StaticRouter.getParamCount(obj.Params);
     _StaticRouter.routeList.push(obj);
   }
