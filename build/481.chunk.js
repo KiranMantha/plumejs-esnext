@@ -1,27 +1,28 @@
-"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[481],{7481:(e,s,n)=>{n.r(s);var t=n(8975),o=n(9669),i=n.n(o);(0,t.wA)({selector:"app-persons"},class{constructor(){this.ulRef=void 0,this.personDetailsCompRef=void 0}mount(){var e=this;(0,t.sY)(this.ulRef,t.dy` loading `),i().get("https://jsonplaceholder.typicode.com/users").then((function(e){return e.data})).then((function(s){let n=s.map((function(s){return t.dy`
+"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[481],{7481:(e,t,s)=>{s.r(t);var n=s(8975),o=s(9669),r=s.n(o);(0,n.wA)({selector:"app-persons",deps:[n.F0]},class{constructor(e){this.ulRef=void 0,this.personDetailsCompRef=void 0}mount(){var e=this;(0,n.sY)(this.ulRef,n.dy` loading `),r().get("https://jsonplaceholder.typicode.com/users").then((function(e){return e.data})).then((function(t){let s=t.map((function(t){return n.dy`
             <li
               class="is-clickable"
-              onclick="${function(){e.loadPersonDetails(s)}}"
+              onclick="${function(){e.loadPersonDetails(t)}}"
             >
-              ${s.name}
+              ${t.name}
             </li>
-          `}));(0,t.sY)(e.ulRef,t.dy` ${n} `)}))}loadPersonDetails(e){this.personDetailsCompRef.setProps({personDetails:e})}onUserClick(e){console.log("data from app-person-details comp: ",e)}render(){var e=this;return t.dy`
+          `}));(0,n.sY)(e.ulRef,n.dy` ${s} `)}))}loadRouteData(){const e=this.router.getCurrentRoute();return{path:e.path,routeParams:Object.fromEntries(e.routeParams),queryParams:Object.fromEntries(e.queryParams),state:e.state}}loadPersonDetails(e){this.personDetailsCompRef.setProps({personDetails:e})}onUserClick(e){console.log("data from app-person-details comp: ",e)}render(){var e=this;return n.dy`
       <h3>Persons route</h3>
+      <p>Current route data: <code>${JSON.stringify(this.loadRouteData(),null,2)}</code></p>
       <ul
-        ref="${function(s){e.ulRef=s}}"
+        ref="${function(t){e.ulRef=t}}"
       ></ul>
       <app-person-details
-        ref="${function(s){e.personDetailsCompRef=s}}"
-        onuserclick="${function(s){e.onUserClick(s.detail)}}"
+        ref="${function(t){e.personDetailsCompRef=t}}"
+        onuserclick="${function(t){e.onUserClick(t.detail)}}"
       ></app-person-details>
-    `}}),(0,t.wA)({selector:"app-person-details",deps:[t.Th]},class{constructor(e){this.personDetails=void 0}sendDataToParent(){this.renderer.emitEvent("userclick",this.personDetails)}render(){var e,s=this;return null!=(e=this.personDetails)&&e.name?t.dy`
+    `}}),(0,n.wA)({selector:"app-person-details",deps:[n.Th]},class{constructor(e){this.personDetails=void 0}sendDataToParent(){this.renderer.emitEvent("userclick",this.personDetails)}render(){var e,t=this;return null!=(e=this.personDetails)&&e.name?n.dy`
         <strong>Person Details</strong>
         <div>Name: ${this.personDetails.name}</div>
         <div>Company: ${this.personDetails.company.name}</div>
         <button
           class="button is-info is-light"
-          onclick="${function(){s.sendDataToParent()}}"
+          onclick="${function(){t.sendDataToParent()}}"
         >
           click me and check console
         </button>
-      `:t.dy` <div></div> `}})}}]);
+      `:n.dy` <div></div> `}})}}]);

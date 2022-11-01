@@ -75,6 +75,10 @@ const Component = (componentOptions, klass) => {
       #shadow;
       #componentStyleTag;
 
+      static get observedAttributes() {
+        return klass.observedAttributes || [];
+      }
+
       constructor() {
         super();
         this.#shadow = this.attachShadow({ mode: 'open' });
@@ -148,6 +152,10 @@ const Component = (componentOptions, klass) => {
 
       getInstance() {
         return this.#klass;
+      }
+
+      attributeChangedCallback(name, oldValue, newValue) {
+        this.#klass.onNativeAttributeChanges?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {

@@ -337,6 +337,9 @@ const Component = (componentOptions, klass) => {
       }
       this.getInstance = this.getInstance.bind(this);
     }
+    static get observedAttributes() {
+      return klass.observedAttributes || [];
+    }
     emulateComponent() {
       if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
         __privateSet(this, _componentStyleTag, createStyleTag(componentOptions.styles));
@@ -386,6 +389,10 @@ const Component = (componentOptions, klass) => {
     }
     getInstance() {
       return __privateGet(this, _klass);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+      var _a3, _b;
+      (_b = (_a3 = __privateGet(this, _klass)).onNativeAttributeChanges) == null ? void 0 : _b.call(_a3, name, oldValue, newValue);
     }
     disconnectedCallback() {
       __privateGet(this, _klass).unmount && __privateGet(this, _klass).unmount();
