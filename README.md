@@ -85,10 +85,11 @@ to bundle your application
 ```
 
 # Bundles
+
 ```cmd
-plume.es.js   26.35 KiB / gzip: 6.67 KiB
-plume.umd.js   12.11 KiB / gzip: 4.86 KiB
-plume.iife.js   11.92 KiB / gzip: 4.79 KiB
+plume.es.js   28.51 KiB / gzip: 7.13 KiB
+plume.umd.js   13.10 KiB / gzip: 5.20 KiB
+plume.iife.js   12.91 KiB / gzip: 5.13 KiB
 ```
 
 # Useful links:
@@ -103,6 +104,7 @@ https://www.reddit.com/r/node/comments/llzn11/are_most_people_not_using_esm_impo
 https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
 https://link.medium.com/W1eXCzzHkmb
 https://css-tricks.com/styling-in-the-shadow-dom-with-css-shadow-parts/
+https://gomakethings.com/dom-diffing-with-vanilla-js/
 
 # next steps
 
@@ -119,4 +121,3 @@ checked svg:
 data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FFF' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E
 
 unchecked svg:
-

@@ -148,6 +148,55 @@ const { html, render } = (() => {
       node = commentsWalker.nextNode();
     }
   };
+  const _getNodeType = (node) => {
+    if (node.nodeType === 3)
+      return "text";
+    if (node.nodeType === 8)
+      return "comment";
+    return node.tagName.toLowerCase();
+  };
+  const _getNodeContent = (node) => {
+    if (node.childNodes && node.childNodes.length > 0)
+      return null;
+    return node.textContent;
+  };
+  const _diff = (template, elem) => {
+    const domNodes = Array.prototype.slice.call(elem.childNodes);
+    const templateNodes = Array.prototype.slice.call(template.childNodes);
+    const count = domNodes.length - templateNodes.length;
+    if (count > 0) {
+      for (; count > 0; count--) {
+        domNodes[domNodes.length - count].parentNode.removeChild(domNodes[domNodes.length - count]);
+      }
+    }
+    templateNodes.forEach(function(node, index) {
+      if (!domNodes[index]) {
+        elem.appendChild(node.cloneNode(true));
+        return;
+      }
+      if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
+        domNodes[index].parentNode.replaceChild(node.cloneNode(true), domNodes[index]);
+        return;
+      }
+      const templateContent = _getNodeContent(node);
+      if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
+        domNodes[index].textContent = templateContent;
+      }
+      if (domNodes[index].childNodes.length > 0 && node.childNodes.length < 1) {
+        domNodes[index].innerHTML = "";
+        return;
+      }
+      if (domNodes[index].childNodes.length < 1 && node.childNodes.length > 0) {
+        const fragment = document.createDocumentFragment();
+        _diff(node, fragment);
+        domNodes[index].appendChild(fragment);
+        return;
+      }
+      if (node.childNodes.length > 0) {
+        _diff(node, domNodes[index]);
+      }
+    });
+  };
   const html2 = (templates, ...values) => {
     let result = "";
     const { length } = templates;
@@ -156,10 +205,7 @@ const { html, render } = (() => {
       let isAttributePart = false;
       result += templates[i - 1];
       if (isAttributeRegex.test(result) && isNodeRegex.test(result)) {
-        result = result.replace(
-          isAttributeRegex,
-          (_, $1, $2) => `${attributePrefix}${i - 1}=${$2 || '"'}${$1}${$2 ? "" : '"'}`
-        );
+        result = result.replace(isAttributeRegex, (_, $1, $2) => `${attributePrefix}${i - 1}=${$2 || '"'}${$1}${$2 ? "" : '"'}`);
         isAttributePart = true;
       }
       if (!isAttributePart) {
@@ -188,8 +234,12 @@ const { html, render } = (() => {
     return fragment;
   };
   const render2 = (where, what) => {
-    where.innerHTML = "";
-    where.appendChild(what);
+    if (!where.children.length) {
+      where.innerHTML = "";
+      where.appendChild(what);
+    } else {
+      _diff(what, where);
+    }
   };
   return { html: html2, render: render2 };
 })();
@@ -323,112 +373,87 @@ const Component = (componentOptions, klass) => {
     componentRegistry.isRootNodeSet = true;
     if (componentOptions.styles) {
       componentRegistry.globalStyles.replace(componentOptions.styles);
-      componentRegistry.globalStyleTag = createStyleTag(
-        componentOptions.styles,
-        document.head
-      );
+      componentRegistry.globalStyleTag = createStyleTag(componentOptions.styles, document.head);
     }
   } else if (componentOptions.root && componentRegistry.isRootNodeSet) {
-    throw Error(
-      "Cannot register duplicate root component in " + componentOptions.selector + " component"
-    );
+    throw Error("Cannot register duplicate root component in " + componentOptions.selector + " component");
   }
-  window.customElements.define(
-    componentOptions.selector,
-    (_a2 = class extends HTMLElement {
-      constructor() {
-        super();
-        __privateAdd(this, _klass, void 0);
-        __privateAdd(this, _shadow, void 0);
-        __privateAdd(this, _componentStyleTag, void 0);
-        __privateSet(this, _shadow, this.attachShadow({ mode: "open" }));
-        if (!CSS_SHEET_NOT_SUPPORTED) {
-          __privateGet(this, _shadow).adoptedStyleSheets = componentRegistry.getComputedCss(
-            componentOptions.styles,
-            componentOptions.standalone
-          );
-        }
-        this.getInstance = this.getInstance.bind(this);
+  window.customElements.define(componentOptions.selector, (_a2 = class extends HTMLElement {
+    constructor() {
+      super();
+      __privateAdd(this, _klass, void 0);
+      __privateAdd(this, _shadow, void 0);
+      __privateAdd(this, _componentStyleTag, void 0);
+      __privateSet(this, _shadow, this.attachShadow({ mode: "open" }));
+      if (!CSS_SHEET_NOT_SUPPORTED) {
+        __privateGet(this, _shadow).adoptedStyleSheets = componentRegistry.getComputedCss(componentOptions.styles, componentOptions.standalone);
       }
-      static get observedAttributes() {
-        return klass.observedAttributes || [];
+      this.getInstance = this.getInstance.bind(this);
+    }
+    static get observedAttributes() {
+      return klass.observedAttributes || [];
+    }
+    emulateComponent() {
+      if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
+        __privateSet(this, _componentStyleTag, createStyleTag(componentOptions.styles));
       }
-      emulateComponent() {
-        if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          __privateSet(this, _componentStyleTag, createStyleTag(componentOptions.styles));
-        }
-      }
-      connectedCallback() {
-        var _a3, _b, _c, _d;
-        this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = __privateGet(this, _shadow);
-        rendererInstance.update = () => {
-          this.update();
-        };
-        rendererInstance.emitEvent = (eventName, data) => {
-          this.emitEvent(eventName, data);
-        };
-        __privateSet(this, _klass, instantiate(
-          klass,
-          componentOptions.deps,
-          rendererInstance
-        ));
-        (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
+    }
+    connectedCallback() {
+      var _a3, _b, _c, _d;
+      this.emulateComponent();
+      const rendererInstance = new Renderer();
+      rendererInstance.shadowRoot = __privateGet(this, _shadow);
+      rendererInstance.update = () => {
         this.update();
-        (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
-        this.emitEvent(
-          "bindprops",
-          {
-            setProps: (propsObj) => {
-              this.setProps(propsObj);
-            }
-          },
-          false
-        );
-      }
-      update() {
-        render(__privateGet(this, _shadow), (() => __privateGet(this, _klass).render())());
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles && __privateGet(this, _shadow).insertBefore(
-            __privateGet(this, _componentStyleTag),
-            __privateGet(this, _shadow).childNodes[0]
-          );
-          if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
-            __privateGet(this, _shadow).insertBefore(
-              document.importNode(componentRegistry.globalStyleTag, true),
-              __privateGet(this, _shadow).childNodes[0]
-            );
-          }
+      };
+      rendererInstance.emitEvent = (eventName, data) => {
+        this.emitEvent(eventName, data);
+      };
+      __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
+      (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
+      this.update();
+      (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
+      this.emitEvent("bindprops", {
+        setProps: (propsObj) => {
+          this.setProps(propsObj);
+        }
+      }, false);
+    }
+    update() {
+      render(__privateGet(this, _shadow), (() => __privateGet(this, _klass).render())());
+      if (CSS_SHEET_NOT_SUPPORTED) {
+        componentOptions.styles && __privateGet(this, _shadow).insertBefore(__privateGet(this, _componentStyleTag), __privateGet(this, _shadow).childNodes[0]);
+        if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
+          __privateGet(this, _shadow).insertBefore(document.importNode(componentRegistry.globalStyleTag, true), __privateGet(this, _shadow).childNodes[0]);
         }
       }
-      emitEvent(eventName, data) {
-        const event = new CustomEvent(eventName, {
-          detail: data
-        });
-        this.dispatchEvent(event);
+    }
+    emitEvent(eventName, data) {
+      const event = new CustomEvent(eventName, {
+        detail: data
+      });
+      this.dispatchEvent(event);
+    }
+    setProps(propsObj) {
+      var _a3, _b;
+      for (const [key, value] of Object.entries(propsObj)) {
+        __privateGet(this, _klass)[key] = value;
       }
-      setProps(propsObj) {
-        var _a3, _b;
-        for (const [key, value] of Object.entries(propsObj)) {
-          __privateGet(this, _klass)[key] = value;
-        }
-        (_b = (_a3 = __privateGet(this, _klass)).onPropsChanged) == null ? void 0 : _b.call(_a3);
-        this.update();
-      }
-      getInstance() {
-        return __privateGet(this, _klass);
-      }
-      attributeChangedCallback(name, oldValue, newValue) {
-        var _a3, _b;
-        (_b = (_a3 = __privateGet(this, _klass)).onNativeAttributeChanges) == null ? void 0 : _b.call(_a3, name, oldValue, newValue);
-      }
-      disconnectedCallback() {
-        var _a3, _b;
-        (_b = (_a3 = __privateGet(this, _klass)).unmount) == null ? void 0 : _b.call(_a3);
-      }
-    }, _klass = new WeakMap(), _shadow = new WeakMap(), _componentStyleTag = new WeakMap(), _a2)
-  );
+      (_b = (_a3 = __privateGet(this, _klass)).onPropsChanged) == null ? void 0 : _b.call(_a3);
+      this.update();
+    }
+    getInstance() {
+      return __privateGet(this, _klass);
+    }
+    attributeChangedCallback(name, oldValue, newValue) {
+      var _a3, _b;
+      (_b = (_a3 = __privateGet(this, _klass)).onNativeAttributeChanges) == null ? void 0 : _b.call(_a3, name, oldValue, newValue);
+    }
+    disconnectedCallback() {
+      var _a3, _b;
+      (_b = (_a3 = __privateGet(this, _klass)).unmount) == null ? void 0 : _b.call(_a3);
+    }
+  }, _klass = new WeakMap(), _shadow = new WeakMap(), _componentStyleTag = new WeakMap(), _a2));
 };
 const SERVICE_OPTIONS_DEFAULTS = {
   deps: []
@@ -491,9 +516,7 @@ const _StaticRouter = class {
     obj.redirectTo = route.redirectTo;
     if (route.template) {
       if (!route.templatePath)
-        throw Error(
-          "templatePath is required in route if template is mentioned."
-        );
+        throw Error("templatePath is required in route if template is mentioned.");
       obj.Template = route.template;
       obj.TemplatePath = route.templatePath;
     }
@@ -735,12 +758,10 @@ const _getTargetValue = (target) => {
     case "select": {
       const one = target.type === "select-one";
       const options = Array.from(target.options);
-      const value = [...options].filter((option) => option.selected).map(
-        (option) => {
-          var _a2;
-          return (_a2 = option.value) != null ? _a2 : (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" ");
-        }
-      );
+      const value = [...options].filter((option) => option.selected).map((option) => {
+        var _a2;
+        return (_a2 = option.value) != null ? _a2 : (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" ");
+      });
       targetValue = one ? value[0] : value;
       break;
     }
