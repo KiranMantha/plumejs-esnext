@@ -54,7 +54,7 @@ class FormComponent {
               aria-describedby="emailHelp"
               placeholder="Enter email"
               value=${this.sampleform1.get('email').value}
-              onchange=${this.createChangeHandler1('email')}
+              oninput=${this.createChangeHandler1('email')}
             />
           </div>
         </div>
@@ -67,7 +67,7 @@ class FormComponent {
               id="exampleInputPassword1"
               placeholder="Password"
               value=${this.sampleform1.get('password').value}
-              onchange=${this.createChangeHandler1('password')}
+              oninput=${this.createChangeHandler1('password')}
             />
           </div>
         </div>

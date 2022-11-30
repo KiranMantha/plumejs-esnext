@@ -3,9 +3,12 @@
 // @flow
 
 import { Component, Service, html, render, registerRouterComponent, Renderer } from './lib';
+
 import { Router } from './lib/router';
-import { Observable } from 'rxjs';
+
 import styles from './base.scss';
+
+import { Observable } from 'rxjs';
 
 registerRouterComponent();
 
@@ -110,7 +113,7 @@ class AppComponent {
     },
     {
       path: '/nested-table',
-      template: '<app-nested-table></app-nested-table>',
+      template: '<app-nested-table name="kiran"></app-nested-table>',
       templatePath: () => import('./app/nested-table')
     },
     {
@@ -160,7 +163,7 @@ class AppComponent {
   render() {
     return html`
       <div class="layout">
-        <header class="layout">
+        <header class="layout sticky-header">
           <nav>
             <ul>
               <li>

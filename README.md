@@ -93,5 +93,30 @@ plume.iife.js   11.92 KiB / gzip: 4.79 KiB
 
 # Useful links:
 
-1. https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
-2. https://typicode.github.io/husky/#/?id=install
+https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
+https://typicode.github.io/husky/#/?id=install
+https://alxgbsn.co.uk/2019/02/22/testing-native-es-modules-mocha-esm/
+https://kulshekhar.github.io/ts-jest/docs/guides/esm-support/
+https://bl.ocks.org/rstacruz/511f43265de4939f6ca729a3df7b001c
+https://gist.github.com/rstacruz/511f43265de4939f6ca729a3df7b001c
+https://www.reddit.com/r/node/comments/llzn11/are_most_people_not_using_esm_importexport_syntax/
+https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
+https://link.medium.com/W1eXCzzHkmb
+https://css-tricks.com/styling-in-the-shadow-dom-with-css-shadow-parts/
+
+# next steps
+
+creating blog using [an editor like this](https://levelup.gitconnected.com/an-open-source-medium-like-wysiwyg-editor-1258d3efdf92)
+https://awesomeopensource.com/project/JefMari/awesome-wysiwyg
+
+https://stackoverflow.com/questions/47102233/how-do-i-use-markdown-it-js-to-parse-content-in-a-div
+
+# todo
+
+1. add parammap to current route to get query params
+
+checked svg:
+data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23FFF' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E
+
+unchecked svg:
+

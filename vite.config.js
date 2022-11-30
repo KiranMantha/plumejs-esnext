@@ -1,10 +1,17 @@
 import path from 'path';
 import { defineConfig } from 'vite';
+import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
   base: '/',
+  plugins: [
+    viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br'
+    })
+  ],
   build: {
-    outDir: 'dist',
+    outDir: 'build',
     sourcemap: false,
     lib: {
       entry: path.resolve(__dirname, 'src/lib/index.js'),

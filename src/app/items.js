@@ -114,7 +114,7 @@ class ItemsComponent {
             </div>
           </div>
         </form>
-        <table class="table-bordered">
+        <table class="table-bordered table-hover">
           <thead>
             <tr>
               <th>Name</th>

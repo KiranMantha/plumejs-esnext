@@ -131,14 +131,14 @@ Component(
   {
     selector: 'app-row-item',
     styles: `:host {
-        display: table-row-group;
-      }
-      .hide-row {
-          display: none;
-      }
-      :host > tr > td[colspan] table {
-          margin: 0;
-      }
+      display: table-row-group;
+  }
+  .hide-row {
+      display: none;
+  }
+  :host > tr > td[colspan] table {
+      margin: 0;
+  }
   `
   },
   RowItem

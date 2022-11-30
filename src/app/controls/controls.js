@@ -1,5 +1,5 @@
 import { Component, html, Renderer } from '../../lib';
-import { DialogService } from './dialog/modal-dialog.service';
+import { DialogService } from './dialog/dialog.service';
 
 class NestedModal {
   constructor(renderer) {}
@@ -85,7 +85,6 @@ class ControlsComponent {
     const modal = this.dialogService.modal({
       modalTitle: 'Hello World',
       hideDefaultCloseButton: false,
-      preventBackdropClose: false,
       preventEsc: false,
       renderTemplate: () => html`<p>i'm inside a modal</p>
         <button
@@ -145,6 +144,9 @@ class ControlsComponent {
         <button onclick=${() => {
           this.showModal();
         }}>show modal</button>
+      </div>
+      <div>
+        <app-tree-view></app-tree-view>
       </div>
     `;
   }

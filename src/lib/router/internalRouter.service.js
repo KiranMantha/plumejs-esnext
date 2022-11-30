@@ -85,7 +85,7 @@ export class InternalRouter {
 
           if (!routeItem.IsRegistered) {
             if (routeItem.TemplatePath) {
-              wrapIntoObservable(routeItem.TemplatePath()).subscribe((res) => {
+              wrapIntoObservable(routeItem.TemplatePath()).subscribe(() => {
                 routeItem.IsRegistered = true;
                 this.#template.next(routeItem.Template);
               });

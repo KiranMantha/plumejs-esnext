@@ -52,12 +52,12 @@ class PersonsComponent {
   render() {
     return html`
       <h3>Persons route</h3>
-      <p>Current route data: <code>${JSON.stringify(this.loadRouteData(), null, 2)}</code></p>
-      <ul
-        ref="${(ref) => {
-          this.ulRef = ref;
-        }}"
-      ></ul>
+      <p>
+        Current route data: <pre><code>${JSON.stringify(this.loadRouteData(), null, 4)}</code></pre>
+      </p>
+      <ul ref="${(ref) => {
+        this.ulRef = ref;
+      }}"></ul>
       <app-person-details
         ref="${(node) => {
           this.personDetailsCompRef = node;

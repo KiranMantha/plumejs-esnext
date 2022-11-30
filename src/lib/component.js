@@ -108,9 +108,9 @@ const Component = (componentOptions, klass) => {
           this.emitEvent(eventName, data);
         };
         this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
-        this.#klass.beforeMount && this.#klass.beforeMount();
+        this.#klass.beforeMount?.();
         this.update();
-        this.#klass.mount && this.#klass.mount();
+        this.#klass.mount?.();
         this.emitEvent(
           'bindprops',
           {
@@ -146,7 +146,7 @@ const Component = (componentOptions, klass) => {
         for (const [key, value] of Object.entries(propsObj)) {
           this.#klass[key] = value;
         }
-        this.#klass.onPropsChanged && this.#klass.onPropsChanged();
+        this.#klass.onPropsChanged?.();
         this.update();
       }
 
@@ -159,7 +159,7 @@ const Component = (componentOptions, klass) => {
       }
 
       disconnectedCallback() {
-        this.#klass.unmount && this.#klass.unmount();
+        this.#klass.unmount?.();
       }
     }
   );
