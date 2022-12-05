@@ -171,7 +171,7 @@ const { html, render } = (() => {
     const templateNodes = Array.prototype.slice.call(template.childNodes);
 
     // If extra elements in DOM, remove them
-    const count = domNodes.length - templateNodes.length;
+    let count = domNodes.length - templateNodes.length;
     if (count > 0) {
       for (; count > 0; count--) {
         domNodes[domNodes.length - count].parentNode.removeChild(domNodes[domNodes.length - count]);

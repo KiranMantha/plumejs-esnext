@@ -163,7 +163,7 @@ const { html, render } = (() => {
   const _diff = (template, elem) => {
     const domNodes = Array.prototype.slice.call(elem.childNodes);
     const templateNodes = Array.prototype.slice.call(template.childNodes);
-    const count = domNodes.length - templateNodes.length;
+    let count = domNodes.length - templateNodes.length;
     if (count > 0) {
       for (; count > 0; count--) {
         domNodes[domNodes.length - count].parentNode.removeChild(domNodes[domNodes.length - count]);
