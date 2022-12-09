@@ -78,7 +78,13 @@ const { html, render } = (() => {
               break;
             }
             case /ref/.test(nodeValue): {
-              values[i](node);
+              if (node.tagName.includes('-')) {
+                node.addEventListener('load', (e) => {
+                  values[i](e.detail);
+                });
+              } else {
+                values[i](node);
+              }
               break;
             }
             case /^data-+/.test(nodeValue): {
@@ -165,10 +171,10 @@ const { html, render } = (() => {
    * @param  {Node} template The template HTML
    * @param  {Node} elem     The UI HTML
    */
-  const _diff = (template, elem) => {
+  const _diff = (template, element) => {
     // Get arrays of child nodes
-    const domNodes = Array.prototype.slice.call(elem.childNodes);
-    const templateNodes = Array.prototype.slice.call(template.childNodes);
+    const domNodes = element ? Array.from(element.childNodes) : [];
+    const templateNodes = template ? Array.from(template.childNodes) : [];
 
     // If extra elements in DOM, remove them
     let count = domNodes.length - templateNodes.length;
@@ -182,13 +188,13 @@ const { html, render } = (() => {
     templateNodes.forEach(function (node, index) {
       // If element doesn't exist, create it
       if (!domNodes[index]) {
-        elem.appendChild(node.cloneNode(true));
+        element && element.appendChild(node);
         return;
       }
 
       // If element is not the same type, replace it with new element
       if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
-        domNodes[index].parentNode.replaceChild(node.cloneNode(true), domNodes[index]);
+        domNodes[index].replaceWith(node);
         return;
       }
 
@@ -196,6 +202,7 @@ const { html, render } = (() => {
       const templateContent = _getNodeContent(node);
       if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
         domNodes[index].textContent = templateContent;
+        return;
       }
 
       // If target element should be empty, wipe it
@@ -216,6 +223,7 @@ const { html, render } = (() => {
       // If there are existing child elements that need to be modified, diff them
       if (node.childNodes.length > 0) {
         _diff(node, domNodes[index]);
+        return;
       }
     });
   };

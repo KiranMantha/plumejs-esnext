@@ -1,7 +1,7 @@
 // @flow
-import { instantiate } from './instantiate.js';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
+import { instantiate } from './instantiate.js';
 import { CSS_SHEET_NOT_SUPPORTED } from './utils';
 
 /**
@@ -98,28 +98,31 @@ const Component = (componentOptions, klass) => {
       }
 
       connectedCallback() {
-        this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = this.#shadow;
-        rendererInstance.update = () => {
+        if (this.isConnected) {
+          this.emitEvent('load', this);
+          this.emulateComponent();
+          const rendererInstance = new Renderer();
+          rendererInstance.shadowRoot = this.#shadow;
+          rendererInstance.update = () => {
+            this.update();
+          };
+          rendererInstance.emitEvent = (eventName, data) => {
+            this.emitEvent(eventName, data);
+          };
+          this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
+          this.#klass.beforeMount?.();
           this.update();
-        };
-        rendererInstance.emitEvent = (eventName, data) => {
-          this.emitEvent(eventName, data);
-        };
-        this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
-        this.#klass.beforeMount?.();
-        this.update();
-        this.#klass.mount?.();
-        this.emitEvent(
-          'bindprops',
-          {
-            setProps: (propsObj) => {
-              this.setProps(propsObj);
-            }
-          },
-          false
-        );
+          this.#klass.mount?.();
+          this.emitEvent(
+            'bindprops',
+            {
+              setProps: (propsObj) => {
+                this.setProps(propsObj);
+              }
+            },
+            false
+          );
+        }
       }
 
       update() {

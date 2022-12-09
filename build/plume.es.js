@@ -90,7 +90,13 @@ const { html, render } = (() => {
               break;
             }
             case /ref/.test(nodeValue): {
-              values[i](node);
+              if (node.tagName.includes("-")) {
+                node.addEventListener("load", (e) => {
+                  values[i](e.detail);
+                });
+              } else {
+                values[i](node);
+              }
               break;
             }
             case /^data-+/.test(nodeValue): {
@@ -160,9 +166,9 @@ const { html, render } = (() => {
       return null;
     return node.textContent;
   };
-  const _diff = (template, elem) => {
-    const domNodes = Array.prototype.slice.call(elem.childNodes);
-    const templateNodes = Array.prototype.slice.call(template.childNodes);
+  const _diff = (template, element) => {
+    const domNodes = element ? Array.from(element.childNodes) : [];
+    const templateNodes = template ? Array.from(template.childNodes) : [];
     let count = domNodes.length - templateNodes.length;
     if (count > 0) {
       for (; count > 0; count--) {
@@ -171,16 +177,17 @@ const { html, render } = (() => {
     }
     templateNodes.forEach(function(node, index) {
       if (!domNodes[index]) {
-        elem.appendChild(node.cloneNode(true));
+        element && element.appendChild(node);
         return;
       }
       if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
-        domNodes[index].parentNode.replaceChild(node.cloneNode(true), domNodes[index]);
+        domNodes[index].replaceWith(node);
         return;
       }
       const templateContent = _getNodeContent(node);
       if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
         domNodes[index].textContent = templateContent;
+        return;
       }
       if (domNodes[index].childNodes.length > 0 && node.childNodes.length < 1) {
         domNodes[index].innerHTML = "";
@@ -194,6 +201,7 @@ const { html, render } = (() => {
       }
       if (node.childNodes.length > 0) {
         _diff(node, domNodes[index]);
+        return;
       }
     });
   };
@@ -243,6 +251,33 @@ const { html, render } = (() => {
   };
   return { html: html2, render: render2 };
 })();
+const componentRegistry = new class {
+  constructor() {
+    __publicField(this, "globalStyles");
+    __publicField(this, "globalStyleTag");
+    __publicField(this, "style_registry");
+    __publicField(this, "isRootNodeSet");
+    try {
+      this.globalStyles = new CSSStyleSheet();
+    } catch (e) {
+      this.globalStyles = "";
+    }
+    this.isRootNodeSet = false;
+    this.globalStyleTag = null;
+  }
+  getComputedCss(styles = "") {
+    let csoArray = [];
+    const defaultStyles = new CSSStyleSheet();
+    defaultStyles.insertRule(":host { display: block; }");
+    csoArray = [this.globalStyles, defaultStyles];
+    if (styles) {
+      const sheet = new CSSStyleSheet();
+      sheet.replace(styles);
+      csoArray.push(sheet);
+    }
+    return csoArray;
+  }
+}();
 const Injector = new (_a = class {
   constructor() {
     __privateAdd(this, _weakMap, void 0);
@@ -312,33 +347,6 @@ const instantiate = (klass, deps, rendererInstance) => {
     return new klass();
   }
 };
-const componentRegistry = new class {
-  constructor() {
-    __publicField(this, "globalStyles");
-    __publicField(this, "globalStyleTag");
-    __publicField(this, "style_registry");
-    __publicField(this, "isRootNodeSet");
-    try {
-      this.globalStyles = new CSSStyleSheet();
-    } catch (e) {
-      this.globalStyles = "";
-    }
-    this.isRootNodeSet = false;
-    this.globalStyleTag = null;
-  }
-  getComputedCss(styles = "") {
-    let csoArray = [];
-    const defaultStyles = new CSSStyleSheet();
-    defaultStyles.insertRule(":host { display: block; }");
-    csoArray = [this.globalStyles, defaultStyles];
-    if (styles) {
-      const sheet = new CSSStyleSheet();
-      sheet.replace(styles);
-      csoArray.push(sheet);
-    }
-    return csoArray;
-  }
-}();
 class Renderer {
   constructor() {
     __publicField(this, "shadowRoot");
@@ -400,24 +408,27 @@ const Component = (componentOptions, klass) => {
     }
     connectedCallback() {
       var _a3, _b, _c, _d;
-      this.emulateComponent();
-      const rendererInstance = new Renderer();
-      rendererInstance.shadowRoot = __privateGet(this, _shadow);
-      rendererInstance.update = () => {
+      if (this.isConnected) {
+        this.emitEvent("load", this);
+        this.emulateComponent();
+        const rendererInstance = new Renderer();
+        rendererInstance.shadowRoot = __privateGet(this, _shadow);
+        rendererInstance.update = () => {
+          this.update();
+        };
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.emitEvent(eventName, data);
+        };
+        __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
+        (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
         this.update();
-      };
-      rendererInstance.emitEvent = (eventName, data) => {
-        this.emitEvent(eventName, data);
-      };
-      __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
-      (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
-      this.update();
-      (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
-      this.emitEvent("bindprops", {
-        setProps: (propsObj) => {
-          this.setProps(propsObj);
-        }
-      }, false);
+        (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
+        this.emitEvent("bindprops", {
+          setProps: (propsObj) => {
+            this.setProps(propsObj);
+          }
+        }, false);
+      }
     }
     update() {
       render(__privateGet(this, _shadow), (() => __privateGet(this, _klass).render())());
