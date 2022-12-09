@@ -186,43 +186,45 @@ const { html, render } = (() => {
 
     // Diff each item in the templateNodes
     templateNodes.forEach(function (node, index) {
+      const domNode = domNodes[index];
+
       // If element doesn't exist, create it
-      if (!domNodes[index]) {
+      if (!domNode) {
         element && element.appendChild(node);
         return;
       }
 
       // If element is not the same type, replace it with new element
-      if (_getNodeType(node) !== _getNodeType(domNodes[index])) {
-        domNodes[index].replaceWith(node);
+      if (_getNodeType(node) !== _getNodeType(domNode)) {
+        domNode.replaceWith(node);
         return;
       }
 
       // If content is different, update it
       const templateContent = _getNodeContent(node);
-      if (templateContent && templateContent !== _getNodeContent(domNodes[index])) {
-        domNodes[index].textContent = templateContent;
+      if (templateContent && templateContent !== _getNodeContent(domNode)) {
+        domNode.textContent = templateContent;
         return;
       }
 
       // If target element should be empty, wipe it
-      if (domNodes[index].childNodes.length > 0 && node.childNodes.length < 1) {
-        domNodes[index].innerHTML = '';
+      if (domNode.childNodes.length > 0 && node.childNodes.length < 1) {
+        domNode.innerHTML = '';
         return;
       }
 
       // If element is empty and shouldn't be, build it up
       // This uses a document fragment to minimize reflows
-      if (domNodes[index].childNodes.length < 1 && node.childNodes.length > 0) {
+      if (domNode.childNodes.length < 1 && node.childNodes.length > 0) {
         const fragment = document.createDocumentFragment();
         _diff(node, fragment);
-        domNodes[index].appendChild(fragment);
+        domNode.appendChild(fragment);
         return;
       }
 
       // If there are existing child elements that need to be modified, diff them
       if (node.childNodes.length > 0) {
-        _diff(node, domNodes[index]);
+        _diff(node, domNode);
         return;
       }
     });
