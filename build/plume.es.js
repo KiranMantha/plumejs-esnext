@@ -407,30 +407,6 @@ const Component = (componentOptions, klass) => {
         __privateSet(this, _componentStyleTag, createStyleTag(componentOptions.styles));
       }
     }
-    connectedCallback() {
-      var _a3, _b, _c, _d;
-      if (this.isConnected) {
-        this.emitEvent("load", this);
-        this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = __privateGet(this, _shadow);
-        rendererInstance.update = () => {
-          this.update();
-        };
-        rendererInstance.emitEvent = (eventName, data) => {
-          this.emitEvent(eventName, data);
-        };
-        __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
-        (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
-        this.update();
-        (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
-        this.emitEvent("bindprops", {
-          setProps: (propsObj) => {
-            this.setProps(propsObj);
-          }
-        }, false);
-      }
-    }
     update() {
       render(__privateGet(this, _shadow), (() => __privateGet(this, _klass).render())());
       if (CSS_SHEET_NOT_SUPPORTED) {
@@ -456,6 +432,30 @@ const Component = (componentOptions, klass) => {
     }
     getInstance() {
       return __privateGet(this, _klass);
+    }
+    connectedCallback() {
+      var _a3, _b, _c, _d;
+      if (this.isConnected) {
+        this.emitEvent("load", this);
+        this.emulateComponent();
+        const rendererInstance = new Renderer();
+        rendererInstance.shadowRoot = __privateGet(this, _shadow);
+        rendererInstance.update = () => {
+          this.update();
+        };
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.emitEvent(eventName, data);
+        };
+        __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
+        (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
+        this.update();
+        (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
+        this.emitEvent("bindprops", {
+          setProps: (propsObj) => {
+            this.setProps(propsObj);
+          }
+        }, false);
+      }
     }
     attributeChangedCallback(name, oldValue, newValue) {
       var _a3, _b;

@@ -97,34 +97,6 @@ const Component = (componentOptions, klass) => {
         }
       }
 
-      connectedCallback() {
-        if (this.isConnected) {
-          this.emitEvent('load', this);
-          this.emulateComponent();
-          const rendererInstance = new Renderer();
-          rendererInstance.shadowRoot = this.#shadow;
-          rendererInstance.update = () => {
-            this.update();
-          };
-          rendererInstance.emitEvent = (eventName, data) => {
-            this.emitEvent(eventName, data);
-          };
-          this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
-          this.#klass.beforeMount?.();
-          this.update();
-          this.#klass.mount?.();
-          this.emitEvent(
-            'bindprops',
-            {
-              setProps: (propsObj) => {
-                this.setProps(propsObj);
-              }
-            },
-            false
-          );
-        }
-      }
-
       update() {
         render(this.#shadow, (() => this.#klass.render())());
         if (CSS_SHEET_NOT_SUPPORTED) {
@@ -155,6 +127,34 @@ const Component = (componentOptions, klass) => {
 
       getInstance() {
         return this.#klass;
+      }
+
+      connectedCallback() {
+        if (this.isConnected) {
+          this.emitEvent('load', this);
+          this.emulateComponent();
+          const rendererInstance = new Renderer();
+          rendererInstance.shadowRoot = this.#shadow;
+          rendererInstance.update = () => {
+            this.update();
+          };
+          rendererInstance.emitEvent = (eventName, data) => {
+            this.emitEvent(eventName, data);
+          };
+          this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
+          this.#klass.beforeMount?.();
+          this.update();
+          this.#klass.mount?.();
+          this.emitEvent(
+            'bindprops',
+            {
+              setProps: (propsObj) => {
+                this.setProps(propsObj);
+              }
+            },
+            false
+          );
+        }
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
