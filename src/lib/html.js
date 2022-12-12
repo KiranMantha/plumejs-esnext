@@ -146,6 +146,45 @@ const { html, render } = (() => {
   };
 
   /**
+   * update node attributes y comparing present node and compiled node
+   * @param {HTMLElement} templateNode
+   * @param {HTMLElement} domNode
+   */
+  const _diffAttributes = (templateNode, domNode) => {
+    if (!templateNode || !domNode || templateNode.nodeType !== 1 || domNode.nodeType !== 1) return;
+    const templateAtts = templateNode.attributes;
+    const existingAtts = domNode.attributes;
+
+    for (const { name, value } of templateAtts) {
+      if (/class/.test(name)) {
+        Array.from(templateNode.classList).every((className) => {
+          if (!domNode.classList.contains(className)) {
+            domNode.classList.add(className);
+          }
+        });
+      } else {
+        if (!existingAtts[name] || existingAtts[name] !== value) {
+          domNode.setAttribute(name, value);
+        }
+      }
+    }
+
+    for (const { name } of existingAtts) {
+      if (/class/.test(name)) {
+        Array.from(domNode.classList).every((className) => {
+          if (!templateNode.classList.contains(className)) {
+            domNode.classList.remove(className);
+          }
+        });
+      } else {
+        if (!templateAtts[name]) {
+          domNode.removeAttribute(name);
+        }
+      }
+    }
+  };
+
+  /**
    * Get the type for a node
    * @param  {Node}   node The node
    * @return {String}      The type
@@ -169,7 +208,7 @@ const { html, render } = (() => {
   /**
    * Compare the template to the UI and make updates
    * @param  {Node} template The template HTML
-   * @param  {Node} elem     The UI HTML
+   * @param  {Node} element The UI HTML
    */
   const _diff = (template, element) => {
     // Get arrays of child nodes
@@ -187,6 +226,7 @@ const { html, render } = (() => {
     // Diff each item in the templateNodes
     templateNodes.forEach(function (node, index) {
       const domNode = domNodes[index];
+      _diffAttributes(node, domNode);
 
       // If element doesn't exist, create it
       if (!domNode) {
@@ -285,7 +325,7 @@ const { html, render } = (() => {
    * @param {(templates: any, ...values: any[]) => DocumentFragment} what
    */
   const render = (where, what) => {
-    if (!where.children.length) {
+    if (where && !where.children.length) {
       where.innerHTML = '';
       where.appendChild(what);
     } else {

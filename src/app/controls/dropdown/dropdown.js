@@ -17,7 +17,6 @@ class DropdownComponent {
   #detailsNode;
   #summaryNode;
   #optionsContainerNode;
-  #summaryText;
   #isMultiSelect = false;
   #selectedOptions = [];
 
@@ -31,56 +30,52 @@ class DropdownComponent {
       };
       const { multiple, resetDropdown } = this.dropdownOptions;
       if (!!resetDropdown) {
-        this._selectedOptions = [];
+        this.#optionsContainerNode.innerHTML = '';
+        this.#selectedOptions = [];
         this.dropdownOptions.options = this.dropdownOptions.options.map((option) => {
           option.selected = false;
           return option;
         });
+      } else {
+        this.#selectedOptions = this.dropdownOptions.options.filter((item) => !!item.selected);
       }
       this.#isMultiSelect = multiple;
-      this.#getSummaryText();
     }
   }
 
   onOptionSelected(isChecked, selectedOption, index) {
-    let selectedText = '';
-
     if (!this.#isMultiSelect) {
-      //get button text
-      selectedText = selectedOption.label;
       this.#detailsNode.removeAttribute('open');
+      this.#selectedOptions = [selectedOption];
     } else {
       // update selected options
       this.dropdownOptions.options[index].selected = isChecked;
       this.#selectedOptions = this.dropdownOptions.options.filter((item) => !!item.selected);
-
-      //get button text
-      if (this.dropdownOptions.buttonText) {
-        selectedText = this.dropdownOptions.buttonText(this.#selectedOptions);
-      } else if (this.#selectedOptions.length) {
-        selectedText = this.#selectedOptions.map((item) => item.label).join(', ');
-      } else {
-        selectedText = this.dropdownOptions.defaultText;
-      }
     }
 
     //set button text and emit selected options
-    this.#summaryNode.textContent = selectedText;
+    this.#summaryNode.textContent = this.#getSummaryText();
     this.renderer.emitEvent('optionselected', {
       option: !this.#isMultiSelect ? selectedOption : this.#selectedOptions
     });
   }
 
   #getSummaryText() {
-    this.#selectedOptions = this.dropdownOptions.options.filter((item) => !!item.selected);
     if (this.#isMultiSelect) {
-      this.#summaryText = this.#selectedOptions.map((item) => item.label).join(',') || this.dropdownOptions.defaultText;
+      if (this.#selectedOptions.length) {
+        return (
+          this.dropdownOptions.buttonText?.(this.#selectedOptions) ||
+          this.#selectedOptions.map((item) => item.label).join(',')
+        );
+      } else {
+        return this.dropdownOptions.defaultText;
+      }
     } else {
       if (this.#selectedOptions.length) {
-        this.#summaryText = this.#selectedOptions[0].label;
+        return this.#selectedOptions[0].label;
       } else {
         this.dropdownOptions.options[0].selected = true;
-        this.#summaryText = this.dropdownOptions.options[0].label;
+        return this.dropdownOptions.options[0].label;
       }
     }
   }
@@ -152,7 +147,7 @@ class DropdownComponent {
           role="dropdown"
           class="${this.dropdownOptions.disable ? 'disabled' : ''}"
           ref=${(node) => {
-            this.#detailsNode = node;
+            if (!this.#detailsNode) this.#detailsNode = node;
           }}
           ontoggle=${() => {
             this.#onDropdownToggle();
@@ -160,14 +155,14 @@ class DropdownComponent {
         >
           <summary
             ref=${(node) => {
-              this.#summaryNode = node;
+              if (!this.#summaryNode) this.#summaryNode = node;
             }}
           >
-            ${this.#summaryText}
+            ${this.#getSummaryText()}
           </summary>
           <ul
             ref=${(node) => {
-              this.#optionsContainerNode = node;
+              if (!this.#optionsContainerNode) this.#optionsContainerNode = node;
             }}
           >
             ${this.#buildItems()}
@@ -175,7 +170,7 @@ class DropdownComponent {
         </details>
       `;
     } else {
-      return html`<div></div>`;
+      return html``;
     }
   }
 }
