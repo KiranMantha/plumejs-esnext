@@ -13,6 +13,7 @@ const { html, render } = (() => {
   const attributeRegex = /^attr([^ ]+)/;
   const insertNodePrefix = 'insertNode';
   const insertNodeRegex = /^insertNode([^ ]+)/;
+  let refNodes = [];
 
   const _sanitize = (data) => {
     const tagsToReplace = {
@@ -78,13 +79,15 @@ const { html, render } = (() => {
               break;
             }
             case /ref/.test(nodeValue): {
-              if (node.tagName.includes('-')) {
-                node.addEventListener('load', (e) => {
-                  values[i](e.detail);
-                });
-              } else {
-                values[i](node);
-              }
+              const closure = ((node) => {
+                const _node = node;
+                return () => {
+                  if (_node.isConnected) {
+                    values[i](_node);
+                  }
+                };
+              })(node);
+              refNodes.push(closure);
               break;
             }
             case /^data-+/.test(nodeValue): {
@@ -331,6 +334,10 @@ const { html, render } = (() => {
     } else {
       _diff(what, where);
     }
+    refNodes.forEach((closure) => {
+      closure();
+    });
+    refNodes = [];
   };
 
   return { html, render };

@@ -131,7 +131,6 @@ const Component = (componentOptions, klass) => {
 
       connectedCallback() {
         if (this.isConnected) {
-          this.emitEvent('load', this);
           this.emulateComponent();
           const rendererInstance = new Renderer();
           rendererInstance.shadowRoot = this.#shadow;
