@@ -130,30 +130,28 @@ const Component = (componentOptions, klass) => {
       }
 
       connectedCallback() {
-        if (this.isConnected) {
-          this.emulateComponent();
-          const rendererInstance = new Renderer();
-          rendererInstance.shadowRoot = this.#shadow;
-          rendererInstance.update = () => {
-            this.update();
-          };
-          rendererInstance.emitEvent = (eventName, data) => {
-            this.emitEvent(eventName, data);
-          };
-          this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
-          this.#klass.beforeMount?.();
+        this.emulateComponent();
+        const rendererInstance = new Renderer();
+        rendererInstance.shadowRoot = this.#shadow;
+        rendererInstance.update = () => {
           this.update();
-          this.#klass.mount?.();
-          this.emitEvent(
-            'bindprops',
-            {
-              setProps: (propsObj) => {
-                this.setProps(propsObj);
-              }
-            },
-            false
-          );
-        }
+        };
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.emitEvent(eventName, data);
+        };
+        this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
+        this.#klass.beforeMount?.();
+        this.update();
+        this.#klass.mount?.();
+        this.emitEvent(
+          'bindprops',
+          {
+            setProps: (propsObj) => {
+              this.setProps(propsObj);
+            }
+          },
+          false
+        );
       }
 
       attributeChangedCallback(name, oldValue, newValue) {

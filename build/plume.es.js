@@ -475,26 +475,24 @@ const Component = (componentOptions, klass) => {
     }
     connectedCallback() {
       var _a3, _b, _c, _d;
-      if (this.isConnected) {
-        this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = __privateGet(this, _shadow);
-        rendererInstance.update = () => {
-          this.update();
-        };
-        rendererInstance.emitEvent = (eventName, data) => {
-          this.emitEvent(eventName, data);
-        };
-        __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
-        (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
+      this.emulateComponent();
+      const rendererInstance = new Renderer();
+      rendererInstance.shadowRoot = __privateGet(this, _shadow);
+      rendererInstance.update = () => {
         this.update();
-        (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
-        this.emitEvent("bindprops", {
-          setProps: (propsObj) => {
-            this.setProps(propsObj);
-          }
-        }, false);
-      }
+      };
+      rendererInstance.emitEvent = (eventName, data) => {
+        this.emitEvent(eventName, data);
+      };
+      __privateSet(this, _klass, instantiate(klass, componentOptions.deps, rendererInstance));
+      (_b = (_a3 = __privateGet(this, _klass)).beforeMount) == null ? void 0 : _b.call(_a3);
+      this.update();
+      (_d = (_c = __privateGet(this, _klass)).mount) == null ? void 0 : _d.call(_c);
+      this.emitEvent("bindprops", {
+        setProps: (propsObj) => {
+          this.setProps(propsObj);
+        }
+      }, false);
     }
     attributeChangedCallback(name, oldValue, newValue) {
       var _a3, _b;
