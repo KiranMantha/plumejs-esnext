@@ -1,6 +1,6 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const PreloadWebpackPlugin = require('preload-webpack-plugin');
+//const PreloadWebpackPlugin = require('preload-webpack-plugin');
 
 const appconstants = {
   publicPath: '/',

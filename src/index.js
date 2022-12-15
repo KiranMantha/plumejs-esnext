@@ -5,7 +5,7 @@ import { Component, html, registerRouterComponent, render, Renderer, Service } f
 
 import { Router } from './lib/router';
 
-import styles from './base.scss';
+import styles from './base.scss?inline';
 
 import { Observable } from 'rxjs';
 

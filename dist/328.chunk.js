@@ -1,8 +1,4 @@
-"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[328],{1328:(e,l,s)=>{s.r(l);var t=s(8975);(0,t.wA)({selector:"app-sample-form",deps:[t.Th]},class{constructor(e){this.sampleform1=void 0,this.createChangeHandler1=void 0,this.formOutputRef1=void 0,this.sampleform2=void 0,this.createChangeHandler2=void 0,this.formOutputRef2=void 0}beforeMount(){[this.sampleform1,this.createChangeHandler1]=(0,t.uA)({email:"test.email@sample.com",password:"1234",checkme:!0,option:"",options:[["2","4"]]}),[this.sampleform2,this.createChangeHandler2]=(0,t.uA)({name:"",age:""})}submitForm1(e){e.preventDefault(),(0,t.sY)(this.formOutputRef1,t.dy`
-        <pre>${JSON.stringify(this.sampleform1.value,null,4)}</pre>
-      `)}submitForm2(e){e.preventDefault(),(0,t.sY)(this.formOutputRef2,t.dy`
-        <pre>${JSON.stringify(this.sampleform2.value,null,4)}</pre>
-      `)}render(){var e=this;return t.dy`
+"use strict";(self.webpackChunkplumejs_esnext=self.webpackChunkplumejs_esnext||[]).push([[328],{1328:(e,l,s)=>{s.r(l);var a=s(8975);(0,a.wA)({selector:"app-sample-form",deps:[a.Th]},class{constructor(e){this.sampleform1=void 0,this.createChangeHandler1=void 0,this.formOutputRef1=void 0,this.sampleform2=void 0,this.createChangeHandler2=void 0,this.formOutputRef2=void 0}beforeMount(){[this.sampleform1,this.createChangeHandler1]=(0,a.uA)({email:"test.email@sample.com",password:"1234",checkme:!0,option:"",options:[["2","4"]]}),[this.sampleform2,this.createChangeHandler2]=(0,a.uA)({name:"",age:""})}submitForm1(e){e.preventDefault(),(0,a.sY)(this.formOutputRef1,a.dy` <pre>${JSON.stringify(this.sampleform1.value,null,4)}</pre> `)}submitForm2(e){e.preventDefault(),(0,a.sY)(this.formOutputRef2,a.dy` <pre>${JSON.stringify(this.sampleform2.value,null,4)}</pre> `)}render(){var e=this;return a.dy`
       <h5 class="title is-5">sample form 1</h5>
       <form
         onsubmit=${function(l){e.submitForm1(l)}}
@@ -17,7 +13,7 @@
               aria-describedby="emailHelp"
               placeholder="Enter email"
               value=${this.sampleform1.get("email").value}
-              onchange=${this.createChangeHandler1("email")}
+              oninput=${this.createChangeHandler1("email")}
             />
           </div>
         </div>
@@ -30,7 +26,7 @@
               id="exampleInputPassword1"
               placeholder="Password"
               value=${this.sampleform1.get("password").value}
-              onchange=${this.createChangeHandler1("password")}
+              oninput=${this.createChangeHandler1("password")}
             />
           </div>
         </div>
@@ -52,15 +48,12 @@
           <label class="label">single select</label>
           <div class="control">
             <div class="select">
-              <select
-                value=${this.sampleform1.get("option").value}
-                onchange=${this.createChangeHandler1("option")}
-              >
-                <option>Select</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
+              <select value=${this.sampleform1.get("option").value} onchange=${this.createChangeHandler1("option")}>
+                <option value="">Select</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
               </select>
             </div>
           </div>
@@ -69,7 +62,11 @@
           <label class="label">multi select</label>
           <div class="control">
             <div class="select is-multiple">
-              <select multiple value=${this.sampleform1.get("options").value} onchange=${this.createChangeHandler1("options")}>
+              <select
+                multiple
+                value=${this.sampleform1.get("options").value}
+                onchange=${this.createChangeHandler1("options")}
+              >
                 <option value="1">1</option>
                 <option value="2">2</option>
                 <option value="3">3</option>
@@ -80,7 +77,11 @@
         </div>
         <div class="field">
           <div class="control">
-              <button onclick=${function(l){l.preventDefault(),e.sampleform1.reset(),console.log(e.sampleform1),e.renderer.update()}}>Reset</button>
+            <button
+              onclick=${function(l){l.preventDefault(),e.sampleform1.reset(),console.log(e.sampleform1),e.renderer.update()}}
+            >
+              Reset
+            </button>
             <button class="button is-info is-light" type="submit">Submit</button>
           </div>
         </div>
