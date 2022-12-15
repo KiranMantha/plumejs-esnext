@@ -1,6 +1,5 @@
-// @flow
-import { Component, html, render, Renderer, Router } from '../lib';
 import axios from 'axios';
+import { Component, html, render, Renderer, Router } from '../lib';
 
 class PersonsComponent {
   ulRef;

@@ -26,7 +26,34 @@ var __privateMethod = (obj, member, method) => {
   __accessCheck(obj, member, "access private method");
   return method;
 };
-var _weakMap, _a, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn, _initialValues, _controls, _errors, _checkValidity, checkValidity_fn;
+var _weakMap, _a, _initialValues, _controls, _errors, _checkValidity, checkValidity_fn, _currentRoute, _template, _unSubscribeHashEvent, _registerOnHashChange, registerOnHashChange_fn, _routeMatcher, routeMatcher_fn, _navigateTo, navigateTo_fn;
+const componentRegistry = new class {
+  constructor() {
+    __publicField(this, "globalStyles");
+    __publicField(this, "globalStyleTag");
+    __publicField(this, "style_registry");
+    __publicField(this, "isRootNodeSet");
+    try {
+      this.globalStyles = new CSSStyleSheet();
+    } catch (e) {
+      this.globalStyles = "";
+    }
+    this.isRootNodeSet = false;
+    this.globalStyleTag = null;
+  }
+  getComputedCss(styles = "") {
+    let csoArray = [];
+    const defaultStyles = new CSSStyleSheet();
+    defaultStyles.insertRule(":host { display: block; }");
+    csoArray = [this.globalStyles, defaultStyles];
+    if (styles) {
+      const sheet = new CSSStyleSheet();
+      sheet.replace(styles);
+      csoArray.push(sheet);
+    }
+    return csoArray;
+  }
+}();
 const { html, render } = (() => {
   const isAttributeRegex = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/;
   const isNodeRegex = /<[a-z][^>]+$/i;
@@ -292,33 +319,6 @@ const { html, render } = (() => {
   };
   return { html: html2, render: render2 };
 })();
-const componentRegistry = new class {
-  constructor() {
-    __publicField(this, "globalStyles");
-    __publicField(this, "globalStyleTag");
-    __publicField(this, "style_registry");
-    __publicField(this, "isRootNodeSet");
-    try {
-      this.globalStyles = new CSSStyleSheet();
-    } catch (e) {
-      this.globalStyles = "";
-    }
-    this.isRootNodeSet = false;
-    this.globalStyleTag = null;
-  }
-  getComputedCss(styles = "") {
-    let csoArray = [];
-    const defaultStyles = new CSSStyleSheet();
-    defaultStyles.insertRule(":host { display: block; }");
-    csoArray = [this.globalStyles, defaultStyles];
-    if (styles) {
-      const sheet = new CSSStyleSheet();
-      sheet.replace(styles);
-      csoArray.push(sheet);
-    }
-    return csoArray;
-  }
-}();
 const Injector = new (_a = class {
   constructor() {
     __privateAdd(this, _weakMap, void 0);
@@ -504,293 +504,6 @@ const Component = (componentOptions, klass) => {
     }
   }, _klass = new WeakMap(), _shadow = new WeakMap(), _componentStyleTag = new WeakMap(), _a2));
 };
-const SERVICE_OPTIONS_DEFAULTS = {
-  deps: []
-};
-const Service = (...args) => {
-  let options = { ...SERVICE_OPTIONS_DEFAULTS };
-  let klass;
-  if (args[0].hasOwnProperty("deps")) {
-    options = { ...SERVICE_OPTIONS_DEFAULTS, ...args[0] };
-    klass = args[1];
-  } else {
-    klass = args[0];
-  }
-  if (klass) {
-    const instance = instantiate(klass, options.deps);
-    Injector.register(klass, instance);
-  } else {
-    throw new Error("error: Requires constructor to define service");
-  }
-};
-const _StaticRouter = class {
-  static checkParams(urlParams, routeItem) {
-    let paramMapCount = 0, paramsObject = {}, paramCount = routeItem.ParamCount;
-    for (let i = 0; i < urlParams.length; i++) {
-      var routeParam = routeItem.Params[i];
-      if (routeParam.indexOf(":") >= 0) {
-        paramsObject[routeParam.split(":")[1]] = urlParams[i].split("?")[0];
-        paramMapCount += 1;
-      }
-    }
-    if (paramMapCount === paramCount) {
-      return paramsObject;
-    }
-    return {};
-  }
-  static getParamCount(params) {
-    let paramCount = 0;
-    params.forEach((param) => {
-      if (param.indexOf(":") >= 0) {
-        paramCount += 1;
-      }
-    });
-    return paramCount;
-  }
-  static formatRoute(route) {
-    let obj = {
-      Params: {},
-      Url: "",
-      Template: "",
-      ParamCount: 0,
-      IsRegistered: false,
-      redirectTo: "",
-      canActivate: () => true
-    };
-    obj.Params = route.path.split("/").filter((str) => {
-      return str.length > 0;
-    });
-    obj.Url = route.path;
-    obj.Template = "";
-    obj.redirectTo = route.redirectTo;
-    if (route.template) {
-      if (!route.templatePath)
-        throw Error("templatePath is required in route if template is mentioned.");
-      obj.Template = route.template;
-      obj.TemplatePath = route.templatePath;
-    }
-    if (route.canActivate)
-      obj.canActivate = route.canActivate;
-    obj.ParamCount = _StaticRouter.getParamCount(obj.Params);
-    _StaticRouter.routeList.push(obj);
-  }
-  static preloadRoutes() {
-    for (const route of _StaticRouter.routeList) {
-      route.TemplatePath && route.TemplatePath();
-    }
-  }
-};
-let StaticRouter = _StaticRouter;
-__publicField(StaticRouter, "routeList", []);
-const isObservable = (obj) => !!obj && typeof obj.subscribe === "function";
-const isPromise = (obj) => !!obj && typeof obj.then === "function";
-const ofObs = (input) => ({
-  subscribe: (fn) => {
-    fn(input);
-  }
-});
-const fromPromiseObs = (input) => ({
-  subscribe: (fn) => {
-    Promise.resolve(input).then((value) => {
-      fn(value);
-    });
-  }
-});
-class SubjectObs {
-  asObservable() {
-    return {
-      subscribe: (fn) => this.subscribe(fn)
-    };
-  }
-  subscribe(fn) {
-    this.internalFn = fn;
-    return this.unsubscribe;
-  }
-  unsubscribe() {
-    this._internalFn = null;
-  }
-  next(value) {
-    this.internalFn(value);
-  }
-}
-const wrapIntoObservable = (value) => {
-  if (isObservable(value)) {
-    return value;
-  }
-  if (isPromise(value)) {
-    return fromPromiseObs(Promise.resolve(value));
-  }
-  return ofObs(value);
-};
-class InternalRouter {
-  constructor() {
-    __privateAdd(this, _registerOnHashChange);
-    __privateAdd(this, _routeMatcher);
-    __privateAdd(this, _navigateTo);
-    __privateAdd(this, _currentRoute, {
-      path: "",
-      routeParams: /* @__PURE__ */ new Map(),
-      queryParams: /* @__PURE__ */ new Map(),
-      state: {}
-    });
-    __privateAdd(this, _template, new SubjectObs());
-    __privateAdd(this, _unSubscribeHashEvent, void 0);
-  }
-  startHashChange() {
-    __privateSet(this, _unSubscribeHashEvent, fromNativeEvent(window, "hashchange", () => {
-      __privateMethod(this, _registerOnHashChange, registerOnHashChange_fn).call(this);
-    }));
-  }
-  stopHashChange() {
-    __privateGet(this, _unSubscribeHashEvent).call(this);
-  }
-  getTemplate() {
-    return __privateGet(this, _template).asObservable();
-  }
-  getCurrentRoute() {
-    return __privateGet(this, _currentRoute);
-  }
-  navigateTo(path = "", state) {
-    if (path) {
-      let windowHash = window.location.hash.replace(/^#/, "");
-      if (windowHash === path) {
-        __privateMethod(this, _navigateTo, navigateTo_fn).call(this, path, state);
-      }
-      window.location.hash = "#" + path;
-    } else {
-      __privateMethod(this, _navigateTo, navigateTo_fn).call(this, path, state);
-    }
-  }
-}
-_currentRoute = new WeakMap();
-_template = new WeakMap();
-_unSubscribeHashEvent = new WeakMap();
-_registerOnHashChange = new WeakSet();
-registerOnHashChange_fn = function() {
-  const path = window.location.hash.replace(/^#/, "");
-  __privateMethod(this, _navigateTo, navigateTo_fn).call(this, path, null);
-};
-_routeMatcher = new WeakSet();
-routeMatcher_fn = function(route, path) {
-  if (route) {
-    let _matcher = new RegExp(route.replace(/:[^\s/]+/g, "([\\w-]+)"));
-    return path.match(_matcher);
-  } else {
-    return route === path;
-  }
-};
-_navigateTo = new WeakSet();
-navigateTo_fn = function(path, state) {
-  let uParams = path.split("/").filter((h) => {
-    return h.length > 0;
-  });
-  let routeArr = StaticRouter.routeList.filter((route) => {
-    if (route.Params.length === uParams.length && __privateMethod(this, _routeMatcher, routeMatcher_fn).call(this, route.Url, path)) {
-      return route;
-    } else if (route.Url === path) {
-      return route;
-    }
-  });
-  let routeItem = routeArr.length > 0 ? routeArr[0] : null;
-  if (routeItem) {
-    __privateGet(this, _currentRoute).path = path;
-    __privateGet(this, _currentRoute).state = { ...state || {} };
-    wrapIntoObservable(routeItem.canActivate()).subscribe((val) => {
-      if (!val)
-        return;
-      let _params = StaticRouter.checkParams(uParams, routeItem);
-      if (Object.keys(_params).length > 0 || path) {
-        __privateGet(this, _currentRoute).routeParams = new Map(Object.entries(_params));
-        const entries = window.location.hash.split("?")[1] ? new URLSearchParams(window.location.hash.split("?")[1]).entries() : [];
-        __privateGet(this, _currentRoute).queryParams = new Map(entries);
-        if (!routeItem.IsRegistered) {
-          if (routeItem.TemplatePath) {
-            wrapIntoObservable(routeItem.TemplatePath()).subscribe(() => {
-              routeItem.IsRegistered = true;
-              __privateGet(this, _template).next(routeItem.Template);
-            });
-          }
-        } else {
-          __privateGet(this, _template).next(routeItem.Template);
-        }
-      } else {
-        this.navigateTo(routeItem.redirectTo);
-      }
-    });
-  }
-};
-Service(InternalRouter);
-class Router {
-  constructor(internalRouter) {
-  }
-  getCurrentRoute() {
-    return this.internalRouter.getCurrentRoute();
-  }
-  navigateTo(path, state) {
-    this.internalRouter.navigateTo(path, state);
-  }
-  registerRoutes(routes, preloadRoutes = false) {
-    if (Array.isArray(routes)) {
-      for (let route of routes) {
-        StaticRouter.formatRoute(route);
-      }
-      preloadRoutes && StaticRouter.preloadRoutes();
-    } else {
-      throw Error("router.addRoutes: the parameter must be an array");
-    }
-  }
-}
-Service({ deps: [InternalRouter] }, Router);
-const registerRouterComponent = () => {
-  var _template2, _subscriptions;
-  class RouterComponent {
-    constructor(internalRouterSrvc, renderer) {
-      __privateAdd(this, _template2, "");
-      __privateAdd(this, _subscriptions, void 0);
-      __publicField(this, "update");
-    }
-    beforeMount() {
-      __privateSet(this, _subscriptions, this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-        __privateSet(this, _template2, tmpl);
-        this.renderer.update();
-      }));
-      this.internalRouterSrvc.startHashChange();
-    }
-    mount() {
-      let path = window.location.hash.replace(/^#/, "");
-      this.internalRouterSrvc.navigateTo(path);
-    }
-    unmount() {
-      __privateGet(this, _subscriptions).call(this);
-      this.internalRouterSrvc.stopHashChange();
-    }
-    render() {
-      if (__privateGet(this, _template2)) {
-        const stringArray = [`${__privateGet(this, _template2)}`];
-        stringArray.raw = [`${__privateGet(this, _template2)}`];
-        return html(stringArray);
-      } else {
-        return html``;
-      }
-    }
-  }
-  _template2 = new WeakMap();
-  _subscriptions = new WeakMap();
-  Component({ selector: "router-outlet", deps: [InternalRouter, Renderer] }, RouterComponent);
-};
-const useState = (obj) => {
-  let initialState = obj;
-  const reducer = (fn) => {
-    let newState;
-    if (isFunction(fn)) {
-      newState = fn(initialState);
-    } else {
-      newState = fn;
-    }
-    Object.assign(initialState, newState);
-  };
-  return [initialState, reducer];
-};
 const _getTargetValue = (target) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -902,6 +615,19 @@ const useFormFields = (initialValues) => {
   };
   return [form, createChangeHandler, resetFormFields];
 };
+const useState = (obj) => {
+  let initialState = obj;
+  const reducer = (fn) => {
+    let newState;
+    if (isFunction(fn)) {
+      newState = fn(initialState);
+    } else {
+      newState = fn;
+    }
+    Object.assign(initialState, newState);
+  };
+  return [initialState, reducer];
+};
 class Validators {
   static required(value) {
     return value.length ? null : { required: true };
@@ -923,4 +649,278 @@ class Validators {
     };
   }
 }
+const SERVICE_OPTIONS_DEFAULTS = {
+  deps: []
+};
+const Service = (...args) => {
+  let options = { ...SERVICE_OPTIONS_DEFAULTS };
+  let klass;
+  if (args[0].hasOwnProperty("deps")) {
+    options = { ...SERVICE_OPTIONS_DEFAULTS, ...args[0] };
+    klass = args[1];
+  } else {
+    klass = args[0];
+  }
+  if (klass) {
+    const instance = instantiate(klass, options.deps);
+    Injector.register(klass, instance);
+  } else {
+    throw new Error("error: Requires constructor to define service");
+  }
+};
+const isObservable = (obj) => !!obj && typeof obj.subscribe === "function";
+const isPromise = (obj) => !!obj && typeof obj.then === "function";
+const ofObs = (input) => ({
+  subscribe: (fn) => {
+    fn(input);
+  }
+});
+const fromPromiseObs = (input) => ({
+  subscribe: (fn) => {
+    Promise.resolve(input).then((value) => {
+      fn(value);
+    });
+  }
+});
+class SubjectObs {
+  asObservable() {
+    return {
+      subscribe: (fn) => this.subscribe(fn)
+    };
+  }
+  subscribe(fn) {
+    this.internalFn = fn;
+    return this.unsubscribe;
+  }
+  unsubscribe() {
+    this._internalFn = null;
+  }
+  next(value) {
+    this.internalFn(value);
+  }
+}
+const wrapIntoObservable = (value) => {
+  if (isObservable(value)) {
+    return value;
+  }
+  if (isPromise(value)) {
+    return fromPromiseObs(Promise.resolve(value));
+  }
+  return ofObs(value);
+};
+const _StaticRouter = class {
+  static checkParams(urlParams, routeItem) {
+    let paramMapCount = 0, paramsObject = {}, paramCount = routeItem.ParamCount;
+    for (let i = 0; i < urlParams.length; i++) {
+      var routeParam = routeItem.Params[i];
+      if (routeParam.indexOf(":") >= 0) {
+        paramsObject[routeParam.split(":")[1]] = urlParams[i].split("?")[0];
+        paramMapCount += 1;
+      }
+    }
+    if (paramMapCount === paramCount) {
+      return paramsObject;
+    }
+    return {};
+  }
+  static getParamCount(params) {
+    let paramCount = 0;
+    params.forEach((param) => {
+      if (param.indexOf(":") >= 0) {
+        paramCount += 1;
+      }
+    });
+    return paramCount;
+  }
+  static formatRoute(route) {
+    let obj = {
+      Params: {},
+      Url: "",
+      Template: "",
+      ParamCount: 0,
+      IsRegistered: false,
+      redirectTo: "",
+      canActivate: () => true
+    };
+    obj.Params = route.path.split("/").filter((str) => {
+      return str.length > 0;
+    });
+    obj.Url = route.path;
+    obj.Template = "";
+    obj.redirectTo = route.redirectTo;
+    if (route.template) {
+      if (!route.templatePath)
+        throw Error("templatePath is required in route if template is mentioned.");
+      obj.Template = route.template;
+      obj.TemplatePath = route.templatePath;
+    }
+    if (route.canActivate)
+      obj.canActivate = route.canActivate;
+    obj.ParamCount = _StaticRouter.getParamCount(obj.Params);
+    _StaticRouter.routeList.push(obj);
+  }
+  static preloadRoutes() {
+    for (const route of _StaticRouter.routeList) {
+      route.TemplatePath && route.TemplatePath();
+    }
+  }
+};
+let StaticRouter = _StaticRouter;
+__publicField(StaticRouter, "routeList", []);
+class InternalRouter {
+  constructor() {
+    __privateAdd(this, _registerOnHashChange);
+    __privateAdd(this, _routeMatcher);
+    __privateAdd(this, _navigateTo);
+    __privateAdd(this, _currentRoute, {
+      path: "",
+      routeParams: /* @__PURE__ */ new Map(),
+      queryParams: /* @__PURE__ */ new Map(),
+      state: {}
+    });
+    __privateAdd(this, _template, new SubjectObs());
+    __privateAdd(this, _unSubscribeHashEvent, void 0);
+  }
+  startHashChange() {
+    __privateSet(this, _unSubscribeHashEvent, fromNativeEvent(window, "hashchange", () => {
+      __privateMethod(this, _registerOnHashChange, registerOnHashChange_fn).call(this);
+    }));
+  }
+  stopHashChange() {
+    __privateGet(this, _unSubscribeHashEvent).call(this);
+  }
+  getTemplate() {
+    return __privateGet(this, _template).asObservable();
+  }
+  getCurrentRoute() {
+    return __privateGet(this, _currentRoute);
+  }
+  navigateTo(path = "", state) {
+    if (path) {
+      let windowHash = window.location.hash.replace(/^#/, "");
+      if (windowHash === path) {
+        __privateMethod(this, _navigateTo, navigateTo_fn).call(this, path, state);
+      }
+      window.location.hash = "#" + path;
+    } else {
+      __privateMethod(this, _navigateTo, navigateTo_fn).call(this, path, state);
+    }
+  }
+}
+_currentRoute = new WeakMap();
+_template = new WeakMap();
+_unSubscribeHashEvent = new WeakMap();
+_registerOnHashChange = new WeakSet();
+registerOnHashChange_fn = function() {
+  const path = window.location.hash.replace(/^#/, "");
+  __privateMethod(this, _navigateTo, navigateTo_fn).call(this, path, null);
+};
+_routeMatcher = new WeakSet();
+routeMatcher_fn = function(route, path) {
+  if (route) {
+    let _matcher = new RegExp(route.replace(/:[^\s/]+/g, "([\\w-]+)"));
+    return path.match(_matcher);
+  } else {
+    return route === path;
+  }
+};
+_navigateTo = new WeakSet();
+navigateTo_fn = function(path, state) {
+  let uParams = path.split("/").filter((h) => {
+    return h.length > 0;
+  });
+  let routeArr = StaticRouter.routeList.filter((route) => {
+    if (route.Params.length === uParams.length && __privateMethod(this, _routeMatcher, routeMatcher_fn).call(this, route.Url, path)) {
+      return route;
+    } else if (route.Url === path) {
+      return route;
+    }
+  });
+  let routeItem = routeArr.length > 0 ? routeArr[0] : null;
+  if (routeItem) {
+    __privateGet(this, _currentRoute).path = path;
+    __privateGet(this, _currentRoute).state = { ...state || {} };
+    wrapIntoObservable(routeItem.canActivate()).subscribe((val) => {
+      if (!val)
+        return;
+      let _params = StaticRouter.checkParams(uParams, routeItem);
+      if (Object.keys(_params).length > 0 || path) {
+        __privateGet(this, _currentRoute).routeParams = new Map(Object.entries(_params));
+        const entries = window.location.hash.split("?")[1] ? new URLSearchParams(window.location.hash.split("?")[1]).entries() : [];
+        __privateGet(this, _currentRoute).queryParams = new Map(entries);
+        if (!routeItem.IsRegistered) {
+          if (routeItem.TemplatePath) {
+            wrapIntoObservable(routeItem.TemplatePath()).subscribe(() => {
+              routeItem.IsRegistered = true;
+              __privateGet(this, _template).next(routeItem.Template);
+            });
+          }
+        } else {
+          __privateGet(this, _template).next(routeItem.Template);
+        }
+      } else {
+        this.navigateTo(routeItem.redirectTo);
+      }
+    });
+  }
+};
+Service(InternalRouter);
+const registerRouterComponent = () => {
+  var _template2, _subscriptions;
+  class RouterComponent {
+    constructor(internalRouterSrvc, renderer) {
+      __privateAdd(this, _template2, "");
+      __privateAdd(this, _subscriptions, void 0);
+      __publicField(this, "update");
+    }
+    beforeMount() {
+      __privateSet(this, _subscriptions, this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+        __privateSet(this, _template2, tmpl);
+        this.renderer.update();
+      }));
+      this.internalRouterSrvc.startHashChange();
+    }
+    mount() {
+      let path = window.location.hash.replace(/^#/, "");
+      this.internalRouterSrvc.navigateTo(path);
+    }
+    unmount() {
+      __privateGet(this, _subscriptions).call(this);
+      this.internalRouterSrvc.stopHashChange();
+    }
+    render() {
+      if (__privateGet(this, _template2)) {
+        const stringArray = [`${__privateGet(this, _template2)}`];
+        stringArray.raw = [`${__privateGet(this, _template2)}`];
+        return html(stringArray);
+      } else {
+        return html``;
+      }
+    }
+  }
+  _template2 = new WeakMap();
+  _subscriptions = new WeakMap();
+  Component({ selector: "router-outlet", deps: [InternalRouter, Renderer] }, RouterComponent);
+};
+class Router {
+  constructor(internalRouter) {
+  }
+  getCurrentRoute() {
+    return this.internalRouter.getCurrentRoute();
+  }
+  navigateTo(path, state) {
+    this.internalRouter.navigateTo(path, state);
+  }
+  registerRoutes(routes, preloadRoutes = false) {
+    if (Array.isArray(routes)) {
+      for (let route of routes) {
+        StaticRouter.formatRoute(route);
+      }
+      preloadRoutes && StaticRouter.preloadRoutes();
+    } else {
+      throw Error("router.addRoutes: the parameter must be an array");
+    }
+  }
+}
+Service({ deps: [InternalRouter] }, Router);
 export { Component, Renderer, Router, Service, Validators, fromNativeEvent, html, registerRouterComponent, render, useFormFields, useState };

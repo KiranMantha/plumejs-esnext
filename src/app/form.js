@@ -1,4 +1,3 @@
-// @flow
 import { Component, html, render, Renderer, useFormFields } from '../lib';
 
 class FormComponent {

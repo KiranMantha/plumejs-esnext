@@ -1,8 +1,7 @@
-// @flow
 import { Service } from '../service';
 import { fromNativeEvent } from '../utils';
+import { SubjectObs, wrapIntoObservable } from './observable-util';
 import { StaticRouter } from './staticRouter';
-import { wrapIntoObservable, SubjectObs } from './observable-util';
 
 export class InternalRouter {
   #currentRoute = {

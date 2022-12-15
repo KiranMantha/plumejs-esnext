@@ -1,4 +1,3 @@
-// @flow
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';

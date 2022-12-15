@@ -1,7 +1,6 @@
-// @flow
-import { Component, html, useFormFields, Renderer, Validators } from '../lib';
-import { Router } from '../lib/router';
 import axios from 'axios';
+import { Component, html, Renderer, useFormFields, Validators } from '../lib';
+import { Router } from '../lib/router';
 
 class ItemsComponent {
   sheetForm;

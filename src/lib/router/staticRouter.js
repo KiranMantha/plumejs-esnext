@@ -1,4 +1,3 @@
-// @flow
 export class StaticRouter {
   static routeList = [];
   static checkParams(urlParams, routeItem) {

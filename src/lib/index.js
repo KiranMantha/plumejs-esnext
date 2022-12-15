@@ -1,11 +1,10 @@
-// @flow
 /**
  * https://github.com/Mevrael/html-template/blob/master/template.js
  * https://github.com/whatwg/html/issues/2254
  */
-export { html, render } from './html';
 export { Component, Renderer } from './component';
-export { Service } from './service';
+export { useFormFields, useState, Validators } from './hooks';
+export { html, render } from './html';
 export { registerRouterComponent, Router } from './router';
-export { useState, useFormFields, Validators } from './hooks';
+export { Service } from './service';
 export { fromNativeEvent } from './utils';
