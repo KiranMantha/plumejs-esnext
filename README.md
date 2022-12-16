@@ -16,9 +16,9 @@ to bundle your application
 
 ## CDN links
 
-- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/dist/plume.es.js) version
-- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/dist/plume.iife.js) version
-- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/dist/plume.umd.js) version
+- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/plume.es.js) version
+- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/plume.iife.js) version
+- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/plume.umd.js) version
 
 #### navigation for simple css
 
