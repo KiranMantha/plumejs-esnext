@@ -1,11 +1,13 @@
 //https://codeburst.io/angular-2-simple-infinite-scroller-directive-with-rxjs-observables-a989b12d4fb1
 //https://medium.com/@sgroff04/configure-eslint-prettier-and-flow-in-vs-code-for-react-development-c9d95db07213
-// @flow
 
-import { Component, Service, html, render, registerRouterComponent, Renderer } from './lib';
+import { Component, html, registerRouterComponent, render, Renderer, Service } from './lib';
+
 import { Router } from './lib/router';
+
+import styles from './base.scss?inline';
+
 import { Observable } from 'rxjs';
-import styles from './base.scss';
 
 registerRouterComponent();
 
@@ -59,7 +61,7 @@ class AppComponent {
       templatePath: () => import('./app/items')
     },
     {
-      path: '/persons',
+      path: '/persons/:id/:name',
       template: '<app-persons></app-persons>',
       templatePath: () => import('./app/persons'),
       canActivate: () => {
@@ -110,7 +112,7 @@ class AppComponent {
     },
     {
       path: '/nested-table',
-      template: '<app-nested-table></app-nested-table>',
+      template: '<app-nested-table name="kiran"></app-nested-table>',
       templatePath: () => import('./app/nested-table')
     },
     {
@@ -159,39 +161,37 @@ class AppComponent {
 
   render() {
     return html`
-      <div class='layout'>
-        <header class='layout'>
+      <div class="layout">
+        <header class="layout sticky-header">
           <nav>
             <ul>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/home')}>Items Route</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/home')}>Items Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/persons')}>Persons Route</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/persons/123/testuser?a=123')}>Persons Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/form')}>Sample Form</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/form')}>Sample Form</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/calculator/123', {
-                    name: 'kiran',
-                  })}>Calculator</a>
+                <a
+                  href="#"
+                  onclick=${(e) =>
+                    this.navigate(e, '/calculator/123', {
+                      name: 'kiran'
+                    })}
+                  >Calculator</a
+                >
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/controls')}>Controls</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/controls')}>Controls</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/nested-table')}>Nested Table</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/nested-table')}>Nested Table</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) =>
-                  this.navigate(e, '/editor')}>Editor</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
               </li>
             </ul>
           </nav>
@@ -214,35 +214,26 @@ class AppComponent {
               data-adj="${this.setClass}"
             >
               ${this.greet}
-              <input
-                value="${this.greet}"
-                oninput="${(e) => console.log(e.target.value)}"
-              />
+              <input value="${this.greet}" oninput="${(e) => console.log(e.target.value)}" />
 
               ${(() => {
                 if (this.setClass) {
-                  return html`
-                    <div>loaded conditionally..</div>
-                  `;
+                  return html` <div>loaded conditionally..</div> `;
                 }
               })()}
               <ul>
                 ${[1, 2, 3].map((item) => {
-                  return html`
-                    <li onclick="${() => console.log(item)}">
-                      ${item}
-                    </li>
-                  `;
+                  return html` <li onclick="${() => console.log(item)}">${item}</li> `;
                 })}
               </ul>
             </div>
             <div>
-              <button onclick=${
-                this.enablePersonsRoute
-              } title='click persons nav to check persons route'>Enable Persons route</button>
-              <button onclick=${
-                this.disablePersonsRoute
-              } title='click persons nav to check persons route'>Disable Persons route</button>
+              <button onclick=${this.enablePersonsRoute} title="click persons nav to check persons route">
+                Enable Persons route
+              </button>
+              <button onclick=${this.disablePersonsRoute} title="click persons nav to check persons route">
+                Disable Persons route
+              </button>
             </div>
             <fieldset class="fieldset">
               <legend>router outlet</legend>

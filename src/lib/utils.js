@@ -1,5 +1,3 @@
-// @flow
-
 const isFunction = (value) => typeof value === 'function';
 const isObject = (value) => value !== null && typeof value === 'object';
 

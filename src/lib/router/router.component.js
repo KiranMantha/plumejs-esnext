@@ -1,6 +1,5 @@
-// @flow
+import { Component, html, Renderer } from '../index';
 import { InternalRouter } from './internalRouter.service';
-import { Component, Renderer, html } from '../index';
 
 const registerRouterComponent = () => {
   class RouterComponent {

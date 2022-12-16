@@ -1,4 +1,3 @@
-// @flow
 import { Component, html, useState } from '../lib';
 import { Router } from '../lib/router';
 import calculatorStyles from './calculator.scss';

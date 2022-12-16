@@ -1,4 +1,3 @@
-// @flow
 import { Injector } from './injector';
 import { instantiate } from './instantiate';
 

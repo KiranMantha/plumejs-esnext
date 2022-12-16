@@ -1,4 +1,3 @@
-// @flow
 const componentRegistry = new (class {
   globalStyles;
   globalStyleTag;

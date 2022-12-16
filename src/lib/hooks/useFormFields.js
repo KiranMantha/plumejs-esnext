@@ -1,4 +1,3 @@
-// @flow
 const _getTargetValue = (target) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -6,11 +5,7 @@ const _getTargetValue = (target) => {
     case 'textarea': {
       let nonTextElements = ['radio', 'checkbox'];
       if (nonTextElements.includes(target.type)) {
-        targetValue = target.checked
-          ? target.value !== null && target.value !== 'on'
-            ? target.value
-            : true
-          : false;
+        targetValue = target.checked ? (target.value !== null && target.value !== 'on' ? target.value : true) : false;
       } else {
         targetValue = target.value;
       }
@@ -21,11 +16,7 @@ const _getTargetValue = (target) => {
       const options = Array.from(target.options);
       const value = [...options]
         .filter((option) => option.selected)
-        .map(
-          (option) =>
-            option.value ??
-            (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' ')
-        );
+        .map((option) => option.value ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' '));
       targetValue = one ? value[0] : value;
       break;
     }
@@ -88,7 +79,7 @@ class Form {
             this.#errors.set(key, { ...this.#errors.get(key), ...validity });
             this.#controls[key].errors = {
               ...this.#controls[key].errors,
-              ...validity,
+              ...validity
             };
           } else {
             this.#errors.set(key, validity);
@@ -113,7 +104,7 @@ const useFormFields = (initialValues) => {
     const val = Array.isArray(value) ? value : [value];
     controls[key] = {
       value: val.shift(),
-      validators: val,
+      validators: val
     };
     clonedValues[key] = controls[key].value;
   }

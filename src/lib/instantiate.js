@@ -1,4 +1,3 @@
-// @flow
 import { Injector } from './injector';
 import { getArgs } from './utils';
 

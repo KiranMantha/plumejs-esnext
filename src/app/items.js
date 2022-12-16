@@ -1,7 +1,6 @@
-// @flow
-import { Component, html, useFormFields, Renderer, Validators } from '../lib';
-import { Router } from '../lib/router';
 import axios from 'axios';
+import { Component, html, Renderer, useFormFields, Validators } from '../lib';
+import { Router } from '../lib/router';
 
 class ItemsComponent {
   sheetForm;
@@ -12,13 +11,13 @@ class ItemsComponent {
   personsList = [];
   errorsRef;
 
-  constructor(renderer, routerSrvc) { }
+  constructor(renderer, routerSrvc) {}
 
   beforeMount() {
     [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
       name: ['', Validators.required],
       age: ['', Validators.required],
-      salary: ['', Validators.required],
+      salary: ['', Validators.required]
     });
   }
 
@@ -29,11 +28,7 @@ class ItemsComponent {
 
   getErrorSummary() {
     console.log(this.sheetForm.errors);
-    this.errorsRef.innerHTML = JSON.stringify(
-      Object.fromEntries(this.sheetForm.errors),
-      null,
-      4
-    ).trim();
+    this.errorsRef.innerHTML = JSON.stringify(Object.fromEntries(this.sheetForm.errors), null, 4).trim();
   }
 
   submitForm(e) {
@@ -65,81 +60,81 @@ class ItemsComponent {
 
   render() {
     return html`
-    <section>
+      <section>
         <pre>
           <code ref=${(node) => {
-        this.errorsRef = node;
-      }}></code>
+          this.errorsRef = node;
+        }}></code>
         </pre>
         <form
           onsubmit=${(e) => {
-        this.submitForm(e);
-      }}
+            this.submitForm(e);
+          }}
         >
-        <div class="field">
-          <label class="label" for="exampleInputEmail1">Name</label>
-          <div class="control">
-            <input
-              type="text"
-              class="input"
-              id='name'
-              value=${this.sheetForm.get('name').value}
-              onchange=${this.changeHandler('name')}
-            />
+          <div class="field">
+            <label class="label" for="exampleInputEmail1">Name</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input"
+                id="name"
+                value=${this.sheetForm.get('name').value}
+                onchange=${this.changeHandler('name')}
+              />
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label class="label" for="exampleInputPassword1">Age</label>
-          <div class="control">
-            <input
-              type="text"
-              class="input"
-              id='age'
-              value=${this.sheetForm.get('age').value}
-              onchange=${this.changeHandler('age')}
-            />
+          <div class="field">
+            <label class="label" for="exampleInputPassword1">Age</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input"
+                id="age"
+                value=${this.sheetForm.get('age').value}
+                onchange=${this.changeHandler('age')}
+              />
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <label class="label" for="exampleInputPassword1">Salary</label>
-          <div class="control">
-            <input
-              type="text"
-              class="input"
-              id='salary'
-              value=${this.sheetForm.get('salary').value}
-              onchange=${this.changeHandler('salary')}
-            />
+          <div class="field">
+            <label class="label" for="exampleInputPassword1">Salary</label>
+            <div class="control">
+              <input
+                type="text"
+                class="input"
+                id="salary"
+                value=${this.sheetForm.get('salary').value}
+                onchange=${this.changeHandler('salary')}
+              />
+            </div>
           </div>
-        </div>
-        <div class="field">
-          <div class="control">
-            <button class="button  is-info is-light" type="submit">Submit</button>
+          <div class="field">
+            <div class="control">
+              <button class="button  is-info is-light" type="submit">Submit</button>
+            </div>
           </div>
-        </div>
-      </form>
-      <table class="table-bordered">
-        <thead>
+        </form>
+        <table class="table-bordered table-hover">
+          <thead>
             <tr>
               <th>Name</th>
               <th>Age</th>
               <th>Salary</th>
             </tr>
-        </thead>
-        <tbody>
-        ${this.personsList.map((item) => {
-        return html`
-            <tr>
-              <td>${item.name}</td>
-              <td>${item.age}</td>
-              <td>${item.salary}</td>
-            </tr>
-          `;
-      })}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            ${this.personsList.map((item) => {
+              return html`
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.age}</td>
+                  <td>${item.salary}</td>
+                </tr>
+              `;
+            })}
+          </tbody>
+        </table>
       </section>
-      `;
+    `;
   }
 }
 

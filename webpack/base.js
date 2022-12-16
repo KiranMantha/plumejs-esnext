@@ -1,12 +1,12 @@
 const path = require('path');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+//const PreloadWebpackPlugin = require('preload-webpack-plugin');
 
 const appconstants = {
   publicPath: '/',
   root: '../',
   sourceDir: '../src',
-  buildDir: '../build'
+  buildDir: '../dist'
 };
 
 module.exports = {
@@ -30,8 +30,14 @@ module.exports = {
         use: ['html-loader']
       },
       {
-        test: /\.(s*)css$/i,
-        use: ['css-loader', 'sass-loader']
+        test: /\.(s*)css$/,
+        use: [
+          {
+            loader: path.resolve(__dirname, './css-to-string.loader.js')
+          },
+          'css-loader',
+          'sass-loader'
+        ]
       },
       {
         test: /\.js$/,
@@ -54,20 +60,9 @@ module.exports = {
         collapseWhitespace: false
       }
     })
-  ],
-  optimization: {
-    minimizer: [new TerserPlugin()],
-    splitChunks: {
-      cacheGroups: {
-        vendors: {
-          priority: -10,
-          test: /[\\/]node_modules[\\/]/
-        }
-      },
-      chunks: 'async',
-      minChunks: 1,
-      minSize: 30000,
-      name: false
-    }
-  }
+    // new PreloadWebpackPlugin({
+    //   rel: 'preload',
+    //   as: 'script',
+    // }),
+  ]
 };

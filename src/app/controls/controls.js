@@ -1,5 +1,27 @@
-import { Component, html } from '../../lib';
-import { DialogService } from './dialog/modal-dialog.service';
+import { Component, html, Renderer } from '../../lib';
+import { DialogService } from './dialog/dialog.service';
+
+class NestedModal {
+  constructor(renderer) {}
+  closeModal() {
+    this.renderer.emitEvent('closenestedmodal');
+  }
+
+  render() {
+    return html`
+      i'm in a nested modal.
+      <div>
+        <button
+          onclick=${() => {
+            this.closeModal();
+          }}
+        >
+          close this modal
+        </button>
+      </div>
+    `;
+  }
+}
 
 class ControlsComponent {
   dropdownComp;
@@ -23,8 +45,6 @@ class ControlsComponent {
         value: 'o4'
       }
     ],
-    multiple: true,
-    enableFilter: true,
     defaultText: 'Select Multiple',
     buttonText: (options) => {
       if (options.length === 0) {
@@ -39,7 +59,25 @@ class ControlsComponent {
 
   constructor(dialogService) {}
 
-  mount() {
+  enableMultiselect(checked) {
+    this.dropdownOptions.multiple = checked;
+    this.dropdownOptions.resetDropdown = true;
+    this.dropdownComp.setProps({
+      dropdownOptions: this.dropdownOptions
+    });
+  }
+
+  disableDropdown(checked) {
+    this.dropdownOptions.disable = checked;
+    this.dropdownOptions.resetDropdown = true;
+    this.dropdownComp.setProps({
+      dropdownOptions: this.dropdownOptions
+    });
+  }
+
+  enableFilter(checked) {
+    this.dropdownOptions.enableFilter = checked;
+    this.dropdownOptions.resetDropdown = true;
     this.dropdownComp.setProps({
       dropdownOptions: this.dropdownOptions
     });
@@ -63,9 +101,15 @@ class ControlsComponent {
     const modal = this.dialogService.modal({
       modalTitle: 'Hello World',
       hideDefaultCloseButton: false,
-      preventBackdropClose: false,
       preventEsc: false,
-      renderTemplate: () => html`<p>i'm inside a modal</p>`
+      renderTemplate: () => html`<p>i'm inside a modal</p>
+        <button
+          onclick=${() => {
+            this.showNestedModal();
+          }}
+        >
+          open nested modal
+        </button> `
     });
 
     modal.afterClosed().then(() => {
@@ -73,23 +117,51 @@ class ControlsComponent {
     });
   }
 
+  showNestedModal() {
+    const modal = this.dialogService.modal({
+      hideDefaultCloseButton: true,
+      renderTemplate: () =>
+        html`<app-nested-modal
+          onclosenestedmodal=${() => {
+            modal.close();
+          }}
+        ></app-nested-modal>`
+    });
+  }
+
   render() {
     return html`
-      <button onclick=${() => {
-        this.dropdownOptions.resetDropdown = true;
-        this.dropdownComp.setProps({
-          dropdownOptions: this.dropdownOptions
-        });
-      }}>reset</button>
-      <ui-dropdown 
-        class="is-inline-block"
-        ref=${(node) => {
-          this.dropdownComp = node;
-        }} 
-        onoptionselected=${(event) => {
-          console.log(event.detail);
-        }}>
-      </ui-dropdown>
+      <fieldset class="fieldset">
+        <legend>Dropdown</legend>
+        <button onclick=${() => {
+          this.dropdownOptions.resetDropdown = true;
+          this.dropdownComp.setProps({
+            dropdownOptions: this.dropdownOptions
+          });
+        }}>Reset</button>
+        <div style="display: flex; align-items: center;">
+          enable multi select: <input type='checkbox' role='switch' onchange=${(e) =>
+            this.enableMultiselect(e.target.checked)}></input>
+        </div>
+        <div style="display: flex; align-items: center;">
+          disable dropdown: <input type='checkbox' role='switch' onchange=${(e) =>
+            this.disableDropdown(e.target.checked)}></input>
+        </div>
+        <div style="display: flex; align-items: center;">
+          enable filtering: <input type='checkbox' role='switch' onchange=${(e) =>
+            this.enableFilter(e.target.checked)}></input>
+        </div>
+        <ui-dropdown
+          class="is-inline-block"
+          ref=${(node) => {
+            this.dropdownComp = node;
+          }}
+          onbindprops=${() => ({ dropdownOptions: this.dropdownOptions })}
+          onoptionselected=${(event) => {
+            console.log(event.detail);
+          }}>
+        </ui-dropdown>
+      </fieldset>
       <app-modal-dialog></app-modal-dialog>
       <div style="display: flex; align-items: center;">
         Switch: <input type='checkbox' role='switch'></input>
@@ -105,8 +177,12 @@ class ControlsComponent {
           this.showModal();
         }}>show modal</button>
       </div>
+      <div>
+        <app-tree-view></app-tree-view>
+      </div>
     `;
   }
 }
 
+Component({ selector: 'app-nested-modal', deps: [Renderer] }, NestedModal);
 Component({ selector: 'app-controls', deps: [DialogService] }, ControlsComponent);

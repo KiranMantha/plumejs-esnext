@@ -1,7 +1,6 @@
-// @flow
 import { Service } from '../service';
-import { StaticRouter } from './staticRouter';
 import { InternalRouter } from './internalRouter.service';
+import { StaticRouter } from './staticRouter';
 
 export class Router {
   constructor(internalRouter) {}

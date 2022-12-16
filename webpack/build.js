@@ -3,5 +3,8 @@ const baseConfig = require('./base.js');
 
 module.exports = merge(baseConfig, {
   devtool: false,
-  mode: 'production'
+  mode: 'production',
+  output: {
+    publicPath: './'
+  }
 });

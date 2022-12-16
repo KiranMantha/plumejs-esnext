@@ -1,10 +1,11 @@
-// @flow
-import { Component, html, render, Renderer } from '../lib';
 import axios from 'axios';
+import { Component, html, render, Renderer, Router } from '../lib';
 
 class PersonsComponent {
   ulRef;
   personDetailsCompRef;
+
+  constructor(router) {}
 
   mount() {
     render(this.ulRef, html` loading `);
@@ -29,6 +30,16 @@ class PersonsComponent {
       });
   }
 
+  loadRouteData() {
+    const route = this.router.getCurrentRoute();
+    return {
+      path: route.path,
+      routeParams: Object.fromEntries(route.routeParams),
+      queryParams: Object.fromEntries(route.queryParams),
+      state: route.state
+    };
+  }
+
   loadPersonDetails(personDetails) {
     this.personDetailsCompRef.setProps({ personDetails });
   }
@@ -40,11 +51,12 @@ class PersonsComponent {
   render() {
     return html`
       <h3>Persons route</h3>
-      <ul
-        ref="${(ref) => {
-          this.ulRef = ref;
-        }}"
-      ></ul>
+      <p>
+        Current route data: <pre><code>${JSON.stringify(this.loadRouteData(), null, 4)}</code></pre>
+      </p>
+      <ul ref="${(ref) => {
+        this.ulRef = ref;
+      }}"></ul>
       <app-person-details
         ref="${(node) => {
           this.personDetailsCompRef = node;
@@ -86,5 +98,5 @@ class PersonDetailsComponent {
   }
 }
 
-Component({ selector: 'app-persons' }, PersonsComponent);
+Component({ selector: 'app-persons', deps: [Router] }, PersonsComponent);
 Component({ selector: 'app-person-details', deps: [Renderer] }, PersonDetailsComponent);

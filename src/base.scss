@@ -1,12 +1,16 @@
 //@import '@picocss/pico';
 //@import 'simpledotcss/simple.min.css';
-@import './minimal';
+@import './minimal.css';
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+}
 
 .fieldset {
   //background-color: #fff;
   border-radius: 6px;
-  box-shadow: 0 0.5em 1em -0.125em rgba(10, 10, 10, 0.1),
-    0 0 0 1px rgba(10, 10, 10, 0.02);
+  //box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 3px, rgba(0, 0, 0, 0.24) 0px 1px 2px;
   //color: #4a4a4a;
   display: block;
   padding: 1.25rem;
@@ -53,4 +57,8 @@ input[type='checkbox'][role='switch'] {
   &:checked::before {
     margin-left: 19px;
   }
+}
+
+:root::part(table-row) td {
+  border-right: none;
 }
