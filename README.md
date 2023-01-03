@@ -94,17 +94,17 @@ plume.iife.js   13.62 KiB / gzip: 5.39 KiB / brotliCompress: 4.71kb
 
 # Useful links:
 
-https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
-https://typicode.github.io/husky/#/?id=install
-https://alxgbsn.co.uk/2019/02/22/testing-native-es-modules-mocha-esm/
-https://kulshekhar.github.io/ts-jest/docs/guides/esm-support/
-https://bl.ocks.org/rstacruz/511f43265de4939f6ca729a3df7b001c
-https://gist.github.com/rstacruz/511f43265de4939f6ca729a3df7b001c
-https://www.reddit.com/r/node/comments/llzn11/are_most_people_not_using_esm_importexport_syntax/
-https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
-https://link.medium.com/W1eXCzzHkmb
-https://css-tricks.com/styling-in-the-shadow-dom-with-css-shadow-parts/
-https://gomakethings.com/dom-diffing-with-vanilla-js/
+1. https://griffa.dev/posts/setting-up-eslint-to-work-with-new-or-proposed-javascript-features-such-as-private-class-fields./
+2. https://typicode.github.io/husky/#/?id=install
+3. https://alxgbsn.co.uk/2019/02/22/testing-native-es-modules-mocha-esm/
+4. https://kulshekhar.github.io/ts-jest/docs/guides/esm-support/
+5. https://bl.ocks.org/rstacruz/511f43265de4939f6ca729a3df7b001c
+6. https://gist.github.com/rstacruz/511f43265de4939f6ca729a3df7b001c
+7. https://www.reddit.com/r/node/comments/llzn11/are_most_people_not_using_esm_importexport_syntax/
+8. https://www.sensedeep.com/blog/posts/2021/how-to-create-single-source-npm-module.html
+9. https://link.medium.com/W1eXCzzHkmb
+10. https://css-tricks.com/styling-in-the-shadow-dom-with-css-shadow-parts/
+11. https://gomakethings.com/dom-diffing-with-vanilla-js/
 
 # next steps
 
