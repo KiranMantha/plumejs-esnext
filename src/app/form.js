@@ -1,5 +1,6 @@
 import { Component, html, render, Renderer, useFormFields } from '../lib';
 
+@Component({ selector: 'app-sample-form', deps: [Renderer] })
 class FormComponent {
   sampleform1;
   createChangeHandler1;
@@ -180,5 +181,3 @@ class FormComponent {
     `;
   }
 }
-
-Component({ selector: 'app-sample-form', deps: [Renderer] }, FormComponent);

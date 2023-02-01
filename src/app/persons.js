@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { Component, html, render, Renderer, Router } from '../lib';
 
+@Component({ selector: 'app-persons', deps: [Router] })
 class PersonsComponent {
   ulRef;
   personDetailsCompRef;
@@ -69,6 +70,7 @@ class PersonsComponent {
   }
 }
 
+@Component({ selector: 'app-person-details', deps: [Renderer] })
 class PersonDetailsComponent {
   constructor(renderer) {}
   personDetails;
@@ -97,6 +99,3 @@ class PersonDetailsComponent {
     }
   }
 }
-
-Component({ selector: 'app-persons', deps: [Router] }, PersonsComponent);
-Component({ selector: 'app-person-details', deps: [Renderer] }, PersonDetailsComponent);

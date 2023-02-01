@@ -2,6 +2,7 @@ import axios from 'axios';
 import { Component, html, Renderer, useFormFields, Validators } from '../lib';
 import { Router } from '../lib/router';
 
+@Component({ selector: 'app-items', deps: [Renderer, Router] })
 class ItemsComponent {
   sheetForm;
   changeHandler;
@@ -137,5 +138,3 @@ class ItemsComponent {
     `;
   }
 }
-
-Component({ selector: 'app-items', deps: [Renderer, Router] }, ItemsComponent);

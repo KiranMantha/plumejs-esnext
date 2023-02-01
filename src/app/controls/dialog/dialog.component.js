@@ -38,6 +38,7 @@ class BaseDialog {
   }
 }
 
+@Component({ selector: 'app-modal-dialog' })
 class ModalDialog extends BaseDialog {
   ObservedProperties = ['modalData'];
 
@@ -97,6 +98,7 @@ class ModalDialog extends BaseDialog {
   }
 }
 
+@Component({ selector: 'app-alert-dialog' })
 class AlertDialog extends BaseDialog {
   ObservedProperties = ['alertOptions'];
 
@@ -166,6 +168,3 @@ class AlertDialog extends BaseDialog {
     }
   }
 }
-
-Component({ selector: 'app-alert-dialog' }, AlertDialog);
-Component({ selector: 'app-modal-dialog' }, ModalDialog);

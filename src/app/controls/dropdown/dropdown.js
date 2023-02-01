@@ -1,6 +1,6 @@
 import { Component, html, Renderer } from '../../../lib';
 import { isOutOfViewPort } from '../helper.js';
-import dropdownStyles from './dropdown.scss';
+import dropdownStyles from './dropdown.scss?inline';
 
 const defaultDropdownOptions = {
   options: [],
@@ -12,6 +12,12 @@ const defaultDropdownOptions = {
   resetDropdown: false
 };
 
+@Component({
+  selector: 'ui-dropdown',
+  styles: dropdownStyles,
+  standalone: true,
+  deps: [Renderer]
+})
 class DropdownComponent {
   dropdownOptions = { ...defaultDropdownOptions };
   #detailsNode;
@@ -174,13 +180,3 @@ class DropdownComponent {
     }
   }
 }
-
-Component(
-  {
-    selector: 'ui-dropdown',
-    styles: dropdownStyles,
-    standalone: true,
-    deps: [Renderer]
-  },
-  DropdownComponent
-);

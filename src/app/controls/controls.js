@@ -1,6 +1,7 @@
 import { Component, html, Renderer } from '../../lib';
 import { DialogService } from './dialog/dialog.service';
 
+@Component({ selector: 'app-nested-modal', deps: [Renderer] })
 class NestedModal {
   constructor(renderer) {}
   closeModal() {
@@ -23,6 +24,7 @@ class NestedModal {
   }
 }
 
+@Component({ selector: 'app-controls', deps: [DialogService] })
 class ControlsComponent {
   dropdownComp;
   dropdownOptions = {
@@ -183,6 +185,3 @@ class ControlsComponent {
     `;
   }
 }
-
-Component({ selector: 'app-nested-modal', deps: [Renderer] }, NestedModal);
-Component({ selector: 'app-controls', deps: [DialogService] }, ControlsComponent);

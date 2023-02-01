@@ -1,5 +1,18 @@
 import { Component, html } from '../lib';
 
+@Component({
+  selector: 'app-row-item',
+  styles: `:host {
+      display: table-row-group;
+  }
+  .hide-row {
+      display: none;
+  }
+  :host > tr > td[colspan] table {
+      margin: 0;
+  }
+  `
+})
 class RowItem {
   ObservedProperties = ['category'];
 
@@ -71,6 +84,9 @@ class RowItem {
   }
 }
 
+@Component({
+  selector: 'app-nested-table'
+})
 class NestedTable {
   static observedAttributes = ['name'];
 
@@ -126,26 +142,3 @@ class NestedTable {
     `;
   }
 }
-
-Component(
-  {
-    selector: 'app-row-item',
-    styles: `:host {
-      display: table-row-group;
-  }
-  .hide-row {
-      display: none;
-  }
-  :host > tr > td[colspan] table {
-      margin: 0;
-  }
-  `
-  },
-  RowItem
-);
-Component(
-  {
-    selector: 'app-nested-table'
-  },
-  NestedTable
-);

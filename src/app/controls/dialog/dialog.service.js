@@ -1,4 +1,4 @@
-import { Service, fromNativeEvent } from '../../../lib';
+import { fromNativeEvent, Injectable } from '../../../lib';
 
 const DEFAULT_MODAL_PROPS = {
   modalTitle: '',
@@ -8,7 +8,8 @@ const DEFAULT_MODAL_PROPS = {
   renderTemplate: () => html``
 };
 
-export class DialogService {
+@Injectable()
+class DialogService {
   alert(message) {
     return this.#prompt(message, true);
   }
@@ -90,4 +91,4 @@ export class DialogService {
   }
 }
 
-Service(DialogService);
+export { DialogService };

@@ -2,6 +2,7 @@ import { Component, html, useState } from '../lib';
 import { Router } from '../lib/router';
 import calculatorStyles from './calculator.scss';
 
+@Component({ selector: 'app-calculator', styles: calculatorStyles, deps: [Router] })
 class CalculatorComponent {
   btnValues;
   calc;
@@ -154,5 +155,3 @@ class CalculatorComponent {
     `;
   }
 }
-
-Component({ selector: 'app-calculator', styles: calculatorStyles, deps: [Router] }, CalculatorComponent);

@@ -1,22 +1,21 @@
 //https://codeburst.io/angular-2-simple-infinite-scroller-directive-with-rxjs-observables-a989b12d4fb1
 //https://medium.com/@sgroff04/configure-eslint-prettier-and-flow-in-vs-code-for-react-development-c9d95db07213
 
-import { Component, html, registerRouterComponent, render, Renderer, Service } from './lib';
-
-import { Router } from './lib/router';
-
-import styles from './base.scss?inline';
-
 import { Observable } from 'rxjs';
+import styles from './base.scss?inline';
+import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
+import { Router } from './lib/router';
 
 registerRouterComponent();
 
+@Injectable()
 class TestService {
   getGreeting() {
     return 'hello world';
   }
 }
 
+@Component({ selector: 'test-ele', deps: [Renderer] })
 class TestComponent {
   constructor(renderer) {}
 
@@ -43,6 +42,12 @@ class TestComponent {
   }
 }
 
+@Component({
+  selector: 'app-root',
+  styles: styles,
+  root: true,
+  deps: [TestService, Router]
+})
 class AppComponent {
   greet;
   divRef;
@@ -254,16 +259,4 @@ class AppComponent {
   }
 }
 
-Service(TestService);
-Component({ selector: 'test-ele', deps: [Renderer] }, TestComponent);
-Component(
-  {
-    selector: 'app-root',
-    styles: styles,
-    root: true,
-    deps: [TestService, Router]
-  },
-  AppComponent
-);
-
-render(document.getElementById('test'), html` <app-root data-adj="${'hello world'}"></app-root> `);
+render(document.getElementById('test'), html`<app-root data-adj="${'hello world'}"></app-root>`);
