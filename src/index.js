@@ -119,6 +119,11 @@ class AppComponent {
       path: '/editor',
       template: '<app-editor></app-editor>',
       templatePath: () => import('./app/editor')
+    },
+    {
+      path: '/experiments',
+      template: '<app-experiments></app-experiments>',
+      templatePath: () => import('./app/experiments')
     }
   ];
 
@@ -192,6 +197,9 @@ class AppComponent {
               </li>
               <li>
                 <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
+              </li>
+              <li>
+                <a href="#" onclick=${(e) => this.navigate(e, '/experiments')}>Experiments</a>
               </li>
             </ul>
           </nav>

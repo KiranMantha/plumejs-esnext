@@ -16,6 +16,7 @@
   ],
   "plugins": [
     "@babel/plugin-syntax-dynamic-import",
+    ["@babel/plugin-proposal-decorators", { "loose": true, "version": "2022-03" }],
     [
       "@babel/plugin-proposal-class-properties",
       {
