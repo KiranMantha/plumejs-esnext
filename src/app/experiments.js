@@ -1,17 +1,29 @@
-import { Component, html } from '../lib';
+import { Component, html, Service } from '../lib';
 
-function SampleDecorator(options) {
-  console.log(options);
-  return function (targetKlass) {
-    console.log(targetKlass);
-    Component(options, targetKlass);
+function SampleComponentDecorator(options) {
+  return function (target) {
+    Component(options, target);
   };
 }
 
-@SampleDecorator({ selector: 'app-experiments' })
+function SampleServiceDecorator() {
+  return function (target) {
+    Service(target);
+  };
+}
+
+@SampleServiceDecorator()
+class ExpService {
+  getText() {
+    return 'hello all';
+  }
+}
+
+@SampleComponentDecorator({ selector: 'app-experiments', deps: [ExpService] })
 class Experiments {
+  constructor(expService) {}
   render() {
-    return html`hello all`;
+    return html`${this.expService.getText()}`;
   }
 }
 
