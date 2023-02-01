@@ -37,7 +37,7 @@ const registerRouterComponent = () => {
       }
     }
   }
-  Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] }, RouterComponent);
+  Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] })(RouterComponent);
 };
 
 export { registerRouterComponent };

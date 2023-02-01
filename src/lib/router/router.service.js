@@ -1,8 +1,8 @@
-import { Service } from '../service';
+import { Injectable } from '../decorators';
 import { InternalRouter } from './internalRouter.service';
 import { StaticRouter } from './staticRouter';
 
-export class Router {
+class Router {
   constructor(internalRouter) {}
 
   /**
@@ -42,5 +42,5 @@ export class Router {
     }
   }
 }
-
-Service({ deps: [InternalRouter] }, Router);
+Injectable({ deps: [InternalRouter] })(Router);
+export { Router };

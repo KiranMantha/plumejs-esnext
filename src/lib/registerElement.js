@@ -48,11 +48,7 @@ const createStyleTag = (content, where) => {
  * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
-const Component = (componentOptions, klass) => {
-  if (window.customElements.get(componentOptions.selector)) {
-    return;
-  }
-
+const registerElement = (componentOptions, klass) => {
   // mapping with defaults
   componentOptions = { ...DEFAULT_COMPONENT_OPTIONS, ...componentOptions };
   componentOptions.styles = componentOptions.styles.toString();
@@ -164,4 +160,4 @@ const Component = (componentOptions, klass) => {
   );
 };
 
-export { Component, Renderer };
+export { registerElement, Renderer };

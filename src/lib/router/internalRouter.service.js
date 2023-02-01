@@ -1,9 +1,9 @@
-import { Service } from '../service';
+import { Injectable } from '../decorators';
 import { fromNativeEvent } from '../utils';
 import { SubjectObs, wrapIntoObservable } from './observable-util';
 import { StaticRouter } from './staticRouter';
 
-export class InternalRouter {
+class InternalRouter {
   #currentRoute = {
     path: '',
     routeParams: new Map(),
@@ -99,5 +99,5 @@ export class InternalRouter {
     }
   }
 }
-
-Service(InternalRouter);
+Injectable()(InternalRouter);
+export { InternalRouter };
