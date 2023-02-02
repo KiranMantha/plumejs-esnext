@@ -4,7 +4,7 @@ import babel from 'vite-plugin-babel';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
-  base: '/',
+  base: './',
   plugins: [
     babel({
       babelConfig: {
