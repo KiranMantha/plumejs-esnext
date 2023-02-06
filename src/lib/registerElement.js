@@ -114,9 +114,11 @@ const registerElement = (componentOptions, klass) => {
 
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
-          this.#klass[key] = value;
+          if (klass.observedProperties[key]) {
+            this.#klass[key] = value;
+          }
         }
-        this.#klass.onPropsChanged?.();
+        this.#klass.onPropertiesChanged?.();
         this.update();
       }
 
@@ -150,7 +152,7 @@ const registerElement = (componentOptions, klass) => {
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
-        this.#klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+        this.#klass.onAttributesChanges?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {

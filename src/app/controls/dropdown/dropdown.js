@@ -28,7 +28,7 @@ class DropdownComponent {
 
   constructor(renderer) {}
 
-  onPropsChanged() {
+  onPropertiesChanged() {
     if (this.dropdownOptions.options.length) {
       this.dropdownOptions = {
         ...defaultDropdownOptions,

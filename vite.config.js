@@ -20,6 +20,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'build',
+    emptyOutDir: true,
     sourcemap: false,
     lib: {
       entry: path.resolve(__dirname, 'src/lib/index.js'),
