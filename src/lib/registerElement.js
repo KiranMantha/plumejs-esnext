@@ -7,10 +7,8 @@ import { CSS_SHEET_NOT_SUPPORTED } from './utils';
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
  */
 class Renderer {
-  /**
-   * {ShadowRoot} used to traverse dom tree
-   */
-  shadowRoot;
+  #shadowRoot;
+  #hostElement;
 
   /**
    * {() => void} used to update DOM with new state
@@ -25,6 +23,25 @@ class Renderer {
 
   static get __metadata__() {
     return { name: 'Renderer' };
+  }
+
+  /**
+   * {ShadowRoot} used to traverse dom tree
+   */
+  get shadowRoot() {
+    return this.#shadowRoot;
+  }
+
+  /**
+   * {HostElement} used to do read native properties on host element
+   */
+  get hostElement() {
+    return this.#hostElement;
+  }
+
+  constructor(_hostELement, _shadowRoot) {
+    this.#hostElement = _hostELement;
+    this.#shadowRoot = _shadowRoot;
   }
 }
 
@@ -128,8 +145,7 @@ const registerElement = (componentOptions, klass) => {
 
       connectedCallback() {
         this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = this.#shadow;
+        const rendererInstance = new Renderer(this, this.#shadow);
         rendererInstance.update = () => {
           this.update();
         };
