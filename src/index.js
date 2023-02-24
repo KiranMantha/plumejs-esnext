@@ -176,13 +176,13 @@ class AppComponent {
           <nav>
             <ul>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/home')}>Items Route</a>
+                <a href="#/home">Items Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/persons/123/testuser?a=123')}>Persons Route</a>
+                <a href="#/persons/123/testuser?a=123">Persons Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/form')}>Sample Form</a>
+                <a href="#/form">Sample Form</a>
               </li>
               <li>
                 <a
@@ -195,16 +195,16 @@ class AppComponent {
                 >
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/controls')}>Controls</a>
+                <a href="#/controls">Controls</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/nested-table')}>Nested Table</a>
+                <a href="#/nested-table">Nested Table</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
+                <a href="#/editor">Editor</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/experiments')}>Experiments</a>
+                <a href="#/experiments">Experiments</a>
               </li>
             </ul>
           </nav>
