@@ -9,12 +9,12 @@ var n = (t, e, s) => (Y(t, e, "read from private field"), s ? s.call(t) : e.get(
     throw TypeError("Cannot add the same private member more than once");
   e instanceof WeakSet ? e.add(t) : e.set(t, s);
 }, w = (t, e, s, r) => (Y(t, e, "write to private field"), r ? r.call(t, s) : e.set(t, s), s);
-var L = (t, e, s) => (Y(t, e, "access private method"), s);
-var N, te;
+var k = (t, e, s) => (Y(t, e, "access private method"), s);
+var _, te;
 const se = new (te = class {
   constructor() {
-    y(this, N, void 0);
-    w(this, N, /* @__PURE__ */ new WeakMap());
+    y(this, _, void 0);
+    w(this, _, /* @__PURE__ */ new WeakMap());
   }
   /**
    * register a dependency
@@ -22,8 +22,8 @@ const se = new (te = class {
    * @param {Object} instance of the klass
    */
   register(t, e) {
-    if (!n(this, N).get(t))
-      n(this, N).set(t, e);
+    if (!n(this, _).get(t))
+      n(this, _).set(t, e);
     else
       throw console.error(t), "service already exists";
   }
@@ -33,7 +33,7 @@ const se = new (te = class {
    * @return {Object} instance of the klass
    */
   getService(t) {
-    const e = n(this, N).get(t);
+    const e = n(this, _).get(t);
     if (e)
       return e;
     throw console.error(t), "service is not a registered service.";
@@ -42,9 +42,9 @@ const se = new (te = class {
    * clears all registered dependencies
    */
   clear() {
-    w(this, N, /* @__PURE__ */ new WeakMap());
+    w(this, _, /* @__PURE__ */ new WeakMap());
   }
-}, N = new WeakMap(), te)(), he = (t) => typeof t == "function", de = (t) => {
+}, _ = new WeakMap(), te)(), he = (t) => typeof t == "function", de = (t) => {
   const e = t.toString().split(/constructor\s*[^\(]*\(\s*([^\)]*)\)/m);
   return e.length === 3 ? e[1].split(",").map((s) => s.trim()) : [];
 }, G = (() => {
@@ -182,7 +182,7 @@ const se = new (te = class {
       }
       c = u.nextNode();
     }
-  }, H = (o, i) => {
+  }, L = (o, i) => {
     if (!o || !i || o.nodeType !== 1 || i.nodeType !== 1)
       return;
     const u = o.attributes, c = i.attributes;
@@ -207,7 +207,7 @@ const se = new (te = class {
         u[u.length - f].parentNode.removeChild(u[u.length - f]);
     c.forEach(function(a, m) {
       const g = u[m];
-      if (H(a, g), !g) {
+      if (L(a, g), !g) {
         i && i.appendChild(a);
         return;
       }
@@ -351,7 +351,7 @@ const ge = {
     setProps(d) {
       var p, S;
       for (const [A, E] of Object.entries(d))
-        e.observedProperties[A] && (n(this, s)[A] = E);
+        e.observedProperties.find((L) => L === A) && (n(this, s)[A] = E);
       (S = (p = n(this, s)).onPropertiesChanged) == null || S.call(p), this.update();
     }
     getInstance() {
@@ -363,17 +363,17 @@ const ge = {
       const d = new ne(this, n(this, r));
       d.update = () => {
         this.update();
-      }, d.emitEvent = (H, U) => {
-        this.emitEvent(H, U);
+      }, d.emitEvent = (L, U) => {
+        this.emitEvent(L, U);
       }, w(this, s, re(e, t.deps, d)), (S = (p = n(this, s)).beforeMount) == null || S.call(p), this.update(), (E = (A = n(this, s)).mount) == null || E.call(A), this.emitEvent("bindprops", {
-        setProps: (H) => {
-          this.setProps(H);
+        setProps: (L) => {
+          this.setProps(L);
         }
       }, !1);
     }
     attributeChangedCallback(d, p, S) {
       var A, E;
-      (E = (A = n(this, s)).onAttributesChanges) == null || E.call(A, d, p, S);
+      (E = (A = n(this, s)).onAttributesChanged) == null || E.call(A, d, p, S);
     }
     disconnectedCallback() {
       var d, p;
@@ -430,7 +430,7 @@ class we {
     return n(this, T);
   }
   get valid() {
-    return L(this, D, ae).call(this), !n(this, T).size;
+    return k(this, D, ae).call(this), !n(this, T).size;
   }
   get value() {
     const e = {};
@@ -464,7 +464,7 @@ $ = new WeakMap(), v = new WeakMap(), T = new WeakMap(), D = new WeakSet(), ae =
     }
   }
 };
-const _e = (t) => {
+const Ne = (t) => {
   const e = {}, s = {};
   for (const [b, d] of Object.entries(t)) {
     const p = Array.isArray(d) ? d : [d];
@@ -577,68 +577,68 @@ const ee = (t) => Se(t) ? t : Ce(t) ? Ae(Promise.resolve(t)) : Te(t), O = class 
       e.TemplatePath && e.TemplatePath();
   }
 };
-let k = O;
-R(k, "routeList", []);
-var _, M, V, z, oe, B, le, F, q;
+let M = O;
+R(M, "routeList", []);
+var N, F, V, z, oe, B, le, H, q;
 class K {
   constructor() {
     y(this, z);
     y(this, B);
-    y(this, F);
-    y(this, _, {
+    y(this, H);
+    y(this, N, {
       path: "",
       routeParams: /* @__PURE__ */ new Map(),
       queryParams: /* @__PURE__ */ new Map(),
       state: {}
     });
-    y(this, M, new Ee());
+    y(this, F, new Ee());
     y(this, V, void 0);
   }
   startHashChange() {
     w(this, V, fe(window, "hashchange", () => {
-      L(this, z, oe).call(this);
+      k(this, z, oe).call(this);
     }));
   }
   stopHashChange() {
     n(this, V).call(this);
   }
   getTemplate() {
-    return n(this, M).asObservable();
+    return n(this, F).asObservable();
   }
   getCurrentRoute() {
-    return n(this, _);
+    return n(this, N);
   }
   navigateTo(e = "", s) {
-    e ? (window.location.hash.replace(/^#/, "") === e && L(this, F, q).call(this, e, s), window.location.hash = "#" + e) : L(this, F, q).call(this, e, s);
+    e ? (window.location.hash.replace(/^#/, "") === e && k(this, H, q).call(this, e, s), window.location.hash = "#" + e) : k(this, H, q).call(this, e, s);
   }
 }
-_ = new WeakMap(), M = new WeakMap(), V = new WeakMap(), z = new WeakSet(), oe = function() {
+N = new WeakMap(), F = new WeakMap(), V = new WeakMap(), z = new WeakSet(), oe = function() {
   const e = window.location.hash.replace(/^#/, "");
-  L(this, F, q).call(this, e, null);
+  k(this, H, q).call(this, e, null);
 }, B = new WeakSet(), le = function(e, s) {
   if (e) {
     let r = new RegExp(e.replace(/:[^\s/]+/g, "([\\w-]+)"));
     return s.match(r);
   } else
     return e === s;
-}, F = new WeakSet(), q = function(e, s) {
-  let r = e.split("/").filter((b) => b.length > 0), l = k.routeList.filter((b) => {
-    if (b.Params.length === r.length && L(this, B, le).call(this, b.Url, e))
+}, H = new WeakSet(), q = function(e, s) {
+  let r = e.split("/").filter((b) => b.length > 0), l = M.routeList.filter((b) => {
+    if (b.Params.length === r.length && k(this, B, le).call(this, b.Url, e))
       return b;
     if (b.Url === e)
       return b;
   }), h = l.length > 0 ? l[0] : null;
-  h && (n(this, _).path = e, n(this, _).state = {
+  h && (n(this, N).path = e, n(this, N).state = {
     ...s || {}
   }, ee(h.canActivate()).subscribe((b) => {
     if (!b)
       return;
-    let d = k.checkParams(r, h);
+    let d = M.checkParams(r, h);
     if (Object.keys(d).length > 0 || e) {
-      n(this, _).routeParams = new Map(Object.entries(d));
+      n(this, N).routeParams = new Map(Object.entries(d));
       const p = window.location.hash.split("?")[1] ? new URLSearchParams(window.location.hash.split("?")[1]).entries() : [];
-      n(this, _).queryParams = new Map(p), h.IsRegistered ? n(this, M).next(h.Template) : h.TemplatePath && ee(h.TemplatePath()).subscribe(() => {
-        h.IsRegistered = !0, n(this, M).next(h.Template);
+      n(this, N).queryParams = new Map(p), h.IsRegistered ? n(this, F).next(h.Template) : h.TemplatePath && ee(h.TemplatePath()).subscribe(() => {
+        h.IsRegistered = !0, n(this, F).next(h.Template);
       });
     } else
       this.navigateTo(h.redirectTo);
@@ -707,8 +707,8 @@ class Re {
   registerRoutes(e, s = !1) {
     if (Array.isArray(e)) {
       for (let r of e)
-        k.formatRoute(r);
-      s && k.preloadRoutes();
+        M.formatRoute(r);
+      s && M.preloadRoutes();
     } else
       throw Error("router.addRoutes: the parameter must be an array");
   }
@@ -722,10 +722,10 @@ export {
   ne as Renderer,
   Re as Router,
   ke as Validators,
-  fe as fromNativeEvent,
+  fe as fromEvent,
   X as html,
   Me as registerRouterComponent,
   me as render,
-  _e as useFormFields,
+  Ne as useFormFields,
   Le as useState
 };

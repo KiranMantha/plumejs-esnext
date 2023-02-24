@@ -1,5 +1,5 @@
 import { Injectable } from '../decorators';
-import { fromNativeEvent } from '../utils';
+import { fromEvent } from '../utils';
 import { SubjectObs, wrapIntoObservable } from './observable-util';
 import { StaticRouter } from './staticRouter';
 
@@ -14,7 +14,7 @@ class InternalRouter {
   #unSubscribeHashEvent;
 
   startHashChange() {
-    this.#unSubscribeHashEvent = fromNativeEvent(window, 'hashchange', () => {
+    this.#unSubscribeHashEvent = fromEvent(window, 'hashchange', () => {
       this.#registerOnHashChange();
     });
   }

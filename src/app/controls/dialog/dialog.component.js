@@ -40,7 +40,7 @@ class BaseDialog {
 
 @Component({ selector: 'app-modal-dialog' })
 class ModalDialog extends BaseDialog {
-  observedProperties = ['modalData'];
+  static observedProperties = ['modalData'];
 
   modalData;
   #modalClosedPromise;
@@ -100,7 +100,7 @@ class ModalDialog extends BaseDialog {
 
 @Component({ selector: 'app-alert-dialog' })
 class AlertDialog extends BaseDialog {
-  observedProperties = ['alertOptions'];
+  static observedProperties = ['alertOptions'];
 
   alertOptions;
 

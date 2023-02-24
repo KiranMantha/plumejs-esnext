@@ -1,4 +1,4 @@
-import { fromNativeEvent, Injectable } from '../../../lib';
+import { fromEvent, Injectable } from '../../../lib';
 
 const DEFAULT_MODAL_PROPS = {
   modalTitle: '',
@@ -38,7 +38,7 @@ class DialogService {
 
     if (!_props.preventBackdropClose) {
       const rect = instance.dialogRef.getBoundingClientRect();
-      const unsubscribe = fromNativeEvent(instance.dialogRef, 'click', (event) => {
+      const unsubscribe = fromEvent(instance.dialogRef, 'click', (event) => {
         const isInDialog =
           rect.top <= event.clientY &&
           event.clientY <= rect.top + rect.height &&
@@ -52,7 +52,7 @@ class DialogService {
     }
 
     if (_props.preventEsc) {
-      fromNativeEvent(instance.dialogRef, 'cancel', (event) => {
+      fromEvent(instance.dialogRef, 'cancel', (event) => {
         event.preventDefault();
       });
     }

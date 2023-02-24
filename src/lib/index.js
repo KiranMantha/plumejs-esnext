@@ -7,4 +7,4 @@ export { useFormFields, useState, Validators } from './hooks';
 export { html, render } from './html';
 export { Renderer } from './registerElement';
 export { registerRouterComponent, Router } from './router';
-export { fromNativeEvent } from './utils';
+export { fromEvent } from './utils';

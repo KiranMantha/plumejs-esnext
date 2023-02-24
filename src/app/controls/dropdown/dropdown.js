@@ -19,6 +19,8 @@ const defaultDropdownOptions = {
   deps: [Renderer]
 })
 class DropdownComponent {
+  static observedProperties = ['dropdownOptions'];
+
   dropdownOptions = { ...defaultDropdownOptions };
   #detailsNode;
   #summaryNode;

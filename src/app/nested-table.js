@@ -14,7 +14,7 @@ import { Component, html } from '../lib';
   `
 })
 class RowItem {
-  observedProperties = ['category'];
+  static observedProperties = ['category'];
 
   category;
   nestedRow;
@@ -114,7 +114,7 @@ class NestedTable {
     }
   ];
 
-  onAttributesChanges(name, oldValue, newValue) {
+  onAttributesChanged(name, oldValue, newValue) {
     console.log(name, oldValue, newValue);
   }
 
