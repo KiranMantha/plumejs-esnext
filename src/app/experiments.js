@@ -1,4 +1,4 @@
-import { Component, html, Injectable } from '../lib';
+import { Component, Injectable } from '../lib';
 
 @Injectable()
 class ExpService {
@@ -11,6 +11,6 @@ class ExpService {
 class Experiments {
   constructor(expService) {}
   render() {
-    return html`${this.expService.getText()}`;
+    return this.expService.getText();
   }
 }

@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_NOT_SUPPORTED } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, sanitizeHTML } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
@@ -110,7 +110,12 @@ const registerElement = (componentOptions, klass) => {
       }
 
       update() {
-        render(this.#shadow, (() => this.#klass.render())());
+        const renderValue = this.#klass.render();
+        if (typeof renderValue === 'string') {
+          this.#shadow.innerHTML = sanitizeHTML(renderValue);
+        } else {
+          render(this.#shadow, renderValue);
+        }
         if (CSS_SHEET_NOT_SUPPORTED) {
           componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
           if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
