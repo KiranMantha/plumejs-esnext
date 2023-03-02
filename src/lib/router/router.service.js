@@ -31,16 +31,21 @@ class Router {
    * @param {{path: string, template: string, templatePath: () => Promise, redirectTo: string, canActivate: () => (boolean | Observable<boolean> | Promise<boolean>)}[]} routes
    * @param {boolean} preloadRoutes
    */
-  registerRoutes(routes, preloadRoutes = false) {
+  registerRoutes(routes, preloadAllRoutes = false) {
     if (Array.isArray(routes)) {
-      for (let route of routes) {
+      for (const route of routes) {
         StaticRouter.formatRoute(route);
       }
-      preloadRoutes && StaticRouter.preloadRoutes();
+      if (preloadAllRoutes) {
+        StaticRouter.preloadRoutes();
+      } else {
+        StaticRouter.preloadSelectedRoutes();
+      }
     } else {
       throw Error('router.addRoutes: the parameter must be an array');
     }
   }
 }
+
 Injectable({ deps: [InternalRouter] })(Router);
 export { Router };
