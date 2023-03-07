@@ -1,4 +1,5 @@
 import { Component, html } from '../lib';
+import './editable-table';
 
 @Component({
   selector: 'app-row-item',
@@ -139,6 +140,9 @@ class NestedTable {
           ></app-row-item>`;
         })}
       </table>
+      <br />
+      <br />
+      <app-editable-table></app-editable-table>
     `;
   }
 }
