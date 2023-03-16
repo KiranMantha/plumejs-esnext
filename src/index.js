@@ -1,6 +1,3 @@
-//https://codeburst.io/angular-2-simple-infinite-scroller-directive-with-rxjs-observables-a989b12d4fb1
-//https://medium.com/@sgroff04/configure-eslint-prettier-and-flow-in-vs-code-for-react-development-c9d95db07213
-
 import { Observable } from 'rxjs';
 import styles from './base.scss?inline';
 import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
