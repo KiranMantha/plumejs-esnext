@@ -28,7 +28,7 @@ export class FetchQl {
    * @param {object} variables
    * @returns {Promise}
    */
-  async useGraphql(gql, variables) {
+  async makeRequest(gql, variables) {
     const requestBody = {
       query: gql
     };
