@@ -4,3 +4,7 @@
 4. https://developer.chrome.com/blog/tether-elements-to-each-other-with-css-anchor-positioning/
 5. https://github.com/github/github-elements
 6. https://github.com/orgs/github/repositories?language=javascript&page=1&type=all
+7. https://gomakethings.com/how-to-detect-changes-to-nested-arrays-and-objects-inside-a-proxy/
+8. https://gomakethings.com/how-to-create-a-state-based-ui-component-with-vanilla-js/
+9. https://gomakethings.com/how-to-create-a-reactive-state-based-ui-component-with-vanilla-js-proxies/
+10. https://gomakethings.com/how-to-batch-ui-rendering-in-a-reactive-state-based-ui-component-with-vanilla-js/

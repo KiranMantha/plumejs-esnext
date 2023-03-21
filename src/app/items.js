@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { Component, html, Renderer, useFormFields, Validators } from '../lib';
+import { Component, html, useFormFields, Validators } from '../lib';
 import { Router } from '../lib/router';
 
-@Component({ selector: 'app-items', deps: [Renderer, Router] })
+@Component({ selector: 'app-items', deps: [Router] })
 class ItemsComponent {
   sheetForm;
   changeHandler;
@@ -12,7 +12,7 @@ class ItemsComponent {
   personsList = [];
   errorsRef;
 
-  constructor(renderer, routerSrvc) {}
+  constructor(routerSrvc) {}
 
   beforeMount() {
     [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
@@ -45,7 +45,6 @@ class ItemsComponent {
       .then((persons) => {
         this.personsList.push(...persons);
         this.sheetForm.reset();
-        this.renderer.update();
       });
   }
 
@@ -55,7 +54,6 @@ class ItemsComponent {
       .then((response) => response.data)
       .then((persons) => {
         this.personsList = [...persons];
-        this.renderer.update();
       });
   }
 

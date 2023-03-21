@@ -1,12 +1,11 @@
 import axios from 'axios';
-import { Component, html, Renderer } from '../lib';
+import { Component, html } from '../lib';
 
 @Component({
-  selector: 'app-editable-table',
-  deps: [Renderer]
+  selector: 'app-editable-table'
 })
 class EditableTable {
-  constructor(renderer) {}
+  constructor() {}
   users = [];
 
   mount() {
@@ -15,7 +14,6 @@ class EditableTable {
       .then((response) => response.data)
       .then((users) => {
         this.users = users;
-        this.renderer.update();
       });
   }
 

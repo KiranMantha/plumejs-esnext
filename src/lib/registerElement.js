@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_NOT_SUPPORTED, sanitizeHTML } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
@@ -9,11 +9,6 @@ import { CSS_SHEET_NOT_SUPPORTED, sanitizeHTML } from './utils';
 class Renderer {
   #shadowRoot;
   #hostElement;
-
-  /**
-   * {() => void} used to update DOM with new state
-   */
-  update;
 
   /**
    * @param {string} eventName
@@ -141,7 +136,6 @@ const registerElement = (componentOptions, klass) => {
           }
         }
         this.#klass.onPropertiesChanged?.();
-        this.update();
       }
 
       getInstance() {
@@ -151,15 +145,11 @@ const registerElement = (componentOptions, klass) => {
       connectedCallback() {
         this.emulateComponent();
         const rendererInstance = new Renderer(this, this.#shadow);
-        rendererInstance.update = () => {
-          this.update();
-        };
         rendererInstance.emitEvent = (eventName, data) => {
           this.emitEvent(eventName, data);
         };
-        this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
+        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
         this.#klass.beforeMount?.();
-        this.update();
         this.#klass.mount?.();
         this.emitEvent(
           'bindprops',

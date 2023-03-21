@@ -224,7 +224,14 @@ class AppComponent {
               data-adj="${this.setClass}"
             >
               ${this.greet}
-              <input value="${this.greet}" oninput="${(e) => console.log(e.target.value)}" />
+              <input
+                value="${this.greet}"
+                oninput="${(e) => {
+                  const value = e.target.value;
+                  console.log(value);
+                  this.greet = value;
+                }}"
+              />
 
               ${(() => {
                 if (this.setClass) {
