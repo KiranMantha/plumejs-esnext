@@ -7,8 +7,8 @@ import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
  */
 class Renderer {
-  #shadowRoot;
-  #hostElement;
+  shadowRoot;
+  hostElement;
 
   /**
    * @param {string} eventName
@@ -24,19 +24,19 @@ class Renderer {
    * {ShadowRoot} used to traverse dom tree
    */
   get shadowRoot() {
-    return this.#shadowRoot;
+    return this.shadowRoot;
   }
 
   /**
    * {HostElement} used to do read native properties on host element
    */
   get hostElement() {
-    return this.#hostElement;
+    return this.hostElement;
   }
 
   constructor(_hostELement, _shadowRoot) {
-    this.#hostElement = _hostELement;
-    this.#shadowRoot = _shadowRoot;
+    this.hostElement = _hostELement;
+    this.shadowRoot = _shadowRoot;
   }
 }
 
@@ -78,9 +78,9 @@ const registerElement = (componentOptions, klass) => {
   window.customElements.define(
     componentOptions.selector,
     class extends HTMLElement {
-      #klass;
-      #shadow;
-      #componentStyleTag;
+      klass;
+      shadow;
+      componentStyleTag;
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -88,9 +88,9 @@ const registerElement = (componentOptions, klass) => {
 
       constructor() {
         super();
-        this.#shadow = this.attachShadow({ mode: 'open' });
+        this.shadow = this.attachShadow({ mode: 'open' });
         if (!CSS_SHEET_NOT_SUPPORTED) {
-          this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
+          this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             componentOptions.styles,
             componentOptions.standalone
           );
@@ -100,23 +100,23 @@ const registerElement = (componentOptions, klass) => {
 
       emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          this.#componentStyleTag = createStyleTag(componentOptions.styles);
+          this.componentStyleTag = createStyleTag(componentOptions.styles);
         }
       }
 
       update() {
-        const renderValue = this.#klass.render();
+        const renderValue = this.klass.render();
         if (typeof renderValue === 'string') {
-          this.#shadow.innerHTML = sanitizeHTML(renderValue);
+          this.shadow.innerHTML = sanitizeHTML(renderValue);
         } else {
-          render(this.#shadow, renderValue);
+          render(this.shadow, renderValue);
         }
         if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+          componentOptions.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
           if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
-            this.#shadow.insertBefore(
+            this.shadow.insertBefore(
               document.importNode(componentRegistry.globalStyleTag, true),
-              this.#shadow.childNodes[0]
+              this.shadow.childNodes[0]
             );
           }
         }
@@ -132,25 +132,25 @@ const registerElement = (componentOptions, klass) => {
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
           if (klass.observedProperties.find((property) => property === key)) {
-            this.#klass[key] = value;
+            this.klass[key] = value;
           }
         }
-        this.#klass.onPropertiesChanged?.();
+        this.klass.onPropertiesChanged?.();
       }
 
       getInstance() {
-        return this.#klass;
+        return this.klass;
       }
 
       connectedCallback() {
         this.emulateComponent();
-        const rendererInstance = new Renderer(this, this.#shadow);
+        const rendererInstance = new Renderer(this, this.shadow);
         rendererInstance.emitEvent = (eventName, data) => {
           this.emitEvent(eventName, data);
         };
-        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
-        this.#klass.beforeMount?.();
-        this.#klass.mount?.();
+        this.klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
+        this.klass.beforeMount?.();
+        this.klass.mount?.();
         this.emitEvent(
           'bindprops',
           {
@@ -163,11 +163,11 @@ const registerElement = (componentOptions, klass) => {
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
-        this.#klass.onAttributesChanged?.(name, oldValue, newValue);
+        this.klass.onAttributesChanged?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {
-        this.#klass.unmount?.();
+        this.klass.unmount?.();
       }
     }
   );

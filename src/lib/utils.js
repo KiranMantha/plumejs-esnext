@@ -109,15 +109,12 @@ const sanitizeHTML = (htmlString) => {
 };
 
 const debounceRender = function (elementInstance) {
-  // If there's a pending render, cancel it
-  if (elementInstance.debounce) {
-    window.cancelAnimationFrame(elementInstance.debounce);
+  if (elementInstance.renderCount === 1) {
+    queueMicrotask(() => {
+      elementInstance.update();
+      elementInstance.renderCount = 0;
+    });
   }
-
-  // Setup the new render to run at the next animation frame
-  elementInstance.debounce = window.requestAnimationFrame(function () {
-    elementInstance.update();
-  });
 };
 
 const proxifiedClass = (elementInstance, target) => {
@@ -131,27 +128,14 @@ const proxifiedClass = (elementInstance, target) => {
       });
       return new Proxy(this, {
         get(obj, prop, receiver) {
-          if (window.debug) console.log('proxiedklass getter', obj, prop);
-          try {
-            return Reflect.get(obj, prop, receiver);
-          } catch (e) {
-            return this[prop];
-          }
+          return Reflect.get(obj, prop, receiver);
         },
         set(obj, prop, value, receiver) {
-          if (window.debug) console.log('proxiedklass setter', obj, prop);
-          //obj[prop] = value;
-          //Reflect.set(obj, prop, value, receiver);
-          try {
-            Reflect.set(obj, prop, value, receiver);
-          } catch (e) {
-            this[prop] = value;
-          }
+          Reflect.set(obj, prop, value, receiver);
           debounceRender(elementInstance);
           return true;
         },
         deleteProperty(obj, prop) {
-          if (window.debug) console.log('proxiedklass deleteprop');
           Reflect.deleteProperty(obj, prop);
         }
       });
