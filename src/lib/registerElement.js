@@ -7,8 +7,13 @@ import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
  */
 class Renderer {
-  shadowRoot;
-  hostElement;
+  #shadowRoot;
+  #hostElement;
+
+  /**
+   * {() => void} used to update DOM with new state
+   */
+  update;
 
   /**
    * @param {string} eventName
@@ -24,19 +29,19 @@ class Renderer {
    * {ShadowRoot} used to traverse dom tree
    */
   get shadowRoot() {
-    return this.shadowRoot;
+    return this.#shadowRoot;
   }
 
   /**
    * {HostElement} used to do read native properties on host element
    */
   get hostElement() {
-    return this.hostElement;
+    return this.#hostElement;
   }
 
   constructor(_hostELement, _shadowRoot) {
-    this.hostElement = _hostELement;
-    this.shadowRoot = _shadowRoot;
+    this.#hostElement = _hostELement;
+    this.#shadowRoot = _shadowRoot;
   }
 }
 
@@ -78,20 +83,20 @@ const registerElement = (componentOptions, klass) => {
   window.customElements.define(
     componentOptions.selector,
     class extends HTMLElement {
-      klass;
-      shadow;
-      componentStyleTag;
+      #klass;
+      #shadow;
+      #componentStyleTag;
       renderCount = 0;
 
       static get observedAttributes() {
-        return klass.observedAttributes || [];
+        return [...(klass.observedAttributes || [])];
       }
 
       constructor() {
         super();
-        this.shadow = this.attachShadow({ mode: 'open' });
+        this.#shadow = this.attachShadow({ mode: 'open' });
         if (!CSS_SHEET_NOT_SUPPORTED) {
-          this.shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
+          this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             componentOptions.styles,
             componentOptions.standalone
           );
@@ -103,67 +108,69 @@ const registerElement = (componentOptions, klass) => {
       /**
        * user defined functions
        */
-      emulateComponent() {
+      #emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          this.componentStyleTag = createStyleTag(componentOptions.styles);
+          this.#componentStyleTag = createStyleTag(componentOptions.styles);
         }
       }
 
-      update() {
-        if (!this.klass) return;
-        const renderValue = this.klass.render();
-        if (typeof renderValue === 'string') {
-          this.shadow.innerHTML = sanitizeHTML(renderValue);
-        } else {
-          render(this.shadow, renderValue);
-        }
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles && this.shadow.insertBefore(this.componentStyleTag, this.shadow.childNodes[0]);
-          if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
-            this.shadow.insertBefore(
-              document.importNode(componentRegistry.globalStyleTag, true),
-              this.shadow.childNodes[0]
-            );
-          }
-        }
-      }
-
-      emitEvent(eventName, data) {
+      #emitEvent(eventName, data) {
         const event = new CustomEvent(eventName, {
           detail: data
         });
         this.dispatchEvent(event);
       }
 
+      update() {
+        const renderValue = this.#klass.render();
+        if (typeof renderValue === 'string') {
+          this.#shadow.innerHTML = sanitizeHTML(renderValue);
+        } else {
+          render(this.#shadow, renderValue);
+        }
+        if (CSS_SHEET_NOT_SUPPORTED) {
+          componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
+          if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
+            this.#shadow.insertBefore(
+              document.importNode(componentRegistry.globalStyleTag, true),
+              this.#shadow.childNodes[0]
+            );
+          }
+        }
+      }
+
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
           if (klass.observedProperties.find((property) => property === key)) {
-            this.klass[key] = value;
+            this.#klass[key] = value;
           }
         }
-        this.klass.onPropertiesChanged?.();
+        this.#klass.onPropertiesChanged?.();
       }
 
       getInstance() {
-        return this.klass;
+        return this.#klass;
       }
 
       /**
        * Default html element events
        */
       connectedCallback() {
-        this.emulateComponent();
-        const rendererInstance = new Renderer(this, this.shadow);
-        rendererInstance.emitEvent = (eventName, data) => {
-          this.emitEvent(eventName, data);
+        this.#emulateComponent();
+        const rendererInstance = new Renderer(this, this.#shadow);
+        rendererInstance.update = () => {
+          this.update();
         };
-        this.klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
-        this.klass.beforeMount?.();
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.#emitEvent(eventName, data);
+        };
+        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
+        this.#klass.beforeMount?.();
         if (this.renderCount === 0) {
           this.update();
         }
-        this.klass.mount?.();
-        this.emitEvent(
+        this.#klass.mount?.();
+        this.#emitEvent(
           'bindprops',
           {
             setProps: (propsObj) => {
@@ -175,13 +182,12 @@ const registerElement = (componentOptions, klass) => {
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
-        this.klass.onAttributesChanged?.(name, oldValue, newValue);
+        this.#klass.onAttributesChanged?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {
-        // this will not queue rendering
         this.renderCount = 1;
-        this.klass.unmount?.();
+        this.#klass.unmount?.();
       }
     }
   );
