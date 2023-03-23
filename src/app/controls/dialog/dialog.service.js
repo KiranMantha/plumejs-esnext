@@ -66,7 +66,7 @@ class DialogService {
     const element = document.createElement(selector);
     document.body.appendChild(element);
     element.setProps(props);
-    Promise.resolve().then(() => {
+    queueMicrotask(() => {
       element.getInstance().showModal();
     });
     return element;
