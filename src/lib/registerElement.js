@@ -81,6 +81,7 @@ const registerElement = (componentOptions, klass) => {
       klass;
       shadow;
       componentStyleTag;
+      renderCount = 0;
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -96,8 +97,12 @@ const registerElement = (componentOptions, klass) => {
           );
         }
         this.getInstance = this.getInstance.bind(this);
+        this.update = this.update.bind(this);
       }
 
+      /**
+       * user defined functions
+       */
       emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
           this.componentStyleTag = createStyleTag(componentOptions.styles);
@@ -105,6 +110,7 @@ const registerElement = (componentOptions, klass) => {
       }
 
       update() {
+        if (!this.klass) return;
         const renderValue = this.klass.render();
         if (typeof renderValue === 'string') {
           this.shadow.innerHTML = sanitizeHTML(renderValue);
@@ -142,6 +148,9 @@ const registerElement = (componentOptions, klass) => {
         return this.klass;
       }
 
+      /**
+       * Default html element events
+       */
       connectedCallback() {
         this.emulateComponent();
         const rendererInstance = new Renderer(this, this.shadow);
@@ -150,6 +159,9 @@ const registerElement = (componentOptions, klass) => {
         };
         this.klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
         this.klass.beforeMount?.();
+        if (this.renderCount === 0) {
+          this.update();
+        }
         this.klass.mount?.();
         this.emitEvent(
           'bindprops',
@@ -167,6 +179,8 @@ const registerElement = (componentOptions, klass) => {
       }
 
       disconnectedCallback() {
+        // this will not queue rendering
+        this.renderCount = 1;
         this.klass.unmount?.();
       }
     }

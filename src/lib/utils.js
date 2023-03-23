@@ -34,6 +34,11 @@ const fromEvent = (target, eventName, onNext, options = false) => {
   return unsubscribe;
 };
 
+/**
+ * sanitize html string to prevent XSS attacks
+ * @param {string} htmlString
+ * @return {string} sanitizedHTML
+ */
 const sanitizeHTML = (htmlString) => {
   /**
    * Convert the string to an HTML document
@@ -119,7 +124,7 @@ const debounceRender = function (elementInstance) {
 
 const proxifiedClass = (elementInstance, target) => {
   const constructorArgs = getArgs(target);
-  elementInstance.debounce = null;
+
   return class extends target {
     constructor(...args) {
       super(...args);
@@ -132,6 +137,7 @@ const proxifiedClass = (elementInstance, target) => {
         },
         set(obj, prop, value, receiver) {
           Reflect.set(obj, prop, value, receiver);
+          ++elementInstance.renderCount;
           debounceRender(elementInstance);
           return true;
         },
