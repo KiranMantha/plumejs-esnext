@@ -140,9 +140,6 @@ const proxifiedClass = (elementInstance, target) => {
           ++elementInstance.renderCount;
           debounceRender(elementInstance);
           return true;
-        },
-        deleteProperty(obj, prop) {
-          Reflect.deleteProperty(obj, prop);
         }
       });
     }

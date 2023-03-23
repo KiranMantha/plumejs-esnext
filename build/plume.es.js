@@ -63,7 +63,7 @@ const ie = new (ne = class {
   }, r = (u, b) => {
     if (b = b.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(u) && (b.includes("javascript:") || b.includes("data:")) || u.startsWith("on"))
       return !0;
-  }, c = (u) => {
+  }, l = (u) => {
     const b = u.attributes;
     for (const {
       name: C,
@@ -73,7 +73,7 @@ const ie = new (ne = class {
   }, o = (u) => {
     const b = u.children;
     for (const C of b)
-      c(C), o(C);
+      l(C), o(C);
   }, d = e();
   return s(d), o(d), d.innerHTML;
 }, ye = function(t) {
@@ -84,17 +84,14 @@ const ie = new (ne = class {
   const s = oe(e);
   return class extends e {
     constructor(...r) {
-      return super(...r), r.forEach((c, o) => {
-        this[s[o]] = c;
+      return super(...r), r.forEach((l, o) => {
+        this[s[o]] = l;
       }), new Proxy(this, {
-        get(c, o, d) {
-          return Reflect.get(c, o, d);
+        get(l, o, d) {
+          return Reflect.get(l, o, d);
         },
-        set(c, o, d, u) {
-          return Reflect.set(c, o, d, u), ++t.renderCount, ye(t), !0;
-        },
-        deleteProperty(c, o) {
-          Reflect.deleteProperty(c, o);
+        set(l, o, d, u) {
+          return Reflect.set(l, o, d, u), ++t.renderCount, ye(t), !0;
         }
       });
     }
@@ -104,9 +101,9 @@ const ie = new (ne = class {
     const r = [];
     for (const d of e)
       d.__metadata__ ? r.push(s) : r.push(ie.getService(d));
-    const c = oe(t), o = new t(...r);
+    const l = oe(t), o = new t(...r);
     return e.forEach((d, u) => {
-      o[c[u]] = r[u];
+      o[l[u]] = r[u];
     }), o;
   } else
     return new t();
@@ -136,9 +133,9 @@ const ie = new (ne = class {
   html: te,
   render: we
 } = (() => {
-  const t = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/, e = /<[a-z][^>]+$/i, s = "attr", r = /^attr([^ ]+)/, c = "insertNode", o = /^insertNode([^ ]+)/;
+  const t = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/, e = /<[a-z][^>]+$/i, s = "attr", r = /^attr([^ ]+)/, l = "insertNode", o = /^insertNode([^ ]+)/;
   let d = [];
-  const u = (l) => {
+  const u = (c) => {
     const i = {
       "&": "&amp;",
       "<": "&lt;",
@@ -146,23 +143,23 @@ const ie = new (ne = class {
       "(": "%28",
       ")": "%29"
     };
-    let f = JSON.stringify(l);
+    let f = JSON.stringify(c);
     const h = (a) => i[a] || a;
     return f = ((a) => a.replace(/[&<>\(\)]/g, h))(f), JSON.parse(f);
-  }, b = (l, i) => {
-    const f = l.options, h = Array.isArray(i) ? i : [i];
+  }, b = (c, i) => {
+    const f = c.options, h = Array.isArray(i) ? i : [i];
     let m, a, p = f.length;
     for (; p--; ) {
       a = f[p];
       const g = a.getAttribute("value") ?? (a.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" ");
       (a.selected = h.indexOf(g) > -1) && (m = !0);
     }
-    m || (l.selectedIndex = -1);
-  }, C = (l) => {
+    m || (c.selectedIndex = -1);
+  }, C = (c) => {
     const i = document.createElement("template");
-    return i.innerHTML = l, i.content;
-  }, U = (l, i) => {
-    const f = document.createTreeWalker(l, NodeFilter.SHOW_ELEMENT, null);
+    return i.innerHTML = c, i.content;
+  }, U = (c, i) => {
+    const f = document.createTreeWalker(c, NodeFilter.SHOW_ELEMENT, null);
     let h = f.nextNode();
     for (; h; ) {
       if (h.hasAttributes()) {
@@ -216,35 +213,35 @@ const ie = new (ne = class {
       }
       h = f.nextNode();
     }
-  }, v = (l, i) => {
-    const f = document.createTreeWalker(l, NodeFilter.SHOW_COMMENT, null);
+  }, v = (c, i) => {
+    const f = document.createTreeWalker(c, NodeFilter.SHOW_COMMENT, null);
     let h = f.nextNode(), m;
     for (; h; ) {
       if (m = o.exec(h.data)) {
         const a = Array.isArray(i[m[1]]) ? i[m[1]] : [i[m[1]]];
-        h.replaceWith(...a), f.currentNode = l;
+        h.replaceWith(...a), f.currentNode = c;
       }
       h = f.nextNode();
     }
-  }, S = (l, i) => {
-    if (!l || !i || l.nodeType !== 1 || i.nodeType !== 1)
+  }, S = (c, i) => {
+    if (!c || !i || c.nodeType !== 1 || i.nodeType !== 1)
       return;
-    const f = l.attributes, h = i.attributes;
+    const f = c.attributes, h = i.attributes;
     for (const {
       name: m,
       value: a
     } of f)
-      /class/.test(m) ? Array.from(l.classList).every((p) => {
+      /class/.test(m) ? Array.from(c.classList).every((p) => {
         i.classList.contains(p) || i.classList.add(p);
       }) : (!h[m] || h[m] !== a) && i.setAttribute(m, a);
     for (const {
       name: m
     } of h)
       /class/.test(m) ? Array.from(i.classList).every((a) => {
-        l.classList.contains(a) || i.classList.remove(a);
+        c.classList.contains(a) || i.classList.remove(a);
       }) : f[m] || i.removeAttribute(m);
-  }, R = (l) => l.nodeType === 3 ? "text" : l.nodeType === 8 ? "comment" : l.tagName.toLowerCase(), T = (l) => l.childNodes && l.childNodes.length > 0 ? null : l.textContent, E = (l, i) => {
-    const f = i ? Array.from(i.childNodes) : [], h = l ? Array.from(l.childNodes) : [];
+  }, R = (c) => c.nodeType === 3 ? "text" : c.nodeType === 8 ? "comment" : c.tagName.toLowerCase(), T = (c) => c.childNodes && c.childNodes.length > 0 ? null : c.textContent, E = (c, i) => {
+    const f = i ? Array.from(i.childNodes) : [], h = c ? Array.from(c.childNodes) : [];
     let m = f.length - h.length;
     if (m > 0)
       for (; m > 0; m--)
@@ -280,19 +277,19 @@ const ie = new (ne = class {
     });
   };
   return {
-    html: (l, ...i) => {
+    html: (c, ...i) => {
       let f = "";
       const {
         length: h
-      } = l;
+      } = c;
       for (let a = 1; a < h; a++) {
         const p = i[a - 1];
         let g = !1;
-        if (f += l[a - 1], t.test(f) && e.test(f) && (f = f.replace(t, (x, _, V) => `${s}${a - 1}=${V || '"'}${_}${V ? "" : '"'}`), g = !0), !g)
+        if (f += c[a - 1], t.test(f) && e.test(f) && (f = f.replace(t, (x, _, V) => `${s}${a - 1}=${V || '"'}${_}${V ? "" : '"'}`), g = !0), !g)
           switch (!0) {
             case Array.isArray(p):
             case p instanceof DocumentFragment: {
-              f += `<!--${c}${a - 1}-->`;
+              f += `<!--${l}${a - 1}-->`;
               break;
             }
             case (typeof p == "object" && p !== null): {
@@ -303,12 +300,12 @@ const ie = new (ne = class {
               f += p;
           }
       }
-      f += l[h - 1];
+      f += c[h - 1];
       const m = C(f.trim());
       return U(m, i), v(m, i), m;
     },
-    render: (l, i) => {
-      l && !l.children.length ? (l.innerHTML = "", l.appendChild(i)) : E(i, l), d.forEach((f) => {
+    render: (c, i) => {
+      c && !c.children.length ? (c.innerHTML = "", c.appendChild(i)) : E(i, c), d.forEach((f) => {
         f();
       }), d = [];
     }
@@ -359,7 +356,7 @@ const Ce = {
   const s = document.createElement("style");
   return s.innerHTML = t, e && e.appendChild(s), s;
 }, Re = (t, e) => {
-  var s, r, c, o, ce, u, X, C;
+  var s, r, l, o, ce, u, X, C;
   if (t = {
     ...Ce,
     ...t
@@ -377,18 +374,18 @@ const Ce = {
       y(this, u);
       y(this, s, void 0);
       y(this, r, void 0);
-      y(this, c, void 0);
+      y(this, l, void 0);
       A(this, "renderCount", 0);
       P(this, r, this.attachShadow({
         mode: "open"
       })), Q || (n(this, r).adoptedStyleSheets = k.getComputedCss(t.styles, t.standalone)), this.getInstance = this.getInstance.bind(this), this.update = this.update.bind(this);
     }
     static get observedAttributes() {
-      return [...e.observedAttributes || []];
+      return e.observedAttributes || [];
     }
     update() {
       const v = n(this, s).render();
-      typeof v == "string" ? n(this, r).innerHTML = be(v) : we(n(this, r), v), Q && (t.styles && n(this, r).insertBefore(n(this, c), n(this, r).childNodes[0]), k.globalStyleTag && !t.standalone && n(this, r).insertBefore(document.importNode(k.globalStyleTag, !0), n(this, r).childNodes[0]));
+      typeof v == "string" ? n(this, r).innerHTML = be(v) : we(n(this, r), v), Q && (t.styles && n(this, r).insertBefore(n(this, l), n(this, r).childNodes[0]), k.globalStyleTag && !t.standalone && n(this, r).insertBefore(document.importNode(k.globalStyleTag, !0), n(this, r).childNodes[0]));
     }
     setProps(v) {
       var S, R;
@@ -424,8 +421,8 @@ const Ce = {
       var v, S;
       this.renderCount = 1, (S = (v = n(this, s)).unmount) == null || S.call(v);
     }
-  }, s = new WeakMap(), r = new WeakMap(), c = new WeakMap(), o = new WeakSet(), ce = function() {
-    Q && t.styles && P(this, c, se(t.styles));
+  }, s = new WeakMap(), r = new WeakMap(), l = new WeakMap(), o = new WeakSet(), ce = function() {
+    Q && t.styles && P(this, l, se(t.styles));
   }, u = new WeakSet(), X = function(v, S) {
     const R = new CustomEvent(v, {
       detail: S
@@ -443,8 +440,8 @@ const Ce = {
     ...Ae,
     ...t
   }, t.deps.some((r) => {
-    var c;
-    return ((c = r.__metadata__) == null ? void 0 : c.name) === "Renderer";
+    var l;
+    return ((l = r.__metadata__) == null ? void 0 : l.name) === "Renderer";
   }))
     throw Error("Renderer cannot be a dependency for a service. It should be used with component");
   const s = ae(e, t.deps);
@@ -458,8 +455,8 @@ const Ce = {
       break;
     }
     case "select": {
-      const s = t.type === "select-one", c = [...Array.from(t.options)].filter((o) => o.selected).map((o) => o.value ?? (o.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" "));
-      e = s ? c[0] : c;
+      const s = t.type === "select-one", l = [...Array.from(t.options)].filter((o) => o.selected).map((o) => o.value ?? (o.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" "));
+      e = s ? l[0] : l;
       break;
     }
     default: {
@@ -504,8 +501,8 @@ D = new WeakMap(), w = new WeakMap(), L = new WeakMap(), J = new WeakSet(), ue =
   for (const e in n(this, w)) {
     const s = n(this, w)[e].value, r = n(this, w)[e].validators;
     n(this, w)[e].errors = null;
-    for (const c of r) {
-      const o = c(s);
+    for (const l of r) {
+      const o = l(s);
       o !== null && (n(this, L).has(e) ? (n(this, L).set(e, {
         ...n(this, L).get(e),
         ...o
@@ -535,8 +532,8 @@ const Fe = (t) => {
 }, Oe = (t) => {
   let e = t;
   return [e, (r) => {
-    let c;
-    pe(r) ? c = r(e) : c = r, Object.assign(e, c);
+    let l;
+    pe(r) ? l = r(e) : l = r, Object.assign(e, l);
   }];
 };
 class je {
@@ -595,12 +592,12 @@ class ke {
 const re = (t) => Pe(t) ? t : Le(t) ? _e(Promise.resolve(t)) : Ne(t), j = class {
   static checkParams(e, s) {
     let r = 0;
-    const c = {}, o = s.paramCount;
+    const l = {}, o = s.paramCount;
     for (let d = 0; d < e.length; d++) {
       const u = s.params[d];
-      u.indexOf(":") >= 0 && (c[u.split(":")[1]] = e[d].split("?")[0], r += 1);
+      u.indexOf(":") >= 0 && (l[u.split(":")[1]] = e[d].split("?")[0], r += 1);
     }
-    return r === o ? c : {};
+    return r === o ? l : {};
   }
   static getParamCount(e) {
     let s = 0;
@@ -681,12 +678,12 @@ H = new WeakMap(), I = new WeakMap(), z = new WeakMap(), Y = new WeakSet(), he =
   } else
     return e === s;
 }, W = new WeakSet(), B = function(e, s) {
-  const r = e.split("/").filter((d) => d.length > 0), c = F.routeList.filter((d) => {
+  const r = e.split("/").filter((d) => d.length > 0), l = F.routeList.filter((d) => {
     if (d.params.length === r.length && N(this, G, de).call(this, d.url, e))
       return d;
     if (d.url === e)
       return d;
-  }), o = c.length > 0 ? c[0] : null;
+  }), o = l.length > 0 ? l[0] : null;
   o && (n(this, H).path = e, n(this, H).state = {
     ...s || {}
   }, re(o.canActivate()).subscribe((d) => {

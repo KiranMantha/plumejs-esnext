@@ -89,7 +89,7 @@ const registerElement = (componentOptions, klass) => {
       renderCount = 0;
 
       static get observedAttributes() {
-        return [...(klass.observedAttributes || [])];
+        return klass.observedAttributes || [];
       }
 
       constructor() {
