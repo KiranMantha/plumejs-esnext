@@ -29,7 +29,6 @@ class DialogService {
         }
       }),
       instance = element.getInstance();
-    instance.showModal();
     instance.getDialogActions().then((close) => {
       if (close) {
         this.#removeComponent(element);
@@ -67,6 +66,9 @@ class DialogService {
     const element = document.createElement(selector);
     document.body.appendChild(element);
     element.setProps(props);
+    Promise.resolve().then(() => {
+      element.getInstance().showModal();
+    });
     return element;
   }
 
@@ -79,7 +81,6 @@ class DialogService {
         alertOptions: { message, isAlert }
       }),
       instance = element.getInstance();
-    instance.showModal();
     instance.getDialogActions().then((close) => {
       if (close) {
         this.#removeComponent(element);
