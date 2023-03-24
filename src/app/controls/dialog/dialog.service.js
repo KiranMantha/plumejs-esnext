@@ -1,4 +1,4 @@
-import { Service, fromNativeEvent } from '../../../lib';
+import { fromEvent, Injectable } from '../../../lib';
 
 const DEFAULT_MODAL_PROPS = {
   modalTitle: '',
@@ -8,7 +8,8 @@ const DEFAULT_MODAL_PROPS = {
   renderTemplate: () => html``
 };
 
-export class DialogService {
+@Injectable()
+class DialogService {
   alert(message) {
     return this.#prompt(message, true);
   }
@@ -28,7 +29,6 @@ export class DialogService {
         }
       }),
       instance = element.getInstance();
-    instance.showModal();
     instance.getDialogActions().then((close) => {
       if (close) {
         this.#removeComponent(element);
@@ -37,7 +37,7 @@ export class DialogService {
 
     if (!_props.preventBackdropClose) {
       const rect = instance.dialogRef.getBoundingClientRect();
-      const unsubscribe = fromNativeEvent(instance.dialogRef, 'click', (event) => {
+      const unsubscribe = fromEvent(instance.dialogRef, 'click', (event) => {
         const isInDialog =
           rect.top <= event.clientY &&
           event.clientY <= rect.top + rect.height &&
@@ -51,7 +51,7 @@ export class DialogService {
     }
 
     if (_props.preventEsc) {
-      fromNativeEvent(instance.dialogRef, 'cancel', (event) => {
+      fromEvent(instance.dialogRef, 'cancel', (event) => {
         event.preventDefault();
       });
     }
@@ -66,6 +66,9 @@ export class DialogService {
     const element = document.createElement(selector);
     document.body.appendChild(element);
     element.setProps(props);
+    queueMicrotask(() => {
+      element.getInstance().showModal();
+    });
     return element;
   }
 
@@ -78,7 +81,6 @@ export class DialogService {
         alertOptions: { message, isAlert }
       }),
       instance = element.getInstance();
-    instance.showModal();
     instance.getDialogActions().then((close) => {
       if (close) {
         this.#removeComponent(element);
@@ -90,4 +92,4 @@ export class DialogService {
   }
 }
 
-Service(DialogService);
+export { DialogService };

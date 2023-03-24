@@ -10,14 +10,14 @@ function promisify() {
 
 class BaseDialog {
   dialogRef;
-  #userInput;
-  #dialogActions;
+  userInput;
+  dialogActions;
   resolveDialogActions;
   resolveUserInput;
 
   constructor() {
-    [this.#userInput, this.resolveUserInput] = promisify();
-    [this.#dialogActions, this.resolveDialogActions] = promisify();
+    [this.userInput, this.resolveUserInput] = promisify();
+    [this.dialogActions, this.resolveDialogActions] = promisify();
   }
 
   showModal() {
@@ -30,32 +30,33 @@ class BaseDialog {
   }
 
   getUserInput() {
-    return this.#userInput;
+    return this.userInput;
   }
 
   getDialogActions() {
-    return this.#dialogActions;
+    return this.dialogActions;
   }
 }
 
+@Component({ selector: 'app-modal-dialog' })
 class ModalDialog extends BaseDialog {
-  ObservedProperties = ['modalData'];
+  static observedProperties = ['modalData'];
 
   modalData;
-  #modalClosedPromise;
-  #resolveModalClose;
+  modalClosedPromise;
+  resolveModalClose;
 
   constructor() {
     super();
-    [this.#modalClosedPromise, this.#resolveModalClose] = promisify();
+    [this.modalClosedPromise, this.resolveModalClose] = promisify();
   }
 
   afterClosed() {
-    return this.#modalClosedPromise;
+    return this.modalClosedPromise;
   }
 
   onDialogClosed() {
-    this.#resolveModalClose();
+    this.resolveModalClose();
     this.resolveDialogActions(true);
   }
 
@@ -97,8 +98,9 @@ class ModalDialog extends BaseDialog {
   }
 }
 
+@Component({ selector: 'app-alert-dialog' })
 class AlertDialog extends BaseDialog {
-  ObservedProperties = ['alertOptions'];
+  static observedProperties = ['alertOptions'];
 
   alertOptions;
 
@@ -166,6 +168,3 @@ class AlertDialog extends BaseDialog {
     }
   }
 }
-
-Component({ selector: 'app-alert-dialog' }, AlertDialog);
-Component({ selector: 'app-modal-dialog' }, ModalDialog);

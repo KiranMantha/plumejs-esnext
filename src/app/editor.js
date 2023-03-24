@@ -1,7 +1,8 @@
-import { Component, html } from '../lib';
 import MarkdownIt from 'markdown-it';
+import { Component, html } from '../lib';
 import editorStyles from './editor.scss';
 
+@Component({ selector: 'app-editor', styles: editorStyles })
 class Editor {
   editorNode;
   previewNode;
@@ -47,5 +48,3 @@ class Editor {
     `;
   }
 }
-
-Component({ selector: 'app-editor', styles: editorStyles }, Editor);

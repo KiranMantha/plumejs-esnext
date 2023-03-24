@@ -1,22 +1,18 @@
-//https://codeburst.io/angular-2-simple-infinite-scroller-directive-with-rxjs-observables-a989b12d4fb1
-//https://medium.com/@sgroff04/configure-eslint-prettier-and-flow-in-vs-code-for-react-development-c9d95db07213
-
-import { Component, html, registerRouterComponent, render, Renderer, Service } from './lib';
-
-import { Router } from './lib/router';
-
-import styles from './base.scss?inline';
-
 import { Observable } from 'rxjs';
+import styles from './base.scss?inline';
+import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
+import { Router } from './lib/router';
 
 registerRouterComponent();
 
+@Injectable()
 class TestService {
   getGreeting() {
     return 'hello world';
   }
 }
 
+@Component({ selector: 'test-ele', deps: [Renderer] })
 class TestComponent {
   constructor(renderer) {}
 
@@ -43,6 +39,12 @@ class TestComponent {
   }
 }
 
+@Component({
+  selector: 'app-root',
+  styles: styles,
+  root: true,
+  deps: [TestService, Router]
+})
 class AppComponent {
   greet;
   divRef;
@@ -119,6 +121,11 @@ class AppComponent {
       path: '/editor',
       template: '<app-editor></app-editor>',
       templatePath: () => import('./app/editor')
+    },
+    {
+      path: '/experiments',
+      template: '<app-experiments></app-experiments>',
+      templatePath: () => import('./app/experiments')
     }
   ];
 
@@ -166,13 +173,13 @@ class AppComponent {
           <nav>
             <ul>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/home')}>Items Route</a>
+                <a href="#/home">Items Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/persons/123/testuser?a=123')}>Persons Route</a>
+                <a href="#/persons/123/testuser?a=123">Persons Route</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/form')}>Sample Form</a>
+                <a href="#/form">Sample Form</a>
               </li>
               <li>
                 <a
@@ -185,13 +192,16 @@ class AppComponent {
                 >
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/controls')}>Controls</a>
+                <a href="#/controls">Controls</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/nested-table')}>Nested Table</a>
+                <a href="#/nested-table">Nested Table</a>
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
+                <a href="#/editor">Editor</a>
+              </li>
+              <li>
+                <a href="#/experiments">Experiments</a>
               </li>
             </ul>
           </nav>
@@ -214,7 +224,14 @@ class AppComponent {
               data-adj="${this.setClass}"
             >
               ${this.greet}
-              <input value="${this.greet}" oninput="${(e) => console.log(e.target.value)}" />
+              <input
+                value="${this.greet}"
+                oninput="${(e) => {
+                  const value = e.target.value;
+                  console.log(value);
+                  this.greet = value;
+                }}"
+              />
 
               ${(() => {
                 if (this.setClass) {
@@ -246,16 +263,4 @@ class AppComponent {
   }
 }
 
-Service(TestService);
-Component({ selector: 'test-ele', deps: [Renderer] }, TestComponent);
-Component(
-  {
-    selector: 'app-root',
-    styles: styles,
-    root: true,
-    deps: [TestService, Router]
-  },
-  AppComponent
-);
-
-render(document.getElementById('test'), html` <app-root data-adj="${'hello world'}"></app-root> `);
+render(document.getElementById('test'), html`<app-root data-adj="${'hello world'}"></app-root>`);

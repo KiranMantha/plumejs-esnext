@@ -1,18 +1,17 @@
-import { Component, html, Renderer } from '../index';
+import { Component, html } from '../index';
 import { InternalRouter } from './internalRouter.service';
 
 const registerRouterComponent = () => {
   class RouterComponent {
-    #template = '';
-    #subscriptions;
+    template = '';
+    subscriptions;
     update;
 
-    constructor(internalRouterSrvc, renderer) {}
+    constructor(internalRouterSrvc) {}
 
     beforeMount() {
-      this.#subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-        this.#template = tmpl;
-        this.renderer.update();
+      this.subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+        this.template = tmpl;
       });
       this.internalRouterSrvc.startHashChange();
     }
@@ -23,21 +22,21 @@ const registerRouterComponent = () => {
     }
 
     unmount() {
-      this.#subscriptions();
+      this.subscriptions();
       this.internalRouterSrvc.stopHashChange();
     }
 
     render() {
-      if (this.#template) {
-        const stringArray = [`${this.#template}`];
-        stringArray.raw = [`${this.#template}`];
+      if (this.template) {
+        const stringArray = [`${this.template}`];
+        stringArray.raw = [`${this.template}`];
         return html(stringArray);
       } else {
         return html``;
       }
     }
   }
-  Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] }, RouterComponent);
+  Component({ selector: 'router-outlet', deps: [InternalRouter] })(RouterComponent);
 };
 
 export { registerRouterComponent };

@@ -1,5 +1,6 @@
-import { Component, html, render, Renderer, useFormFields } from '../lib';
+import { Component, html, render, useFormFields } from '../lib';
 
+@Component({ selector: 'app-sample-form' })
 class FormComponent {
   sampleform1;
   createChangeHandler1;
@@ -9,7 +10,7 @@ class FormComponent {
   createChangeHandler2;
   formOutputRef2;
 
-  constructor(renderer) {}
+  constructor() {}
 
   beforeMount() {
     [this.sampleform1, this.createChangeHandler1] = useFormFields({
@@ -122,7 +123,6 @@ class FormComponent {
                 e.preventDefault();
                 this.sampleform1.reset();
                 console.log(this.sampleform1);
-                this.renderer.update();
               }}
             >
               Reset
@@ -180,5 +180,3 @@ class FormComponent {
     `;
   }
 }
-
-Component({ selector: 'app-sample-form', deps: [Renderer] }, FormComponent);

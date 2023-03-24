@@ -1,10 +1,18 @@
 import path from 'path';
 import { defineConfig } from 'vite';
+import babel from 'vite-plugin-babel';
 import viteCompression from 'vite-plugin-compression';
 
 export default defineConfig({
-  base: '/',
+  base: './',
   plugins: [
+    babel({
+      babelConfig: {
+        babelrc: false,
+        configFile: false,
+        plugins: [['@babel/plugin-proposal-decorators', { loose: true, version: '2022-03' }]]
+      }
+    }),
     viteCompression({
       algorithm: 'brotliCompress',
       ext: '.br'
@@ -12,6 +20,7 @@ export default defineConfig({
   ],
   build: {
     outDir: 'build',
+    emptyOutDir: true,
     sourcemap: false,
     lib: {
       entry: path.resolve(__dirname, 'src/lib/index.js'),

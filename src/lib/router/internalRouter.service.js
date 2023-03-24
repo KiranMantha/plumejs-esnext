@@ -1,9 +1,9 @@
-import { Service } from '../service';
-import { fromNativeEvent } from '../utils';
+import { Injectable } from '../decorators';
+import { fromEvent } from '../utils';
 import { SubjectObs, wrapIntoObservable } from './observable-util';
 import { StaticRouter } from './staticRouter';
 
-export class InternalRouter {
+class InternalRouter {
   #currentRoute = {
     path: '',
     routeParams: new Map(),
@@ -14,7 +14,7 @@ export class InternalRouter {
   #unSubscribeHashEvent;
 
   startHashChange() {
-    this.#unSubscribeHashEvent = fromNativeEvent(window, 'hashchange', () => {
+    this.#unSubscribeHashEvent = fromEvent(window, 'hashchange', () => {
       this.#registerOnHashChange();
     });
   }
@@ -33,7 +33,7 @@ export class InternalRouter {
 
   navigateTo(path = '', state) {
     if (path) {
-      let windowHash = window.location.hash.replace(/^#/, '');
+      const windowHash = window.location.hash.replace(/^#/, '');
       if (windowHash === path) {
         this.#navigateTo(path, state);
       }
@@ -50,7 +50,7 @@ export class InternalRouter {
 
   #routeMatcher(route, path) {
     if (route) {
-      let _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
+      const _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
       return path.match(_matcher);
     } else {
       return route === path;
@@ -58,46 +58,46 @@ export class InternalRouter {
   }
 
   #navigateTo(path, state) {
-    let uParams = path.split('/').filter((h) => {
+    const uParams = path.split('/').filter((h) => {
       return h.length > 0;
     });
-    let routeArr = StaticRouter.routeList.filter((route) => {
-      if (route.Params.length === uParams.length && this.#routeMatcher(route.Url, path)) {
+    const routeArr = StaticRouter.routeList.filter((route) => {
+      if (route.params.length === uParams.length && this.#routeMatcher(route.url, path)) {
         return route;
-      } else if (route.Url === path) {
+      } else if (route.url === path) {
         return route;
       }
     });
-    let routeItem = routeArr.length > 0 ? routeArr[0] : null;
+    const routeItem = routeArr.length > 0 ? routeArr[0] : null;
     if (routeItem) {
       this.#currentRoute.path = path;
       this.#currentRoute.state = { ...(state || {}) };
       wrapIntoObservable(routeItem.canActivate()).subscribe((val) => {
         if (!val) return;
-        let _params = StaticRouter.checkParams(uParams, routeItem);
+        const _params = StaticRouter.checkParams(uParams, routeItem);
         if (Object.keys(_params).length > 0 || path) {
           this.#currentRoute.routeParams = new Map(Object.entries(_params));
           const entries = window.location.hash.split('?')[1]
             ? new URLSearchParams(window.location.hash.split('?')[1]).entries()
             : [];
           this.#currentRoute.queryParams = new Map(entries);
-
-          if (!routeItem.IsRegistered) {
-            if (routeItem.TemplatePath) {
-              wrapIntoObservable(routeItem.TemplatePath()).subscribe(() => {
-                routeItem.IsRegistered = true;
-                this.#template.next(routeItem.Template);
+          if (!routeItem.isRegistered) {
+            if (routeItem.templatePath) {
+              wrapIntoObservable(routeItem.templatePath()).subscribe(() => {
+                routeItem.isRegistered = true;
+                this.#template.next(routeItem.template);
               });
             }
           } else {
-            this.#template.next(routeItem.Template);
+            this.#template.next(routeItem.template);
           }
         } else {
-          this.navigateTo(routeItem.redirectTo);
+          this.navigateTo(routeItem.redirectTo, state);
         }
       });
     }
   }
 }
 
-Service(InternalRouter);
+Injectable()(InternalRouter);
+export { InternalRouter };

@@ -1,16 +1,14 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_NOT_SUPPORTED } from './utils';
+import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
  */
 class Renderer {
-  /**
-   * {ShadowRoot} used to traverse dom tree
-   */
-  shadowRoot;
+  #shadowRoot;
+  #hostElement;
 
   /**
    * {() => void} used to update DOM with new state
@@ -25,6 +23,25 @@ class Renderer {
 
   static get __metadata__() {
     return { name: 'Renderer' };
+  }
+
+  /**
+   * {ShadowRoot} used to traverse dom tree
+   */
+  get shadowRoot() {
+    return this.#shadowRoot;
+  }
+
+  /**
+   * {HostElement} used to do read native properties on host element
+   */
+  get hostElement() {
+    return this.#hostElement;
+  }
+
+  constructor(_hostELement, _shadowRoot) {
+    this.#hostElement = _hostELement;
+    this.#shadowRoot = _shadowRoot;
   }
 }
 
@@ -48,11 +65,7 @@ const createStyleTag = (content, where) => {
  * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
-const Component = (componentOptions, klass) => {
-  if (window.customElements.get(componentOptions.selector)) {
-    return;
-  }
-
+const registerElement = (componentOptions, klass) => {
   // mapping with defaults
   componentOptions = { ...DEFAULT_COMPONENT_OPTIONS, ...componentOptions };
   componentOptions.styles = componentOptions.styles.toString();
@@ -73,6 +86,7 @@ const Component = (componentOptions, klass) => {
       #klass;
       #shadow;
       #componentStyleTag;
+      renderCount = 0;
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -88,16 +102,32 @@ const Component = (componentOptions, klass) => {
           );
         }
         this.getInstance = this.getInstance.bind(this);
+        this.update = this.update.bind(this);
       }
 
-      emulateComponent() {
+      /**
+       * user defined functions
+       */
+      #emulateComponent() {
         if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
           this.#componentStyleTag = createStyleTag(componentOptions.styles);
         }
       }
 
+      #emitEvent(eventName, data) {
+        const event = new CustomEvent(eventName, {
+          detail: data
+        });
+        this.dispatchEvent(event);
+      }
+
       update() {
-        render(this.#shadow, (() => this.#klass.render())());
+        const renderValue = this.#klass.render();
+        if (typeof renderValue === 'string') {
+          this.#shadow.innerHTML = sanitizeHTML(renderValue);
+        } else {
+          render(this.#shadow, renderValue);
+        }
         if (CSS_SHEET_NOT_SUPPORTED) {
           componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
           if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
@@ -109,40 +139,36 @@ const Component = (componentOptions, klass) => {
         }
       }
 
-      emitEvent(eventName, data) {
-        const event = new CustomEvent(eventName, {
-          detail: data
-        });
-        this.dispatchEvent(event);
-      }
-
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
-          this.#klass[key] = value;
+          if (klass.observedProperties.find((property) => property === key)) {
+            this.#klass[key] = value;
+          }
         }
-        this.#klass.onPropsChanged?.();
-        this.update();
+        this.#klass.onPropertiesChanged?.();
       }
 
       getInstance() {
         return this.#klass;
       }
 
+      /**
+       * Default html element events
+       */
       connectedCallback() {
-        this.emulateComponent();
-        const rendererInstance = new Renderer();
-        rendererInstance.shadowRoot = this.#shadow;
+        this.#emulateComponent();
+        const rendererInstance = new Renderer(this, this.#shadow);
         rendererInstance.update = () => {
           this.update();
         };
         rendererInstance.emitEvent = (eventName, data) => {
-          this.emitEvent(eventName, data);
+          this.#emitEvent(eventName, data);
         };
-        this.#klass = instantiate(klass, componentOptions.deps, rendererInstance);
+        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
         this.#klass.beforeMount?.();
         this.update();
         this.#klass.mount?.();
-        this.emitEvent(
+        this.#emitEvent(
           'bindprops',
           {
             setProps: (propsObj) => {
@@ -154,14 +180,15 @@ const Component = (componentOptions, klass) => {
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
-        this.#klass.onNativeAttributeChanges?.(name, oldValue, newValue);
+        this.#klass.onAttributesChanged?.(name, oldValue, newValue);
       }
 
       disconnectedCallback() {
+        this.renderCount = 1;
         this.#klass.unmount?.();
       }
     }
   );
 };
 
-export { Component, Renderer };
+export { registerElement, Renderer };

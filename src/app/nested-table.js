@@ -1,7 +1,21 @@
 import { Component, html } from '../lib';
+import './editable-table';
 
+@Component({
+  selector: 'app-row-item',
+  styles: `:host {
+      display: table-row-group;
+  }
+  .hide-row {
+      display: none;
+  }
+  :host > tr > td[colspan] table {
+      margin: 0;
+  }
+  `
+})
 class RowItem {
-  ObservedProperties = ['category'];
+  static observedProperties = ['category'];
 
   category;
   nestedRow;
@@ -71,6 +85,9 @@ class RowItem {
   }
 }
 
+@Component({
+  selector: 'app-nested-table'
+})
 class NestedTable {
   static observedAttributes = ['name'];
 
@@ -98,7 +115,7 @@ class NestedTable {
     }
   ];
 
-  onNativeAttributeChanges(name, oldValue, newValue) {
+  onAttributesChanged(name, oldValue, newValue) {
     console.log(name, oldValue, newValue);
   }
 
@@ -123,29 +140,9 @@ class NestedTable {
           ></app-row-item>`;
         })}
       </table>
+      <br />
+      <br />
+      <app-editable-table></app-editable-table>
     `;
   }
 }
-
-Component(
-  {
-    selector: 'app-row-item',
-    styles: `:host {
-      display: table-row-group;
-  }
-  .hide-row {
-      display: none;
-  }
-  :host > tr > td[colspan] table {
-      margin: 0;
-  }
-  `
-  },
-  RowItem
-);
-Component(
-  {
-    selector: 'app-nested-table'
-  },
-  NestedTable
-);
