@@ -407,7 +407,7 @@ const Ce = {
         this.update();
       }, v.emitEvent = (O, ee) => {
         N(this, u, X).call(this, O, ee);
-      }, P(this, s, ae(ve(this, e), t.deps, v)), (R = (S = n(this, s)).beforeMount) == null || R.call(S), this.renderCount === 0 && this.update(), (E = (T = n(this, s)).mount) == null || E.call(T), N(this, u, X).call(this, "bindprops", {
+      }, P(this, s, ae(ve(this, e), t.deps, v)), (R = (S = n(this, s)).beforeMount) == null || R.call(S), this.update(), (E = (T = n(this, s)).mount) == null || E.call(T), N(this, u, X).call(this, "bindprops", {
         setProps: (O) => {
           this.setProps(O);
         }

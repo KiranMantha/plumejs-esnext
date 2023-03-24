@@ -166,9 +166,7 @@ const registerElement = (componentOptions, klass) => {
         };
         this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
         this.#klass.beforeMount?.();
-        if (this.renderCount === 0) {
-          this.update();
-        }
+        this.update();
         this.#klass.mount?.();
         this.#emitEvent(
           'bindprops',
