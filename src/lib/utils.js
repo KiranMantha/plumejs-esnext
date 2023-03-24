@@ -34,6 +34,11 @@ const fromEvent = (target, eventName, onNext, options = false) => {
   return unsubscribe;
 };
 
+/**
+ * sanitize html string to prevent XSS attacks
+ * @param {string} htmlString
+ * @return {string} sanitizedHTML
+ */
 const sanitizeHTML = (htmlString) => {
   /**
    * Convert the string to an HTML document
@@ -108,4 +113,37 @@ const sanitizeHTML = (htmlString) => {
   return html.innerHTML;
 };
 
-export { isFunction, isObject, getArgs, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML };
+const debounceRender = function (elementInstance) {
+  if (elementInstance.renderCount === 1) {
+    queueMicrotask(() => {
+      elementInstance.update();
+      elementInstance.renderCount = 0;
+    });
+  }
+};
+
+const proxifiedClass = (elementInstance, target) => {
+  const constructorArgs = getArgs(target);
+
+  return class extends target {
+    constructor(...args) {
+      super(...args);
+      args.forEach((arg, i) => {
+        this[constructorArgs[i]] = arg;
+      });
+      return new Proxy(this, {
+        get(obj, prop, receiver) {
+          return Reflect.get(obj, prop, receiver);
+        },
+        set(obj, prop, value, receiver) {
+          Reflect.set(obj, prop, value, receiver);
+          ++elementInstance.renderCount;
+          debounceRender(elementInstance);
+          return true;
+        }
+      });
+    }
+  };
+};
+
+export { isFunction, isObject, getArgs, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass };

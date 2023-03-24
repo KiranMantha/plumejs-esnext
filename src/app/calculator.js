@@ -7,7 +7,7 @@ class CalculatorComponent {
   btnValues;
   calc;
   setCalc;
-  outputNode;
+  outputValue = 0;
 
   constructor(routerSrvc) {}
 
@@ -123,20 +123,13 @@ class CalculatorComponent {
         break;
       }
     }
-    this.outputNode.innerHTML = this.calc.num ? this.calc.num : this.calc.res;
+    this.outputValue = this.calc.num ? this.calc.num : this.calc.res;
   }
 
   render() {
     return html`
       <div class="wrapper">
-        <div
-          class="screen"
-          ref=${(node) => {
-            this.outputNode = node;
-          }}
-        >
-          0
-        </div>
+        <div class="screen">${this.outputValue}</div>
         <div class="button-box">
           ${this.btnValues.flat().map((btn, i) => {
             return html`
