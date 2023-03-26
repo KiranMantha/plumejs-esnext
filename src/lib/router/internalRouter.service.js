@@ -33,14 +33,14 @@ class InternalRouter {
   }
 
   navigateTo(path = '', state) {
+    this.#routeStateMap.clear();
     if (path) {
       const windowHash = window.location.hash.replace(/^#/, '');
       if (windowHash === path) {
         this.#navigateTo(path, state);
       }
-      window.location.hash = '#' + path;
-      this.#routeStateMap.clear();
       this.#routeStateMap.set(path, state);
+      window.location.hash = '#' + path;
     } else {
       this.#navigateTo(path, state);
     }
