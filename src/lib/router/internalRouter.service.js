@@ -12,6 +12,7 @@ class InternalRouter {
   };
   #template = new SubjectObs();
   #unSubscribeHashEvent;
+  #routeStateMap = new Map();
 
   startHashChange() {
     this.#unSubscribeHashEvent = fromEvent(window, 'hashchange', () => {
@@ -38,6 +39,8 @@ class InternalRouter {
         this.#navigateTo(path, state);
       }
       window.location.hash = '#' + path;
+      this.#routeStateMap.clear();
+      this.#routeStateMap.set(path, state);
     } else {
       this.#navigateTo(path, state);
     }
@@ -45,7 +48,8 @@ class InternalRouter {
 
   #registerOnHashChange() {
     const path = window.location.hash.replace(/^#/, '');
-    this.#navigateTo(path, null);
+    const state = this.#routeStateMap.get(path);
+    this.#navigateTo(path, state);
   }
 
   #routeMatcher(route, path) {
