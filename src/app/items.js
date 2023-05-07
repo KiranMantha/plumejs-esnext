@@ -53,7 +53,15 @@ class ItemsComponent {
       .get(this.apiUrl)
       .then((response) => response.data)
       .then((persons) => {
-        this.personsList = [...persons];
+        this.personsList = persons;
+
+        setTimeout(() => {
+          this.personsList.push({
+            name: 'test',
+            age: '20',
+            salary: '30000'
+          });
+        }, 2000);
       });
   }
 

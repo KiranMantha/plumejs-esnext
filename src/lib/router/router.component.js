@@ -3,15 +3,14 @@ import { InternalRouter } from './internalRouter.service';
 
 const registerRouterComponent = () => {
   class RouterComponent {
-    template = '';
-    subscriptions;
-    update;
+    _template = '';
+    _subscriptions;
 
     constructor(internalRouterSrvc) {}
 
     beforeMount() {
-      this.subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-        this.template = tmpl;
+      this._subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+        this._template = tmpl;
       });
       this.internalRouterSrvc.startHashChange();
     }
@@ -22,14 +21,14 @@ const registerRouterComponent = () => {
     }
 
     unmount() {
-      this.subscriptions();
+      this._subscriptions();
       this.internalRouterSrvc.stopHashChange();
     }
 
     render() {
-      if (this.template) {
-        const stringArray = [`${this.template}`];
-        stringArray.raw = [`${this.template}`];
+      if (this._template) {
+        const stringArray = [`${this._template}`];
+        stringArray.raw = [`${this._template}`];
         return html(stringArray);
       } else {
         return html``;

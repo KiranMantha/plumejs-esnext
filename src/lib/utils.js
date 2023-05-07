@@ -125,23 +125,28 @@ const debounceRender = function (elementInstance) {
 const proxifiedClass = (elementInstance, target) => {
   const constructorArgs = getArgs(target);
 
+  const handler = () => ({
+    get(obj, prop) {
+      if (['[object Object]', '[object Array]'].indexOf(Object.prototype.toString.call(obj[prop])) > -1) {
+        return new Proxy(obj[prop], handler());
+      }
+      return obj[prop];
+    },
+    set(obj, prop, value) {
+      obj[prop] = value;
+      ++elementInstance.renderCount;
+      debounceRender(elementInstance);
+      return true;
+    }
+  });
+
   return class extends target {
     constructor(...args) {
       super(...args);
       args.forEach((arg, i) => {
         this[constructorArgs[i]] = arg;
       });
-      return new Proxy(this, {
-        get(obj, prop, receiver) {
-          return Reflect.get(obj, prop, receiver);
-        },
-        set(obj, prop, value, receiver) {
-          Reflect.set(obj, prop, value, receiver);
-          ++elementInstance.renderCount;
-          debounceRender(elementInstance);
-          return true;
-        }
-      });
+      return new Proxy(this, handler());
     }
   };
 };
