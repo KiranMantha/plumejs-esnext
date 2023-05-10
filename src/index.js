@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import styles from './base.scss?inline';
-import { Component, html, Injectable, registerRouterComponent, render } from './lib';
+import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
 import { Router } from './lib/router';
 
 registerRouterComponent();
@@ -12,8 +12,9 @@ class TestService {
   }
 }
 
-@Component({ selector: 'test-ele' })
+@Component({ selector: 'test-ele', deps: [Renderer] })
 class TestComponent {
+  constructor(renderer) {}
   inputVal = '';
 
   emitDataToParent() {
