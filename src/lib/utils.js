@@ -127,7 +127,10 @@ const proxifiedClass = (elementInstance, target) => {
 
   const handler = () => ({
     get(obj, prop) {
-      if (['[object Object]', '[object Array]'].indexOf(Object.prototype.toString.call(obj[prop])) > -1) {
+      if (
+        ['[object Object]', '[object Array]'].indexOf(Object.prototype.toString.call(obj[prop])) > -1 &&
+        !('__metadata__' in obj[prop])
+      ) {
         return new Proxy(obj[prop], handler());
       }
       return obj[prop];
@@ -151,4 +154,12 @@ const proxifiedClass = (elementInstance, target) => {
   };
 };
 
-export { isFunction, isObject, getArgs, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass };
+const promisify = () => {
+  let resolver;
+  const promise = new Promise((resolve) => {
+    resolver = resolve;
+  });
+  return [promise, resolver];
+};
+
+export { isFunction, isObject, getArgs, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass, promisify };

@@ -21,8 +21,8 @@ class Renderer {
    */
   emitEvent;
 
-  static get __metadata__() {
-    return { name: 'Renderer' };
+  get __metadata__() {
+    return { name: 'RENDERER' };
   }
 
   /**

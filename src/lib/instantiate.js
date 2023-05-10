@@ -5,7 +5,7 @@ const instantiate = (klass, deps, rendererInstance) => {
   if (deps.length > 0) {
     const services = [];
     for (const dependency of deps) {
-      if (!dependency.__metadata__) {
+      if (dependency.prototype.__metadata__.name !== 'RENDERER') {
         services.push(Injector.getService(dependency));
       } else {
         services.push(rendererInstance);
