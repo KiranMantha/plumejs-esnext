@@ -29,61 +29,61 @@ const _getTargetValue = (target) => {
 };
 
 class Form {
-  #initialValues;
-  #controls;
-  #errors = new Map();
+  _initialValues;
+  _controls;
+  _errors = new Map();
 
   constructor(initialValues, controls) {
-    this.#initialValues = initialValues;
-    this.#controls = controls;
+    this._initialValues = initialValues;
+    this._controls = controls;
   }
 
   get errors() {
-    return this.#errors;
+    return this._errors;
   }
 
   get valid() {
-    this.#checkValidity();
-    return this.#errors.size ? false : true;
+    this._checkValidity();
+    return this._errors.size ? false : true;
   }
 
   get value() {
     const values = {};
-    for (const [key, value] of Object.entries(this.#controls)) {
+    for (const [key, value] of Object.entries(this._controls)) {
       values[key] = value.value;
     }
     return values;
   }
 
   get(controlName) {
-    return this.#controls[controlName];
+    return this._controls[controlName];
   }
 
   reset(obj = {}) {
-    for (const key in this.#controls) {
-      this.#controls[key].value = obj[key] || this.#initialValues[key];
+    for (const key in this._controls) {
+      this._controls[key].value = obj[key] || this._initialValues[key];
     }
-    this.#errors.clear();
+    this._errors.clear();
   }
 
-  #checkValidity() {
-    this.#errors.clear();
-    for (const key in this.#controls) {
-      const value = this.#controls[key].value;
-      const validators = this.#controls[key].validators;
-      this.#controls[key].errors = null;
+  _checkValidity() {
+    this._errors.clear();
+    for (const key in this._controls) {
+      const value = this._controls[key].value;
+      const validators = this._controls[key].validators;
+      this._controls[key].errors = null;
       for (const validator of validators) {
         const validity = validator(value);
         if (validity !== null) {
-          if (this.#errors.has(key)) {
-            this.#errors.set(key, { ...this.#errors.get(key), ...validity });
-            this.#controls[key].errors = {
-              ...this.#controls[key].errors,
+          if (this._errors.has(key)) {
+            this._errors.set(key, { ...this._errors.get(key), ...validity });
+            this._controls[key].errors = {
+              ...this._controls[key].errors,
               ...validity
             };
           } else {
-            this.#errors.set(key, validity);
-            this.#controls[key].errors = validity;
+            this._errors.set(key, validity);
+            this._controls[key].errors = validity;
           }
         }
       }

@@ -127,10 +127,8 @@ const proxifiedClass = (elementInstance, target) => {
 
   const handler = () => ({
     get(obj, prop) {
-      if (
-        ['[object Object]', '[object Array]'].indexOf(Object.prototype.toString.call(obj[prop])) > -1 &&
-        !('__metadata__' in obj[prop])
-      ) {
+      const propertyType = Object.prototype.toString.call(obj[prop]);
+      if (['[object Object]', '[object Array]'].indexOf(propertyType) > -1 && !('__metadata__' in obj[prop])) {
         return new Proxy(obj[prop], handler());
       }
       return obj[prop];

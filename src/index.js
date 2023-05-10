@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import styles from './base.scss?inline';
-import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
+import { Component, html, Injectable, registerRouterComponent, render } from './lib';
 import { Router } from './lib/router';
 
 registerRouterComponent();
@@ -12,14 +12,20 @@ class TestService {
   }
 }
 
-@Component({ selector: 'test-ele', deps: [Renderer] })
+@Component({ selector: 'test-ele' })
 class TestComponent {
-  constructor(renderer) {}
+  inputVal = '';
 
   emitDataToParent() {
     this.renderer.emitEvent('customoutput', {
       greet: 'greetings from child'
     });
+  }
+
+  handleInput(e) {
+    const value = e.target.value;
+    console.log(value);
+    this.inputVal = value;
   }
 
   render() {
@@ -34,6 +40,11 @@ class TestComponent {
         >
           emit data from child to parent
         </button>
+        <div>
+          <p>two way data binding</p>
+          <p>${this.inputVal}</p>
+          <input type="text" value="${this.inputVal}" oninput="${(e) => this.handleInput(e)}" />
+        </div>
       </fieldset>
     `;
   }
