@@ -15,11 +15,18 @@ class TestService {
 @Component({ selector: 'test-ele', deps: [Renderer] })
 class TestComponent {
   constructor(renderer) {}
+  inputVal = '';
 
   emitDataToParent() {
     this.renderer.emitEvent('customoutput', {
       greet: 'greetings from child'
     });
+  }
+
+  handleInput(e) {
+    const value = e.target.value;
+    console.log(value);
+    this.inputVal = value;
   }
 
   render() {
@@ -34,6 +41,11 @@ class TestComponent {
         >
           emit data from child to parent
         </button>
+        <div>
+          <p>two way data binding</p>
+          <p>${this.inputVal}</p>
+          <input type="text" value="${this.inputVal}" oninput="${(e) => this.handleInput(e)}" />
+        </div>
       </fieldset>
     `;
   }

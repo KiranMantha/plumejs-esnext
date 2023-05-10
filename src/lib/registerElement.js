@@ -21,8 +21,8 @@ class Renderer {
    */
   emitEvent;
 
-  static get __metadata__() {
-    return { name: 'Renderer' };
+  get __metadata__() {
+    return { name: 'RENDERER' };
   }
 
   /**
@@ -101,8 +101,20 @@ const registerElement = (componentOptions, klass) => {
             componentOptions.standalone
           );
         }
+        this.#createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
+      }
+
+      #createProxyInstance() {
+        const rendererInstance = new Renderer(this, this.#shadow);
+        rendererInstance.update = () => {
+          this.update();
+        };
+        rendererInstance.emitEvent = (eventName, data) => {
+          this.#emitEvent(eventName, data);
+        };
+        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
       }
 
       /**
@@ -157,14 +169,6 @@ const registerElement = (componentOptions, klass) => {
        */
       connectedCallback() {
         this.#emulateComponent();
-        const rendererInstance = new Renderer(this, this.#shadow);
-        rendererInstance.update = () => {
-          this.update();
-        };
-        rendererInstance.emitEvent = (eventName, data) => {
-          this.#emitEvent(eventName, data);
-        };
-        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
         this.#klass.beforeMount?.();
         this.update();
         this.#klass.mount?.();
