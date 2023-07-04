@@ -7,8 +7,8 @@ import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
  */
 class Renderer {
-  #shadowRoot;
-  #hostElement;
+  _shadowRoot;
+  _hostElement;
 
   /**
    * {() => void} used to update DOM with new state
@@ -29,19 +29,19 @@ class Renderer {
    * {ShadowRoot} used to traverse dom tree
    */
   get shadowRoot() {
-    return this.#shadowRoot;
+    return this._shadowRoot;
   }
 
   /**
    * {HostElement} used to do read native properties on host element
    */
   get hostElement() {
-    return this.#hostElement;
+    return this._hostElement;
   }
 
-  constructor(_hostELement, _shadowRoot) {
-    this.#hostElement = _hostELement;
-    this.#shadowRoot = _shadowRoot;
+  constructor(hostELement, shadowRoot) {
+    this._hostElement = hostELement;
+    this._shadowRoot = shadowRoot;
   }
 }
 
@@ -170,6 +170,7 @@ const registerElement = (componentOptions, klass) => {
       connectedCallback() {
         this.#emulateComponent();
         this.#klass.beforeMount?.();
+        //this update is needed so that when we use refs in mount hook they won't break
         this.update();
         this.#klass.mount?.();
         this.#emitEvent(
@@ -195,4 +196,4 @@ const registerElement = (componentOptions, klass) => {
   );
 };
 
-export { registerElement, Renderer };
+export { Renderer, registerElement };

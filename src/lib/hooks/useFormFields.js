@@ -64,6 +64,7 @@ class Form {
       this._controls[key].value = obj[key] || this._initialValues[key];
     }
     this._errors.clear();
+    return this;
   }
 
   _checkValidity() {
@@ -117,7 +118,7 @@ const useFormFields = (initialValues) => {
   };
 
   const resetFormFields = () => {
-    form.reset();
+    return form.reset();
   };
 
   return [form, createChangeHandler, resetFormFields];

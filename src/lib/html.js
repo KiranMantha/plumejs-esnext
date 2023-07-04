@@ -79,10 +79,10 @@ const { html, render } = (() => {
             }
             case /ref/.test(nodeValue): {
               const closure = ((node) => {
-                const _node = node;
+                const refNode = node;
                 return () => {
-                  if (_node.isConnected) {
-                    values[i](_node);
+                  if (refNode.isConnected) {
+                    values[i](refNode);
                   }
                 };
               })(node);
