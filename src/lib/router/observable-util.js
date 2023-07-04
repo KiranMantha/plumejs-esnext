@@ -48,4 +48,4 @@ const wrapIntoObservable = (value) => {
   return ofObs(value);
 };
 
-export { wrapIntoObservable, SubjectObs };
+export { SubjectObs, wrapIntoObservable };

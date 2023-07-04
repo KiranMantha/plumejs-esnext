@@ -160,4 +160,4 @@ const promisify = () => {
   return [promise, resolver];
 };
 
-export { isFunction, isObject, getArgs, CSS_SHEET_NOT_SUPPORTED, fromEvent, sanitizeHTML, proxifiedClass, promisify };
+export { CSS_SHEET_NOT_SUPPORTED, fromEvent, getArgs, isFunction, isObject, promisify, proxifiedClass, sanitizeHTML };
