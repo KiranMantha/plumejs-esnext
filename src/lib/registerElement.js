@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
@@ -94,12 +94,15 @@ const registerElement = (componentOptions, klass) => {
 
       constructor() {
         super();
-        this.#shadow = this.attachShadow({ mode: 'open' });
-        if (!CSS_SHEET_NOT_SUPPORTED) {
+        if (CSS_SHEET_SUPPORTED) {
+          this.#shadow = this.attachShadow({ mode: 'open' });
           this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             componentOptions.styles,
             componentOptions.standalone
           );
+        } else {
+          this.#shadow = this;
+          this.#componentStyleTag = createStyleTag(componentOptions.styles || '', document.head);
         }
         this.#createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
@@ -117,15 +120,6 @@ const registerElement = (componentOptions, klass) => {
         this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
       }
 
-      /**
-       * user defined functions
-       */
-      #emulateComponent() {
-        if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          this.#componentStyleTag = createStyleTag(componentOptions.styles);
-        }
-      }
-
       #emitEvent(eventName, data) {
         const event = new CustomEvent(eventName, {
           detail: data
@@ -139,15 +133,6 @@ const registerElement = (componentOptions, klass) => {
           this.#shadow.innerHTML = sanitizeHTML(renderValue);
         } else {
           render(this.#shadow, renderValue);
-        }
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
-          if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
-            this.#shadow.insertBefore(
-              document.importNode(componentRegistry.globalStyleTag, true),
-              this.#shadow.childNodes[0]
-            );
-          }
         }
       }
 
@@ -168,7 +153,6 @@ const registerElement = (componentOptions, klass) => {
        * Default html element events
        */
       connectedCallback() {
-        this.#emulateComponent();
         this.#klass.beforeMount?.();
         //this update is needed so that when we use refs in mount hook they won't break
         this.update();

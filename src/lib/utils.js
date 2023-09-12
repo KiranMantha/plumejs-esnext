@@ -9,12 +9,12 @@ const getArgs = (func) => {
   return [];
 };
 
-const CSS_SHEET_NOT_SUPPORTED = (() => {
+const CSS_SHEET_SUPPORTED = (() => {
   try {
     new CSSStyleSheet();
-    return false;
-  } catch (e) {
     return true;
+  } catch (e) {
+    return false;
   }
 })();
 
@@ -160,4 +160,4 @@ const promisify = () => {
   return [promise, resolver];
 };
 
-export { CSS_SHEET_NOT_SUPPORTED, fromEvent, getArgs, isFunction, isObject, promisify, proxifiedClass, sanitizeHTML };
+export { CSS_SHEET_SUPPORTED, fromEvent, getArgs, isFunction, isObject, promisify, proxifiedClass, sanitizeHTML };
