@@ -175,6 +175,7 @@ const registerElement = (componentOptions, klass) => {
       disconnectedCallback() {
         this.renderCount = 1;
         this.#klass.unmount?.();
+        this.#componentStyleTag?.remove();
       }
     }
   );
