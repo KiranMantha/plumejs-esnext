@@ -102,7 +102,8 @@ const registerElement = (componentOptions, klass) => {
           );
         } else {
           this.#shadow = this;
-          this.#componentStyleTag = createStyleTag(componentOptions.styles || '', document.head);
+          const styles = componentOptions.styles.replaceAll(':host', componentOptions.selector);
+          this.#componentStyleTag = createStyleTag(styles, document.head);
         }
         this.#createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
