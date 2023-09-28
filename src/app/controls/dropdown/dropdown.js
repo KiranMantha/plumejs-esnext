@@ -156,7 +156,7 @@ class DropdownComponent {
           role="dropdown"
           class="${this.dropdownOptions.disable ? 'disabled' : ''}"
           ref=${(node) => {
-            if (!this.detailsNode) this.detailsNode = node;
+            this.detailsNode = node;
           }}
           ontoggle=${() => {
             this.onDropdownToggle();
@@ -164,14 +164,14 @@ class DropdownComponent {
         >
           <summary
             ref=${(node) => {
-              if (!this.summaryNode) this.summaryNode = node;
+              this.summaryNode = node;
             }}
           >
             ${this.getSummaryText()}
           </summary>
           <ul
             ref=${(node) => {
-              if (!this.optionsContainerNode) this.optionsContainerNode = node;
+              this.optionsContainerNode = node;
             }}
           >
             ${this.buildItems()}
