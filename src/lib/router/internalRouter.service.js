@@ -28,11 +28,10 @@ class InternalRouter {
           self._registerOnHashChange();
         };
       })(window.history);
-    } else {
-      this._unSubscribeHashEvent = fromEvent(window, event, () => {
-        this._registerOnHashChange();
-      });
     }
+    this._unSubscribeHashEvent = fromEvent(window, event, () => {
+      this._registerOnHashChange();
+    });
   }
 
   stopHashChange() {
