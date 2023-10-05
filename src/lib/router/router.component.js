@@ -20,7 +20,7 @@ const registerRouterComponent = () => {
       const path = StaticRouter.isHistoryBasedRouting
         ? window.location.pathname
         : window.location.hash.replace(/^#/, '');
-      this.internalRouterSrvc.navigateTo(path);
+      this.internalRouterSrvc.navigateTo(path || '/');
     }
 
     unmount() {

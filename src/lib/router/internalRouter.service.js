@@ -105,6 +105,8 @@ class InternalRouter {
                 routeItem.isRegistered = true;
                 this._template.next(routeItem.template);
               });
+            } else if (routeItem.redirectTo) {
+              this.navigateTo(routeItem.redirectTo, state);
             }
           } else {
             this._template.next(routeItem.template);
