@@ -1,5 +1,6 @@
 import { Component, html } from '../index';
 import { InternalRouter } from './internalRouter.service';
+import { StaticRouter } from './staticRouter';
 
 const registerRouterComponent = () => {
   class RouterComponent {
@@ -16,7 +17,9 @@ const registerRouterComponent = () => {
     }
 
     mount() {
-      const path = this.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
+      const path = StaticRouter.isHistoryBasedRouting
+        ? window.location.pathname
+        : window.location.hash.replace(/^#/, '');
       this.internalRouterSrvc.navigateTo(path);
     }
 

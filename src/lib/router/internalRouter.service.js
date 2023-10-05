@@ -14,11 +14,10 @@ class InternalRouter {
   _template = new SubjectObs();
   _unSubscribeHashEvent;
   _routeStateMap = new Map();
-  isHistoryBasedRouting = true;
 
   startHashChange() {
-    const event = this.isHistoryBasedRouting ? 'popstate' : 'hashchange';
-    if (this.isHistoryBasedRouting) {
+    const event = StaticRouter.isHistoryBasedRouting ? 'popstate' : 'hashchange';
+    if (StaticRouter.isHistoryBasedRouting) {
       window.history.replaceState({}, null, '');
       const self = this;
       (function (history) {
@@ -47,7 +46,9 @@ class InternalRouter {
   }
 
   navigateTo(path = '/', state) {
-    let windowPath = this.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
+    let windowPath = StaticRouter.isHistoryBasedRouting
+      ? window.location.pathname
+      : window.location.hash.replace(/^#/, '');
     windowPath = windowPath ? windowPath : '/';
     this._routeStateMap.clear();
     this._routeStateMap.set(path, state);
@@ -57,12 +58,14 @@ class InternalRouter {
         this._navigateTo(path, state);
       });
     } else {
-      this.isHistoryBasedRouting ? window.history.pushState(state, '', path) : (window.location.hash = '#' + path);
+      StaticRouter.isHistoryBasedRouting
+        ? window.history.pushState(state, '', path)
+        : (window.location.hash = '#' + path);
     }
   }
 
   _registerOnHashChange() {
-    const path = this.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
+    const path = StaticRouter.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
     const state = this._routeStateMap.get(path);
     this._navigateTo(path, state);
   }
@@ -88,7 +91,7 @@ class InternalRouter {
         if (Object.keys(_params).length > 0 || path) {
           this._currentRoute.routeParams = new Map(Object.entries(_params));
           let entries = [];
-          if (this.isHistoryBasedRouting) {
+          if (StaticRouter.isHistoryBasedRouting) {
             entries = new URLSearchParams(window.location.search).entries();
           } else {
             entries = window.location.hash.split('?')[1]

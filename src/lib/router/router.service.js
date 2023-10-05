@@ -34,7 +34,7 @@ class Router {
    */
   registerRoutes(routes, preloadAllRoutes = false, isHashBasedRouting = false) {
     if (isHashBasedRouting) {
-      this.internalRouter.isHistoryBasedRouting = !isHashBasedRouting;
+      StaticRouter.isHistoryBasedRouting = !isHashBasedRouting;
     }
 
     if (Array.isArray(routes)) {
