@@ -66,7 +66,7 @@ class AppComponent {
 
   routes = [
     {
-      path: '',
+      path: '/',
       redirectTo: '/home'
     },
     {
@@ -146,7 +146,7 @@ class AppComponent {
    * @param {Router} routerSrvc
    */
   constructor(testService, routerSrvc) {
-    routerSrvc.registerRoutes(this.routes, false);
+    routerSrvc.registerRoutes(this.routes, false, true);
     this.greet = testService.getGreeting();
   }
 

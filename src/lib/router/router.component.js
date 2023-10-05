@@ -16,7 +16,7 @@ const registerRouterComponent = () => {
     }
 
     mount() {
-      let path = window.location.hash.replace(/^#/, '');
+      const path = this.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
       this.internalRouterSrvc.navigateTo(path);
     }
 

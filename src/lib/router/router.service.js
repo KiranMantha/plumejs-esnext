@@ -30,8 +30,13 @@ class Router {
    * register routes for routing
    * @param {{path: string, template: string, templatePath: () => Promise, redirectTo: string, canActivate: () => (boolean | Observable<boolean> | Promise<boolean>)}[]} routes
    * @param {boolean} preloadRoutes
+   * @param {boolean} isHashBasedRouting
    */
-  registerRoutes(routes, preloadAllRoutes = false) {
+  registerRoutes(routes, preloadAllRoutes = false, isHashBasedRouting = false) {
+    if (isHashBasedRouting) {
+      this.internalRouter.isHistoryBasedRouting = !isHashBasedRouting;
+    }
+
     if (Array.isArray(routes)) {
       for (const route of routes) {
         StaticRouter.formatRoute(route);

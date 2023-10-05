@@ -2,6 +2,7 @@ import { Injectable } from '../decorators';
 import { fromEvent } from '../utils';
 import { SubjectObs, wrapIntoObservable } from './observable-util';
 import { StaticRouter } from './staticRouter';
+import { matchPath } from './utils';
 
 class InternalRouter {
   _currentRoute = {
@@ -13,11 +14,25 @@ class InternalRouter {
   _template = new SubjectObs();
   _unSubscribeHashEvent;
   _routeStateMap = new Map();
+  isHistoryBasedRouting = true;
 
   startHashChange() {
-    this._unSubscribeHashEvent = fromEvent(window, 'hashchange', () => {
-      this._registerOnHashChange();
-    });
+    const event = this.isHistoryBasedRouting ? 'popstate' : 'hashchange';
+    if (this.isHistoryBasedRouting) {
+      window.history.replaceState({}, null, '');
+      const self = this;
+      (function (history) {
+        var pushState = history.pushState;
+        history.pushState = function () {
+          pushState.apply(history, arguments);
+          self._registerOnHashChange();
+        };
+      })(window.history);
+    } else {
+      this._unSubscribeHashEvent = fromEvent(window, event, () => {
+        this._registerOnHashChange();
+      });
+    }
   }
 
   stopHashChange() {
@@ -32,33 +47,25 @@ class InternalRouter {
     return this._currentRoute;
   }
 
-  navigateTo(path = '', state) {
+  navigateTo(path = '/', state) {
+    let windowPath = this.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
+    windowPath = windowPath ? windowPath : '/';
     this._routeStateMap.clear();
-    if (path) {
-      const windowHash = window.location.hash.replace(/^#/, '');
-      if (windowHash === path) {
+    this._routeStateMap.set(path, state);
+    if (windowPath === path) {
+      this._template.next('');
+      setTimeout(() => {
         this._navigateTo(path, state);
-      }
-      this._routeStateMap.set(path, state);
-      window.location.hash = '#' + path;
+      });
     } else {
-      this._navigateTo(path, state);
+      this.isHistoryBasedRouting ? window.history.pushState(state, '', path) : (window.location.hash = '#' + path);
     }
   }
 
   _registerOnHashChange() {
-    const path = window.location.hash.replace(/^#/, '');
+    const path = this.isHistoryBasedRouting ? window.location.pathname : window.location.hash.replace(/^#/, '');
     const state = this._routeStateMap.get(path);
     this._navigateTo(path, state);
-  }
-
-  _routeMatcher(route, path) {
-    if (route) {
-      const _matcher = new RegExp(route.replace(/:[^\s/]+/g, '([\\w-]+)'));
-      return path.match(_matcher);
-    } else {
-      return route === path;
-    }
   }
 
   _navigateTo(path, state) {
@@ -66,7 +73,7 @@ class InternalRouter {
       return h.length > 0;
     });
     const routeArr = StaticRouter.routeList.filter((route) => {
-      if (route.params.length === uParams.length && this._routeMatcher(route.url, path)) {
+      if (route.params.length === uParams.length && matchPath(route.url, path)) {
         return route;
       } else if (route.url === path) {
         return route;
@@ -81,9 +88,14 @@ class InternalRouter {
         const _params = StaticRouter.checkParams(uParams, routeItem);
         if (Object.keys(_params).length > 0 || path) {
           this._currentRoute.routeParams = new Map(Object.entries(_params));
-          const entries = window.location.hash.split('?')[1]
-            ? new URLSearchParams(window.location.hash.split('?')[1]).entries()
-            : [];
+          let entries = [];
+          if (this.isHistoryBasedRouting) {
+            entries = new URLSearchParams(window.location.search).entries();
+          } else {
+            entries = window.location.hash.split('?')[1]
+              ? new URLSearchParams(window.location.hash.split('?')[1]).entries()
+              : [];
+          }
           this._currentRoute.queryParams = new Map(entries);
           if (!routeItem.isRegistered) {
             if (routeItem.templatePath) {
@@ -104,4 +116,5 @@ class InternalRouter {
 }
 
 Injectable()(InternalRouter);
+
 export { InternalRouter };
