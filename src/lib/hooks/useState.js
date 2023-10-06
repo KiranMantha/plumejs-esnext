@@ -9,7 +9,9 @@ const useState = (obj) => {
     } else {
       newState = fn;
     }
-    Object.assign(initialState, newState);
+    for (const key in newState) {
+      initialState[key] = newState[key];
+    }
   };
   return [initialState, reducer];
 };

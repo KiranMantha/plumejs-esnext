@@ -109,7 +109,10 @@ class InternalRouter {
               this.navigateTo(routeItem.redirectTo, state);
             }
           } else {
-            this._template.next(routeItem.template);
+            this._template.next('');
+            setTimeout(() => {
+              this._template.next(routeItem.template);
+            });
           }
         } else {
           this.navigateTo(routeItem.redirectTo, state);
