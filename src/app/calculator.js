@@ -1,6 +1,6 @@
 import { Component, html, useState } from '../lib';
 import { Router } from '../lib/router';
-import calculatorStyles from './calculator.scss';
+import calculatorStyles from './calculator.scss?inline';
 
 @Component({ selector: 'app-calculator', styles: calculatorStyles, deps: [Router] })
 class CalculatorComponent {

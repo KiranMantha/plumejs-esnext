@@ -146,7 +146,7 @@ class AppComponent {
    * @param {Router} routerSrvc
    */
   constructor(testService, routerSrvc) {
-    routerSrvc.registerRoutes(this.routes, false, true);
+    routerSrvc.registerRoutes(this.routes, false, false);
     this.greet = testService.getGreeting();
   }
 
@@ -185,13 +185,13 @@ class AppComponent {
           <nav>
             <ul>
               <li>
-                <a href="#/home">Items Route</a>
+                <a href="/home">Items Route</a>
               </li>
               <li>
-                <a href="#/persons/123/testuser?a=123">Persons Route</a>
+                <a href="/persons/123/testuser?a=123">Persons Route</a>
               </li>
               <li>
-                <a href="#/form">Sample Form</a>
+                <a href="/form">Sample Form</a>
               </li>
               <li>
                 <a
@@ -204,10 +204,10 @@ class AppComponent {
                 >
               </li>
               <li>
-                <a href="#/controls">Controls</a>
+                <a href="/controls">Controls</a>
               </li>
               <li>
-                <a href="#/nested-table">Nested Table</a>
+                <a href="/nested-table">Nested Table</a>
               </li>
               <li>
                 <a href="#/editor">Editor</a>
