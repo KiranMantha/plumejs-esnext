@@ -10,11 +10,6 @@ module.exports = merge(baseConfig, {
     hot: true,
     port: 3001,
     open: true,
-    historyApiFallback: {
-      rewrites: [
-        { from: /^\/$/, to: '/' },
-        { from: /./, to: '/' }
-      ]
-    }
+    historyApiFallback: true
   }
 });

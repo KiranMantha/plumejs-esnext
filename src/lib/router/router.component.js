@@ -1,4 +1,4 @@
-import { Component, html } from '../index';
+import { Component, Renderer, html } from '../index';
 import { InternalRouter } from './internalRouter.service';
 import { StaticRouter } from './staticRouter';
 
@@ -7,11 +7,15 @@ const registerRouterComponent = () => {
     _template = '';
     _subscriptions;
 
-    constructor(internalRouterSrvc) {}
+    constructor(internalRouterSrvc, renderer) {}
 
     beforeMount() {
       this._subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-        this._template = tmpl;
+        if (this._template !== tmpl) {
+          this._template = tmpl;
+        } else {
+          this.refreshRouterOutletComponent();
+        }
       });
       this.internalRouterSrvc.startHashChange();
     }
@@ -28,6 +32,16 @@ const registerRouterComponent = () => {
       this.internalRouterSrvc.stopHashChange();
     }
 
+    refreshRouterOutletComponent() {
+      const event = new CustomEvent('refresh_component', {
+        detail: {},
+        bubbles: false,
+        cancelable: false,
+        composed: false
+      });
+      this.renderer.shadowRoot.children[0].dispatchEvent(event);
+    }
+
     render() {
       if (this._template) {
         const stringArray = [`${this._template}`];
@@ -38,7 +52,7 @@ const registerRouterComponent = () => {
       }
     }
   }
-  Component({ selector: 'router-outlet', deps: [InternalRouter] })(RouterComponent);
+  Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] })(RouterComponent);
 };
 
 export { registerRouterComponent };

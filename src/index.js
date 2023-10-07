@@ -185,13 +185,31 @@ class AppComponent {
           <nav>
             <ul>
               <li>
-                <a href="/home">Items Route</a>
+                <a
+                  href="#"
+                  onclick=${(e) => {
+                    this.navigate(e, '/home');
+                  }}
+                  >Items Route</a
+                >
               </li>
               <li>
-                <a href="/persons/123/testuser?a=123">Persons Route</a>
+                <a
+                  href="#"
+                  onclick=${(e) => {
+                    this.navigate(e, '/persons/123/testuser?a=123', { date: new Date() });
+                  }}
+                  >Persons Route</a
+                >
               </li>
               <li>
-                <a href="/form">Sample Form</a>
+                <a
+                  href="#"
+                  onclick=${(e) => {
+                    this.navigate(e, '/form');
+                  }}
+                  >Sample Form</a
+                >
               </li>
               <li>
                 <a
@@ -204,16 +222,32 @@ class AppComponent {
                 >
               </li>
               <li>
-                <a href="/controls">Controls</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/controls')}>Controls</a>
               </li>
               <li>
-                <a href="/nested-table">Nested Table</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/nested-table')}>Nested Table</a>
               </li>
               <li>
-                <a href="#/editor">Editor</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
               </li>
               <li>
-                <a href="#/experiments">Experiments</a>
+                <a href="#" onclick=${(e) => this.navigate(e, '/experiments')}>Experiments</a>
+              </li>
+              <li>
+                <details role="listbox">
+                  <summary>dropdown</summary>
+                  <ul role="menu">
+                    <li role="menuitem">
+                      <a>Sub menu 1</a>
+                    </li>
+                    <li role="menuitem">
+                      <a>Sub menu 2</a>
+                    </li>
+                    <li role="menuitem">
+                      <a>Sub menu 3</a>
+                    </li>
+                  </ul>
+                </details>
               </li>
             </ul>
           </nav>

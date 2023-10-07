@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
@@ -50,7 +50,8 @@ const DEFAULT_COMPONENT_OPTIONS = {
   root: false,
   styles: '',
   deps: [],
-  standalone: false
+  standalone: false,
+  encapsulation: 'shadowDom'
 };
 
 const createStyleTag = (content, where) => {
@@ -62,7 +63,7 @@ const createStyleTag = (content, where) => {
 
 /**
  * Register a webcomponent with supplied tag and ES6 class
- * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean }} componentOptions
+ * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean, encapsulation: string }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
 const registerElement = (componentOptions, klass) => {
@@ -87,6 +88,7 @@ const registerElement = (componentOptions, klass) => {
       #shadow;
       #componentStyleTag;
       renderCount = 0;
+      #refreashEventUnSubscription;
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -167,6 +169,10 @@ const registerElement = (componentOptions, klass) => {
           },
           false
         );
+
+        this.#refreashEventUnSubscription = fromEvent(this, 'refresh_component', () => {
+          this.#klass.mount?.();
+        });
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -177,6 +183,7 @@ const registerElement = (componentOptions, klass) => {
         this.renderCount = 1;
         this.#klass.unmount?.();
         this.#componentStyleTag?.remove();
+        this.#refreashEventUnSubscription();
       }
     }
   );

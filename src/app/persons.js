@@ -1,10 +1,10 @@
 import axios from 'axios';
-import { Component, html, render, Renderer, Router, useSearchParams } from '../lib';
+import { Component, html, Renderer, Router, useSearchParams } from '../lib';
 
 @Component({ selector: 'app-persons', deps: [Router] })
 class PersonsComponent {
-  ulRef;
   personDetailsCompRef;
+  users = [];
   seachParams = {};
   updateSearchParams;
 
@@ -13,25 +13,11 @@ class PersonsComponent {
   }
 
   mount() {
-    render(this.ulRef, html` loading `);
     axios
       .get('https://jsonplaceholder.typicode.com/users')
       .then((response) => response.data)
       .then((users) => {
-        let nodes = users.map((user) => {
-          return html`
-            <li
-              class="is-clickable"
-              onclick="${() => {
-                this.loadPersonDetails(user);
-              }}"
-            >
-              ${user.name}
-            </li>
-          `;
-        });
-
-        render(this.ulRef, html` ${nodes} `);
+        this.users = users;
       });
   }
 
@@ -70,9 +56,24 @@ class PersonsComponent {
       <p>
         Current route data: <pre><code>${JSON.stringify(this.loadRouteData(), null, 4)}</code></pre>
       </p>
-      <ul ref="${(ref) => {
-        this.ulRef = ref;
-      }}"></ul>
+      <ul>
+        ${
+          this.users.length
+            ? this.users.map((user) => {
+                return html`
+                  <li
+                    class="is-clickable"
+                    onclick="${() => {
+                      this.loadPersonDetails(user);
+                    }}"
+                  >
+                    ${user.name}
+                  </li>
+                `;
+              })
+            : 'loading'
+        }
+      </ul>
       <app-person-details
         ref="${(node) => {
           this.personDetailsCompRef = node;
@@ -87,6 +88,7 @@ class PersonsComponent {
 
 @Component({ selector: 'app-person-details', deps: [Renderer] })
 class PersonDetailsComponent {
+  static observedProperties = ['personDetails'];
   constructor(renderer) {}
   personDetails;
 

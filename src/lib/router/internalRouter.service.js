@@ -53,10 +53,7 @@ class InternalRouter {
     this._routeStateMap.clear();
     this._routeStateMap.set(path, state);
     if (windowPath === path) {
-      this._template.next('');
-      setTimeout(() => {
-        this._navigateTo(path, state);
-      });
+      this._navigateTo(path, state);
     } else {
       StaticRouter.isHistoryBasedRouting
         ? window.history.pushState(state, '', path)
@@ -109,10 +106,7 @@ class InternalRouter {
               this.navigateTo(routeItem.redirectTo, state);
             }
           } else {
-            this._template.next('');
-            setTimeout(() => {
-              this._template.next(routeItem.template);
-            });
+            this._template.next(routeItem.template);
           }
         } else {
           this.navigateTo(routeItem.redirectTo, state);
