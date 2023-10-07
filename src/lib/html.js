@@ -153,6 +153,8 @@ const { html, render } = (() => {
     if (!templateNode || !domNode || templateNode.nodeType !== 1 || domNode.nodeType !== 1) return;
     const templateAtts = templateNode.attributes;
     const existingAtts = domNode.attributes;
+    const preserveAttributesAttr = domNode.getAttribute('data-preserve-attributes');
+    const preserveExistingAttributes = preserveAttributesAttr && preserveAttributesAttr === 'true';
 
     for (const { name, value } of templateAtts) {
       if (!existingAtts[name] || existingAtts[name] !== value) {
@@ -160,9 +162,11 @@ const { html, render } = (() => {
       }
     }
 
-    for (const { name } of existingAtts) {
-      if (!templateAtts[name]) {
-        domNode.removeAttribute(name);
+    if (!preserveExistingAttributes) {
+      for (const { name } of existingAtts) {
+        if (!templateAtts[name]) {
+          domNode.removeAttribute(name);
+        }
       }
     }
   };
@@ -180,8 +184,8 @@ const { html, render } = (() => {
 
   /**
    * Get the content from a node
-   * @param  {Node}   node The node
-   * @return {String}      The type
+   * @param  {Node} node The node
+   * @return {String} The type
    */
   const _getNodeContent = (node) => {
     if (node.childNodes && node.childNodes.length > 0) return null;
