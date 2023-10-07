@@ -54,7 +54,6 @@ class DropdownComponent {
 
   onOptionSelected(isChecked, selectedOption, index) {
     if (!this.isMultiSelect) {
-      this.detailsNode.removeAttribute('open');
       this.selectedOptions = [selectedOption];
     } else {
       // update selected options
@@ -155,6 +154,7 @@ class DropdownComponent {
         <details
           role="dropdown"
           class="${this.dropdownOptions.disable ? 'disabled' : ''}"
+          data-preserve-attributes="${this.isMultiSelect}"
           ref=${(node) => {
             this.detailsNode = node;
           }}
