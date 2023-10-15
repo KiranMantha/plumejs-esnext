@@ -36,8 +36,7 @@ class DropdownComponent {
         ...defaultDropdownOptions,
         ...this.dropdownOptions
       };
-      const { multiple, resetDropdown, options } = this.dropdownOptions;
-      this.dropdownOptions.options = JSON.parse(JSON.stringify(options));
+      const { multiple, resetDropdown } = this.dropdownOptions;
       if (!!resetDropdown) {
         this.optionsContainerNode.innerHTML = '';
         this.selectedOptions = [];

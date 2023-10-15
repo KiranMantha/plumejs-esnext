@@ -5,6 +5,15 @@ class ExpService {
   greeting = 'hello world';
 }
 
+@Component({
+  selector: 'conditional-component'
+})
+class ConditionalComponent {
+  render() {
+    return html`<p>rendering conditionally</p>`;
+  }
+}
+
 @Component({ selector: 'app-experiments', deps: [Renderer, ExpService] })
 class Experiments {
   setClass1 = true;
@@ -31,6 +40,7 @@ class Experiments {
       >
         ${this.expService.greeting}
       </p>
+      ${this.setClass1 ? html`<conditional-component></conditional-component>` : ''}
       <button onclick=${() => this.toggleClass1()}>toggle class1</button>
       <button onclick=${() => this.toggleClass2()}>toggle class2</button>`;
   }

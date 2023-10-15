@@ -1,6 +1,5 @@
 import { Injectable } from '../decorators';
-import { fromEvent } from '../utils';
-import { SubjectObs, wrapIntoObservable } from './observable-util';
+import { BehaviourSubjectObs, SubjectObs, fromEvent, wrapIntoObservable } from '../utils';
 import { StaticRouter } from './staticRouter';
 import { matchPath } from './utils';
 
@@ -11,30 +10,25 @@ class InternalRouter {
     queryParams: new Map(),
     state: {}
   };
-  _template = new SubjectObs();
-  _unSubscribeHashEvent;
+  _template = new BehaviourSubjectObs('');
+  _navigationEndEvent = new SubjectObs();
   _routeStateMap = new Map();
 
-  startHashChange() {
+  listenRouteChanges() {
     const event = StaticRouter.isHistoryBasedRouting ? 'popstate' : 'hashchange';
     if (StaticRouter.isHistoryBasedRouting) {
       window.history.replaceState({}, null, '');
-      const self = this;
-      (function (history) {
+      (function (history, fn) {
         var pushState = history.pushState;
-        history.pushState = function () {
-          pushState.apply(history, arguments);
-          self._registerOnHashChange();
+        history.pushState = function (...args) {
+          pushState.apply(history, args);
+          fn();
         };
-      })(window.history);
+      })(window.history, this._registerOnHashChange.bind(this));
     }
-    this._unSubscribeHashEvent = fromEvent(window, event, () => {
+    return fromEvent(window, event, () => {
       this._registerOnHashChange();
     });
-  }
-
-  stopHashChange() {
-    this._unSubscribeHashEvent();
   }
 
   getTemplate() {
@@ -59,6 +53,10 @@ class InternalRouter {
         ? window.history.pushState(state, '', path)
         : (window.location.hash = '#' + path);
     }
+  }
+
+  onNavigationEnd() {
+    return this._navigationEndEvent.asObservable();
   }
 
   _registerOnHashChange() {
@@ -96,17 +94,21 @@ class InternalRouter {
               : [];
           }
           this._currentRoute.queryParams = new Map(entries);
+          const triggerNavigation = (routeItem) => {
+            routeItem.isRegistered = true;
+            this._template.next(routeItem.template);
+            this._navigationEndEvent.next();
+          };
           if (!routeItem.isRegistered) {
             if (routeItem.templatePath) {
               wrapIntoObservable(routeItem.templatePath()).subscribe(() => {
-                routeItem.isRegistered = true;
-                this._template.next(routeItem.template);
+                triggerNavigation(routeItem);
               });
             } else if (routeItem.redirectTo) {
               this.navigateTo(routeItem.redirectTo, state);
             }
           } else {
-            this._template.next(routeItem.template);
+            triggerNavigation(routeItem);
           }
         } else {
           this.navigateTo(routeItem.redirectTo, state);

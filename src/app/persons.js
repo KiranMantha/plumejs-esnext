@@ -9,7 +9,7 @@ class PersonsComponent {
   updateSearchParams;
 
   constructor(router) {
-    [this.seachParams, this.updateSearchParams] = useSearchParams(this.seachParams);
+    [this.seachParams, this.updateSearchParams] = useSearchParams();
   }
 
   mount() {

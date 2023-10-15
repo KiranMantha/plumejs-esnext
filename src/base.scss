@@ -7,6 +7,10 @@
   top: 0;
 }
 
+.navlink.active {
+  background-color: var(--nav-hover-color);
+}
+
 .fieldset {
   //background-color: #fff;
   border-radius: 6px;

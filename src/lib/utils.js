@@ -1,5 +1,7 @@
 const isFunction = (value) => typeof value === 'function';
 const isObject = (value) => value !== null && typeof value === 'object';
+const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
+const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 
 const getArgs = (func) => {
   const result = func.toString().split(/constructor\s*[^\(]*\(\s*([^\)]*)\)/m);
@@ -17,6 +19,98 @@ const CSS_SHEET_SUPPORTED = (() => {
     return false;
   }
 })();
+
+const ofObs = (input) => ({
+  subscribe: (fn) => {
+    fn(input);
+  }
+});
+
+const fromPromiseObs = (input) => ({
+  subscribe: (fn) => {
+    Promise.resolve(input).then((value) => {
+      fn(value);
+    });
+  }
+});
+
+class SubjectObs {
+  _callbacks = [];
+
+  asObservable() {
+    return {
+      subscribe: (fn) => this.subscribe(fn)
+    };
+  }
+
+  subscribe(fn) {
+    this._callbacks.push(fn);
+    return this.unsubscribe;
+  }
+
+  unsubscribe() {
+    this._callbacks = [];
+  }
+
+  next(value) {
+    for (const callback of this._callbacks) {
+      callback(value);
+    }
+  }
+}
+
+/**
+ *
+ */
+class BehaviourSubjectObs extends SubjectObs {
+  _initialValue;
+  constructor(initialValue) {
+    super();
+    this._initialValue = initialValue;
+  }
+
+  subscribe(fn) {
+    const unsub = super.subscribe(fn);
+    this.next(this._initialValue);
+    return unsub;
+  }
+}
+
+class Subscriptions {
+  _subcribers = [];
+
+  /**
+   * add subscribers to subscriptions
+   * @param {Function} fn
+   * @returns {void}
+   */
+  add(fn) {
+    this._subcribers.push(fn);
+  }
+
+  /**
+   * remove all added subcriptions
+   * @returns {void}
+   */
+  unsubscribe() {
+    for (const fn of this._subcribers) {
+      fn();
+    }
+    this._subcribers = [];
+  }
+}
+
+const wrapIntoObservable = (value) => {
+  if (isObservable(value)) {
+    return value;
+  }
+
+  if (isPromise(value)) {
+    return fromPromiseObs(Promise.resolve(value));
+  }
+
+  return ofObs(value);
+};
 
 /**
  * register event on targeted dom node
@@ -145,7 +239,9 @@ const proxifiedClass = (elementInstance, target) => {
     constructor(...args) {
       super(...args);
       args.forEach((arg, i) => {
-        this[constructorArgs[i]] = arg;
+        if (constructorArgs[i] && constructorArgs[i] !== 'undefined') {
+          this[constructorArgs[i]] = arg;
+        }
       });
       return new Proxy(this, handler());
     }
@@ -160,4 +256,17 @@ const promisify = () => {
   return [promise, resolver];
 };
 
-export { CSS_SHEET_SUPPORTED, fromEvent, getArgs, isFunction, isObject, promisify, proxifiedClass, sanitizeHTML };
+export {
+  BehaviourSubjectObs,
+  CSS_SHEET_SUPPORTED,
+  SubjectObs,
+  Subscriptions,
+  fromEvent,
+  getArgs,
+  isFunction,
+  isObject,
+  promisify,
+  proxifiedClass,
+  sanitizeHTML,
+  wrapIntoObservable
+};

@@ -7,4 +7,4 @@ export { Validators, useFormFields, useSearchParams, useState } from './hooks';
 export { html, render } from './html';
 export { Renderer } from './registerElement';
 export { Router, registerRouterComponent } from './router';
-export { fromEvent, promisify } from './utils';
+export { BehaviourSubjectObs, SubjectObs, Subscriptions, fromEvent, promisify, wrapIntoObservable } from './utils';

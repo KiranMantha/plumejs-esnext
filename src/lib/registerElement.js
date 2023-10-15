@@ -1,7 +1,7 @@
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML, Subscriptions } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
@@ -88,7 +88,7 @@ const registerElement = (componentOptions, klass) => {
       #shadow;
       #componentStyleTag;
       renderCount = 0;
-      #refreashEventUnSubscription;
+      #refreashEventUnSubscription = new Subscriptions();
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -170,9 +170,11 @@ const registerElement = (componentOptions, klass) => {
           false
         );
 
-        this.#refreashEventUnSubscription = fromEvent(this, 'refresh_component', () => {
-          this.#klass.mount?.();
-        });
+        this.#refreashEventUnSubscription.add(
+          fromEvent(this, 'refresh_component', () => {
+            this.#klass.mount?.();
+          })
+        );
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -183,10 +185,10 @@ const registerElement = (componentOptions, klass) => {
         this.renderCount = 1;
         this.#klass.unmount?.();
         this.#componentStyleTag?.remove();
-        this.#refreashEventUnSubscription();
+        this.#refreashEventUnSubscription.unsubscribe();
       }
     }
   );
 };
 
-export { Renderer, registerElement };
+export { registerElement, Renderer };

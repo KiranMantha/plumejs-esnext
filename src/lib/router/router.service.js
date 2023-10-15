@@ -22,6 +22,14 @@ class Router {
   }
 
   /**
+   * triggers on navigation end
+   * @return {Observable<void>}
+   */
+  onNavigationEnd() {
+    return this.internalRouter.onNavigationEnd();
+  }
+
+  /**
    * type that defines route structure
    * @typedef  Route
    */

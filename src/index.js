@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import styles from './base.scss?inline';
-import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
-import { Router } from './lib/router';
+import { Component, html, Injectable, registerRouterComponent, render, Renderer, Subscriptions } from './lib';
+import { matchPath, Router } from './lib/router';
 
 registerRouterComponent();
 
@@ -63,6 +63,7 @@ class AppComponent {
   setClass = true;
   tabsContainer;
   routePath = '';
+  subscriptions = new Subscriptions();
 
   routes = [
     {
@@ -151,8 +152,12 @@ class AppComponent {
   }
 
   beforeMount() {
-    this.routePath = this.routerSrvc.getCurrentRoute().path;
-    console.log('routePath', this.routePath);
+    this.subscriptions.add(
+      this.routerSrvc.onNavigationEnd().subscribe(() => {
+        this.routePath = this.routerSrvc.getCurrentRoute().path;
+        console.log('routePath', this.routePath);
+      })
+    );
   }
 
   toggleActiveTab() {
@@ -178,6 +183,10 @@ class AppComponent {
     window.localStorage.removeItem('@plumejs/core');
   }
 
+  setNavActive(path) {
+    return matchPath(path, this.routePath) ? 'active' : '';
+  }
+
   render() {
     return html`
       <div class="layout">
@@ -187,6 +196,7 @@ class AppComponent {
               <li>
                 <a
                   href="#"
+                  class="navlink ${this.setNavActive('/home')}"
                   onclick=${(e) => {
                     this.navigate(e, '/home');
                   }}
@@ -196,6 +206,7 @@ class AppComponent {
               <li>
                 <a
                   href="#"
+                  class="navlink ${this.setNavActive('/persons/:id/:name')}"
                   onclick=${(e) => {
                     this.navigate(e, '/persons/123/testuser?a=123', { date: new Date() });
                   }}
@@ -205,6 +216,7 @@ class AppComponent {
               <li>
                 <a
                   href="#"
+                  class="navlink ${this.setNavActive('/form')}"
                   onclick=${(e) => {
                     this.navigate(e, '/form');
                   }}
@@ -214,6 +226,7 @@ class AppComponent {
               <li>
                 <a
                   href="#"
+                  class="navlink ${this.setNavActive('/calculator/:id')}"
                   onclick=${(e) =>
                     this.navigate(e, '/calculator/123', {
                       name: 'kiran'
@@ -222,16 +235,36 @@ class AppComponent {
                 >
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/controls')}>Controls</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/controls')}"
+                  onclick=${(e) => this.navigate(e, '/controls')}
+                  >Controls</a
+                >
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/nested-table')}>Nested Table</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/nested-table')}"
+                  onclick=${(e) => this.navigate(e, '/nested-table')}
+                  >Nested Table</a
+                >
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/editor')}>Editor</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/editor')}"
+                  onclick=${(e) => this.navigate(e, '/editor')}
+                  >Editor</a
+                >
               </li>
               <li>
-                <a href="#" onclick=${(e) => this.navigate(e, '/experiments')}>Experiments</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/experiments')}"
+                  onclick=${(e) => this.navigate(e, '/experiments')}
+                  >Experiments</a
+                >
               </li>
               <li>
                 <details role="listbox">
