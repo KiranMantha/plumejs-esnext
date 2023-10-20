@@ -1,16 +1,12 @@
 import axios from 'axios';
-import { Component, html, Renderer, Router, useSearchParams } from '../lib';
+import { Component, html, Renderer, Router } from '../lib';
 
 @Component({ selector: 'app-persons', deps: [Router] })
 class PersonsComponent {
   personDetailsCompRef;
   users = [];
-  seachParams = {};
-  updateSearchParams;
 
-  constructor(router) {
-    [this.seachParams, this.updateSearchParams] = useSearchParams();
-  }
+  constructor(router) {}
 
   mount() {
     axios
@@ -40,10 +36,7 @@ class PersonsComponent {
   }
 
   updateUrl() {
-    const updatedSearchParams = new URLSearchParams(this.seachParams.toString());
-    updatedSearchParams.set('a', Math.random());
-    this.updateSearchParams(updatedSearchParams);
-    // this.router.navigateTo(`/persons/${Math.random()}/testuser?a=${Math.random()}`);
+    this.router.navigateTo(`/persons/${Math.random()}/testuser?a=${Math.random()}`);
   }
 
   render() {
@@ -52,7 +45,6 @@ class PersonsComponent {
       <span role="tag">sample tag</span><button onclick=${() => {
         this.updateUrl();
       }}>Update url</button>
-      <p>${this.seachParams.a}</p>
       <p>
         Current route data: <pre><code>${JSON.stringify(this.loadRouteData(), null, 4)}</code></pre>
       </p>
