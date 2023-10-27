@@ -88,7 +88,7 @@ const registerElement = (componentOptions, klass) => {
       #shadow;
       #componentStyleTag;
       renderCount = 0;
-      #refreashEventUnSubscription = new Subscriptions();
+      #internalSubscriptions = new Subscriptions();
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -156,25 +156,22 @@ const registerElement = (componentOptions, klass) => {
        * Default html element events
        */
       connectedCallback() {
-        this.#klass.beforeMount?.();
-        //this update is needed so that when we use refs in mount hook they won't break
-        this.update();
-        this.#klass.mount?.();
-        this.#emitEvent(
-          'bindprops',
-          {
-            setProps: (propsObj) => {
-              this.setProps(propsObj);
-            }
-          },
-          false
+        this.#internalSubscriptions.add(
+          fromEvent(this, 'bindprops', (e) => {
+            const propsObj = e.detail.props;
+            propsObj && this.setProps(propsObj);
+          })
         );
-
-        this.#refreashEventUnSubscription.add(
+        this.#internalSubscriptions.add(
           fromEvent(this, 'refresh_component', () => {
             this.#klass.mount?.();
           })
         );
+
+        this.#klass.beforeMount?.();
+        //this update is needed so that when we use refs in mount hook they won't break
+        this.update();
+        this.#klass.mount?.();
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -185,7 +182,7 @@ const registerElement = (componentOptions, klass) => {
         this.renderCount = 1;
         this.#klass.unmount?.();
         this.#componentStyleTag?.remove();
-        this.#refreashEventUnSubscription.unsubscribe();
+        this.#internalSubscriptions.unsubscribe();
       }
     }
   );

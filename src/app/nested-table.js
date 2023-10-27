@@ -134,9 +134,9 @@ class NestedTable {
         </thead>
         ${this.categories.map((category) => {
           return html`<app-row-item
-            onbindprops=${() => ({
+            data-input=${{
               category
-            })}
+            }}
           ></app-row-item>`;
         })}
       </table>

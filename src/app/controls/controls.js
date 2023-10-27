@@ -158,7 +158,7 @@ class ControlsComponent {
           ref=${(node) => {
             this.dropdownComp = node;
           }}
-          onbindprops=${() => ({ dropdownOptions: this.dropdownOptions })}
+          data-input=${{ dropdownOptions: this.dropdownOptions }}
           onoptionselected=${(event) => {
             console.log(event.detail);
           }}>

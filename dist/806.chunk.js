@@ -104,7 +104,7 @@
         <ui-dropdown
           class="is-inline-block"
           ref=${function(t){e.dropdownComp=t}}
-          onbindprops=${function(){return{dropdownOptions:e.dropdownOptions}}}
+          data-input=${{dropdownOptions:this.dropdownOptions}}
           onoptionselected=${function(e){console.log(e.detail)}}>
         </ui-dropdown>
       </fieldset>
