@@ -57,6 +57,21 @@ const { html, render } = (() => {
     return temp.content;
   };
 
+  const _bindDataInput = (node, val) => {
+    const closure = function () {
+      if (this.node.isConnected) {
+        const event = new CustomEvent('bindprops', {
+          detail: {
+            props: this.input
+          },
+          bubbles: false
+        });
+        this.node.dispatchEvent(event);
+      }
+    }.bind({ node, input: val });
+    inputPropsNodes.push(closure);
+  };
+
   const _bindFragments = (fragment, values) => {
     const elementsWalker = document.createTreeWalker(fragment, NodeFilter.SHOW_ELEMENT, null);
     let node = elementsWalker.nextNode();
@@ -73,37 +88,17 @@ const { html, render } = (() => {
               break;
             }
             case /ref/.test(nodeValue): {
-              const closure = ((node, fn) => {
-                const refNode = node;
-                const _fn = fn;
-                return () => {
-                  if (refNode.isConnected) {
-                    _fn(refNode);
-                  }
-                };
-              })(node, values[i]);
+              const closure = function () {
+                this.node.isConnected && this.fn(this.node);
+              }.bind({ node, fn: values[i] });
               refNodes.push(closure);
               break;
             }
             case /^data-+/.test(nodeValue):
             case /^aria-+/.test(nodeValue): {
               if (nodeValue === 'data-input') {
-                const closure = ((node, props) => {
-                  const inputNode = node;
-                  const input = props;
-                  return () => {
-                    if (inputNode.isConnected) {
-                      const event = new CustomEvent('bindprops', {
-                        detail: {
-                          props: input
-                        },
-                        bubbles: false
-                      });
-                      inputNode.dispatchEvent(event);
-                    }
-                  };
-                })(node, values[i]);
-                inputPropsNodes.push(closure);
+                _bindDataInput(node, values[i]);
+                node[Symbol('input')] = JSON.stringify(values[i]);
               } else {
                 node.setAttribute(nodeValue, _sanitize(values[i]));
               }
@@ -184,6 +179,17 @@ const { html, render } = (() => {
         }
       }
     }
+
+    if (domNode.tagName.indexOf('-') > -1 && templateNode.tagName.indexOf('-') > -1) {
+      const templateSymbols = Object.getOwnPropertySymbols(templateNode);
+      const domSymbols = Object.getOwnPropertySymbols(domNode);
+
+      const templateInput = templateSymbols.length ? templateNode[templateSymbols[0]] : '';
+      const domInput = domSymbols.length ? domNode[domSymbols[0]] : '';
+      if (templateInput && domInput && templateInput !== domInput) {
+        _bindDataInput(domNode, JSON.parse(templateInput));
+      }
+    }
   };
 
   /**
@@ -229,12 +235,12 @@ const { html, render } = (() => {
     templateNodes.forEach(function (node, index) {
       const domNode = domNodes[index];
 
+      _diffAttributes(node, domNode);
+
       // Discard diffing of children custom elements
       if (isChildDiffing && domNode && domNode.nodeType === 1 && domNode.tagName.indexOf('-') > -1) {
         return;
       }
-
-      _diffAttributes(node, domNode);
 
       // If element doesn't exist, create it
       if (!domNode) {

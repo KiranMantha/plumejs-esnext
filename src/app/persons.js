@@ -3,8 +3,8 @@ import { Component, html, Renderer, Router } from '../lib';
 
 @Component({ selector: 'app-persons', deps: [Router] })
 class PersonsComponent {
-  personDetailsCompRef;
   users = [];
+  selectedPerson;
 
   constructor(router) {}
 
@@ -56,7 +56,7 @@ class PersonsComponent {
                   <li
                     class="is-clickable"
                     onclick="${() => {
-                      this.loadPersonDetails(user);
+                      this.selectedPerson = user;
                     }}"
                   >
                     ${user.name}
@@ -67,9 +67,7 @@ class PersonsComponent {
         }
       </ul>
       <app-person-details
-        ref="${(node) => {
-          this.personDetailsCompRef = node;
-        }}"
+        data-input=${{ personDetails: this.selectedPerson }}
         onuserclick="${(e) => {
           this.onUserClick(e.detail);
         }}"
