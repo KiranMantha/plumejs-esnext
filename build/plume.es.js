@@ -4,7 +4,7 @@ var g = (s, e, t) => (te(s, typeof e != "symbol" ? e + "" : e, t), t), V = (s, e
   if (!e.has(s))
     throw TypeError("Cannot " + t);
 };
-var y = (s, e, t) => (V(s, e, "read from private field"), t ? t.call(s) : e.get(s)), N = (s, e, t) => {
+var w = (s, e, t) => (V(s, e, "read from private field"), t ? t.call(s) : e.get(s)), N = (s, e, t) => {
   if (e.has(s))
     throw TypeError("Cannot add the same private member more than once");
   e instanceof WeakSet ? e.add(s) : e.set(s, t);
@@ -22,8 +22,8 @@ const U = new (B = class {
    * @param {Object} instance of the klass
    */
   register(s, e) {
-    if (!y(this, k).get(s))
-      y(this, k).set(s, e);
+    if (!w(this, k).get(s))
+      w(this, k).set(s, e);
     else
       throw console.error(s), "service already exists";
   }
@@ -33,7 +33,7 @@ const U = new (B = class {
    * @return {Object} instance of the klass
    */
   getService(s) {
-    const e = y(this, k).get(s);
+    const e = w(this, k).get(s);
     if (e)
       return e;
     throw console.error(s), "service is not a registered service.";
@@ -205,7 +205,7 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
 } = (() => {
   const s = /([^\s\\>"'=]+)\s*=\s*(['"]?)$/, e = /<[a-z][^>]+$/i, t = "attr", r = /^attr([^ ]+)/, u = "insertNode", n = /^insertNode([^ ]+)/;
   let a = [], f = [];
-  const p = (l) => {
+  const p = (c) => {
     const o = {
       "&": "&amp;",
       "<": "&lt;",
@@ -213,59 +213,56 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
       "(": "%28",
       ")": "%29"
     };
-    let h = JSON.stringify(l);
-    const c = (d) => o[d] || d;
-    return h = ((d) => d.replace(/[&<>\(\)]/g, c))(h), JSON.parse(h);
-  }, E = (l, o) => {
-    const h = l.options, c = Array.isArray(o) ? o : [o];
-    let w, d, i = h.length;
+    let h = JSON.stringify(c);
+    const l = (d) => o[d] || d;
+    return h = ((d) => d.replace(/[&<>\(\)]/g, l))(h), JSON.parse(h);
+  }, E = (c, o) => {
+    const h = c.options, l = Array.isArray(o) ? o : [o];
+    let y, d, i = h.length;
     for (; i--; ) {
       d = h[i];
       const m = d.getAttribute("value") ?? (d.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(" ");
-      (d.selected = c.indexOf(m) > -1) && (w = !0);
+      (d.selected = l.indexOf(m) > -1) && (y = !0);
     }
-    w || (l.selectedIndex = -1);
-  }, x = (l) => {
+    y || (c.selectedIndex = -1);
+  }, x = (c) => {
     const o = document.createElement("template");
-    return o.innerHTML = l, o.content;
-  }, F = (l, o) => {
-    const h = function() {
-      if (this.node.isConnected) {
-        const c = new CustomEvent("bindprops", {
+    return o.innerHTML = c, o.content;
+  }, F = (c, o, h) => {
+    const l = () => {
+      if (c.isConnected) {
+        const y = new CustomEvent("bindprops", {
           detail: {
-            props: this.input
+            props: o
           },
           bubbles: !1
         });
-        this.node.dispatchEvent(c);
+        c.dispatchEvent(y);
       }
-    }.bind({
-      node: l,
-      input: o
-    });
-    f.push(h);
-  }, _ = (l, o) => {
-    const h = document.createTreeWalker(l, NodeFilter.SHOW_ELEMENT, null);
-    let c = h.nextNode();
-    for (; c; ) {
-      if (c.hasAttributes()) {
-        const w = Array.from(c.attributes).filter((d) => r.test(d.nodeName));
+    };
+    c[h] = JSON.stringify(o), f.push(l);
+  }, _ = (c, o) => {
+    const h = document.createTreeWalker(c, NodeFilter.SHOW_ELEMENT, null);
+    let l = h.nextNode();
+    for (; l; ) {
+      if (l.hasAttributes()) {
+        const y = Array.from(l.attributes).filter((d) => r.test(d.nodeName));
         for (const {
           nodeName: d,
           nodeValue: i
-        } of w) {
+        } of y) {
           const m = r.exec(d)[1];
           switch (!0) {
             case /^on+/.test(i): {
               const b = i.slice(2).toLowerCase();
-              c.removeEventListener(b, o[m]), c.addEventListener(b, o[m]);
+              l.removeEventListener(b, o[m]), l.addEventListener(b, o[m]);
               break;
             }
             case /ref/.test(i): {
               const b = function() {
                 this.node.isConnected && this.fn(this.node);
               }.bind({
-                node: c,
+                node: l,
                 fn: o[m]
               });
               a.push(b);
@@ -273,66 +270,66 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
             }
             case /^data-+/.test(i):
             case /^aria-+/.test(i): {
-              i === "data-input" ? (F(c, o[m]), c[Symbol("input")] = JSON.stringify(o[m])) : c.setAttribute(i, p(o[m]));
+              i === "data-input" ? F(l, o[m], Symbol("input")) : l.setAttribute(i, p(o[m]));
               break;
             }
             case /class/.test(i): {
-              o[m] ? c.classList.add(...o[m].split(" ")) : c.setAttribute("class", "");
+              o[m] ? l.classList.add(...o[m].split(" ")) : l.setAttribute("class", "");
               break;
             }
             case /value/.test(i): {
-              c.nodeName.toLowerCase() === "select" ? E(c, o[m]) : c.value = p(o[m]);
+              l.nodeName.toLowerCase() === "select" ? E(l, o[m]) : l.value = p(o[m]);
               break;
             }
             case /disabled/.test(i):
             case /checked/.test(i): {
-              o[m] ? c.setAttribute(i, o[m]) : c.removeAttribute(i);
+              o[m] ? l.setAttribute(i, o[m]) : l.removeAttribute(i);
               break;
             }
             default:
-              c.setAttribute(i, p(o[m]));
+              l.setAttribute(i, p(o[m]));
           }
-          c.removeAttribute(d);
+          l.removeAttribute(d);
         }
       }
-      c = h.nextNode();
+      l = h.nextNode();
     }
-  }, S = (l, o) => {
-    const h = document.createTreeWalker(l, NodeFilter.SHOW_COMMENT, null);
-    let c = h.nextNode(), w;
-    for (; c; ) {
-      if (w = n.exec(c.data)) {
-        const d = Array.isArray(o[w[1]]) ? o[w[1]] : [o[w[1]]];
-        c.replaceWith(...d), h.currentNode = l;
+  }, S = (c, o) => {
+    const h = document.createTreeWalker(c, NodeFilter.SHOW_COMMENT, null);
+    let l = h.nextNode(), y;
+    for (; l; ) {
+      if (y = n.exec(l.data)) {
+        const d = Array.isArray(o[y[1]]) ? o[y[1]] : [o[y[1]]];
+        l.replaceWith(...d), h.currentNode = c;
       }
-      c = h.nextNode();
+      l = h.nextNode();
     }
-  }, R = (l, o) => {
-    if (!l || !o || l.nodeType !== 1 || o.nodeType !== 1)
+  }, R = (c, o) => {
+    if (!c || !o || c.nodeType !== 1 || o.nodeType !== 1)
       return;
-    const h = l.attributes, c = o.attributes, w = o.getAttribute("data-preserve-attributes"), d = w && w === "true";
+    const h = c.attributes, l = o.attributes, y = o.getAttribute("data-preserve-attributes"), d = y && y === "true";
     for (const {
       name: i,
       value: m
     } of h)
-      (!c[i] || c[i] !== m) && o.setAttribute(i, m);
+      (!l[i] || l[i] !== m) && o.setAttribute(i, m);
     if (!d)
       for (const {
         name: i
-      } of c)
+      } of l)
         h[i] || o.removeAttribute(i);
-    if (o.tagName.indexOf("-") > -1 && l.tagName.indexOf("-") > -1) {
-      const i = Object.getOwnPropertySymbols(l), m = Object.getOwnPropertySymbols(o), b = i.length ? l[i[0]] : "", P = m.length ? o[m[0]] : "";
-      b && P && b !== P && F(o, JSON.parse(b));
+    if (o.tagName.indexOf("-") > -1 && c.tagName.indexOf("-") > -1) {
+      const i = Object.getOwnPropertySymbols(c), m = Object.getOwnPropertySymbols(o), b = i.length ? c[i[0]] : "", P = m.length ? o[m[0]] : "";
+      b && P && b !== P && F(o, JSON.parse(b), m[0]);
     }
-  }, A = (l) => l.nodeType === 3 ? "text" : l.nodeType === 8 ? "comment" : l.tagName.toLowerCase(), C = (l) => l.childNodes && l.childNodes.length > 0 ? null : l.textContent, T = (l, o, h) => {
-    const c = o ? Array.from(o.childNodes) : [], w = l ? Array.from(l.childNodes) : [];
-    let d = c.length - w.length;
+  }, A = (c) => c.nodeType === 3 ? "text" : c.nodeType === 8 ? "comment" : c.tagName.toLowerCase(), C = (c) => c.childNodes && c.childNodes.length > 0 ? null : c.textContent, T = (c, o, h) => {
+    const l = o ? Array.from(o.childNodes) : [], y = c ? Array.from(c.childNodes) : [];
+    let d = l.length - y.length;
     if (d > 0)
       for (; d > 0; d--)
-        c[c.length - d].parentNode.removeChild(c[c.length - d]);
-    w.forEach(function(i, m) {
-      const b = c[m];
+        l[l.length - d].parentNode.removeChild(l[l.length - d]);
+    y.forEach(function(i, m) {
+      const b = l[m];
       if (R(i, b), h && b && b.nodeType === 1 && b.tagName.indexOf("-") > -1)
         return;
       if (!b) {
@@ -364,15 +361,15 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
     });
   };
   return {
-    html: (l, ...o) => {
+    html: (c, ...o) => {
       let h = "";
       const {
-        length: c
-      } = l;
-      for (let d = 1; d < c; d++) {
+        length: l
+      } = c;
+      for (let d = 1; d < l; d++) {
         const i = o[d - 1];
         let m = !1;
-        if (h += l[d - 1], s.test(h) && e.test(h) && (h = h.replace(s, (b, P, H) => `${t}${d - 1}=${H || '"'}${P}${H ? "" : '"'}`), m = !0), !m)
+        if (h += c[d - 1], s.test(h) && e.test(h) && (h = h.replace(s, (b, P, H) => `${t}${d - 1}=${H || '"'}${P}${H ? "" : '"'}`), m = !0), !m)
           switch (!0) {
             case Array.isArray(i):
             case i instanceof DocumentFragment: {
@@ -387,12 +384,12 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
               h += i;
           }
       }
-      h += l[c - 1];
-      const w = x(h.trim());
-      return _(w, o), S(w, o), w;
+      h += c[l - 1];
+      const y = x(h.trim());
+      return _(y, o), S(y, o), y;
     },
-    render: (l, o) => {
-      l && !l.children.length ? (l.innerHTML = "", l.appendChild(o)) : T(o, l, !1), a.forEach((h) => {
+    render: (c, o) => {
+      c && !c.children.length ? (c.innerHTML = "", c.appendChild(o)) : T(o, c, !1), a.forEach((h) => {
         h();
       }), a = [], f.forEach((h) => {
         h();
@@ -465,7 +462,7 @@ const de = {
       if (ne)
         O(this, r, this.attachShadow({
           mode: "open"
-        })), y(this, r).adoptedStyleSheets = L.getComputedCss(s.styles, s.standalone);
+        })), w(this, r).adoptedStyleSheets = L.getComputedCss(s.styles, s.standalone);
       else {
         O(this, r, this);
         const _ = s.styles.replaceAll(":host", s.selector);
@@ -477,41 +474,41 @@ const de = {
       return e.observedAttributes || [];
     }
     update() {
-      const _ = y(this, t).render();
-      typeof _ == "string" ? y(this, r).innerHTML = ce(_) : he(y(this, r), _);
+      const _ = w(this, t).render();
+      typeof _ == "string" ? w(this, r).innerHTML = ce(_) : he(w(this, r), _);
     }
     setProps(_) {
       var S, R;
       for (const [A, C] of Object.entries(_))
-        e.observedProperties.find((T) => T === A) && (y(this, t)[A] = C);
-      (R = (S = y(this, t)).onPropertiesChanged) == null || R.call(S);
+        e.observedProperties.find((T) => T === A) && (w(this, t)[A] = C);
+      (R = (S = w(this, t)).onPropertiesChanged) == null || R.call(S);
     }
     getInstance() {
-      return y(this, t);
+      return w(this, t);
     }
     /**
      * Default html element events
      */
     connectedCallback() {
       var _, S, R, A;
-      y(this, n).add(I(this, "bindprops", (C) => {
+      w(this, n).add(I(this, "bindprops", (C) => {
         const T = C.detail.props;
         T && this.setProps(T);
-      })), y(this, n).add(I(this, "refresh_component", () => {
+      })), w(this, n).add(I(this, "refresh_component", () => {
         var C, T;
-        (T = (C = y(this, t)).mount) == null || T.call(C);
-      })), (S = (_ = y(this, t)).beforeMount) == null || S.call(_), this.update(), (A = (R = y(this, t)).mount) == null || A.call(R);
+        (T = (C = w(this, t)).mount) == null || T.call(C);
+      })), (S = (_ = w(this, t)).beforeMount) == null || S.call(_), this.update(), (A = (R = w(this, t)).mount) == null || A.call(R);
     }
     attributeChangedCallback(_, S, R) {
       var A, C;
-      (C = (A = y(this, t)).onAttributesChanged) == null || C.call(A, _, S, R);
+      (C = (A = w(this, t)).onAttributesChanged) == null || C.call(A, _, S, R);
     }
     disconnectedCallback() {
       var _, S, R;
-      this.renderCount = 1, (S = (_ = y(this, t)).unmount) == null || S.call(_), (R = y(this, u)) == null || R.remove(), y(this, n).unsubscribe();
+      this.renderCount = 1, (S = (_ = w(this, t)).unmount) == null || S.call(_), (R = w(this, u)) == null || R.remove(), w(this, n).unsubscribe();
     }
   }, t = new WeakMap(), r = new WeakMap(), u = new WeakMap(), n = new WeakMap(), a = new WeakSet(), Q = function() {
-    const _ = new K(this, y(this, r));
+    const _ = new K(this, w(this, r));
     _.update = () => {
       this.update();
     }, _.emitEvent = (S, R) => {

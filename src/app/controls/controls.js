@@ -166,6 +166,10 @@ class ControlsComponent {
       <div>
         <app-tree-view></app-tree-view>
       </div>
+      <fieldset class="fieldset">
+        <legend>Stepper</legend>
+        <app-example-stepper></app-example-stepper>
+      </fieldset>
     `;
   }
 }
