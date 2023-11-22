@@ -230,15 +230,17 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
     return o.innerHTML = c, o.content;
   }, F = (c, o, h) => {
     const l = () => {
-      if (c.isConnected) {
-        const y = new CustomEvent("bindprops", {
-          detail: {
-            props: o
-          },
-          bubbles: !1
-        });
-        c.dispatchEvent(y);
-      }
+      setTimeout(() => {
+        if (c.isConnected) {
+          const y = new CustomEvent("bindprops", {
+            detail: {
+              props: o
+            },
+            bubbles: !1
+          });
+          c.dispatchEvent(y);
+        }
+      });
     };
     c[h] = JSON.stringify(o), f.push(l);
   }, _ = (c, o) => {
@@ -381,7 +383,7 @@ const W = (s) => se(s) ? s : re(s) ? ie(Promise.resolve(s)) : oe(s), I = (s, e, 
               break;
             }
             default:
-              h += i;
+              h += i || "";
           }
       }
       h += c[l - 1];

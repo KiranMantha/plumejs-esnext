@@ -59,15 +59,17 @@ const { html, render } = (() => {
 
   const _bindDataInput = (node, val, symbol) => {
     const fn = () => {
-      if (node.isConnected) {
-        const event = new CustomEvent('bindprops', {
-          detail: {
-            props: val
-          },
-          bubbles: false
-        });
-        node.dispatchEvent(event);
-      }
+      setTimeout(() => {
+        if (node.isConnected) {
+          const event = new CustomEvent('bindprops', {
+            detail: {
+              props: val
+            },
+            bubbles: false
+          });
+          node.dispatchEvent(event);
+        }
+      });
     };
     node[symbol] = JSON.stringify(val);
     inputPropsNodes.push(fn);
@@ -320,7 +322,7 @@ const { html, render } = (() => {
             break;
           }
           default: {
-            result += variable;
+            result += variable || '';
           }
         }
       }
