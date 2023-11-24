@@ -1,24 +1,30 @@
 import axios from 'axios';
-import { Component, html, useFormFields, Validators } from '../lib';
+import { Component, FormBuilder, Validators, html } from '../lib';
 import { Router } from '../lib/router';
 
 @Component({ selector: 'app-items', deps: [Router] })
 class ItemsComponent {
   sheetForm;
-  changeHandler;
-  resetForm;
+  // changeHandler;
+  // resetForm;
   apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
   table;
   personsList = [];
   errorsRef;
+  hasErrors = false;
 
   constructor(routerSrvc) {}
 
   beforeMount() {
-    [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
-      name: ['', Validators.required],
-      age: ['', Validators.required],
-      salary: ['', Validators.required]
+    // [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
+    //   name: ['', Validators.required],
+    //   age: ['', Validators.required],
+    //   salary: ['', Validators.required]
+    // });
+    this.sheetForm = new FormBuilder({
+      name: ['', [Validators.required]],
+      age: ['', [Validators.required]],
+      salary: ['', [Validators.required]]
     });
   }
 
@@ -27,25 +33,29 @@ class ItemsComponent {
     this.getData();
   }
 
-  getErrorSummary() {
-    console.log(this.sheetForm.errors);
-    this.errorsRef.innerHTML = JSON.stringify(Object.fromEntries(this.sheetForm.errors), null, 4).trim();
-  }
-
   submitForm(e) {
     e.preventDefault();
-    this.errorsRef.innerHTML = '';
+    // this.errorsRef.innerHTML = '';
+    // if (!this.sheetForm.valid) {
+    //   this.getErrorSummary();
+    //   return;
+    // }
+    console.log(this.sheetForm.value);
+    this.hasErrors = false;
     if (!this.sheetForm.valid) {
-      this.getErrorSummary();
-      return;
+      console.log(this.sheetForm.errors);
+      this.hasErrors = !!this.sheetForm.errors.size;
+    } else {
+      this.personsList.push(this.sheetForm.value);
+      this.sheetForm.reset();
     }
-    axios
-      .post(this.apiUrl, this.sheetForm.value)
-      .then((response) => response.data)
-      .then((persons) => {
-        this.personsList.push(...persons);
-        this.sheetForm.reset();
-      });
+    // axios
+    //   .post(this.apiUrl, this.sheetForm.value)
+    //   .then((response) => response.data)
+    //   .then((persons) => {
+    //     this.personsList.push(...persons);
+    //     this.sheetForm.reset();
+    //   });
   }
 
   getData() {
@@ -71,7 +81,7 @@ class ItemsComponent {
         <pre>
           <code ref=${(node) => {
           this.errorsRef = node;
-        }}></code>
+        }}>${this.hasErrors ? JSON.stringify(Object.fromEntries(this.sheetForm.errors), null, 4) : null}</code>
         </pre>
         <form
           onsubmit=${(e) => {
@@ -85,8 +95,8 @@ class ItemsComponent {
                 type="text"
                 class="input"
                 id="name"
-                value=${this.sheetForm.get('name').value}
-                onchange=${this.changeHandler('name')}
+                value=${this.sheetForm.getControl('name').value}
+                onchange=${this.sheetForm.changeHandler('name')}
               />
             </div>
           </div>
@@ -97,8 +107,8 @@ class ItemsComponent {
                 type="text"
                 class="input"
                 id="age"
-                value=${this.sheetForm.get('age').value}
-                onchange=${this.changeHandler('age')}
+                value=${this.sheetForm.getControl('age').value}
+                onchange=${this.sheetForm.changeHandler('age')}
               />
             </div>
           </div>
@@ -109,8 +119,8 @@ class ItemsComponent {
                 type="text"
                 class="input"
                 id="salary"
-                value=${this.sheetForm.get('salary').value}
-                onchange=${this.changeHandler('salary')}
+                value=${this.sheetForm.getControl('salary').value}
+                onchange=${this.sheetForm.changeHandler('salary')}
               />
             </div>
           </div>

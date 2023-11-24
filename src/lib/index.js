@@ -3,7 +3,7 @@
  * https://github.com/whatwg/html/issues/2254
  */
 export { Component, Injectable } from './decorators';
-export { Validators, useFormFields } from './hooks';
+export { FormBuilder, Validators } from './form';
 export { html, render } from './html';
 export { Renderer } from './registerElement';
 export { Router, registerRouterComponent } from './router';
