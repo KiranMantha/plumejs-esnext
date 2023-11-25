@@ -29,10 +29,18 @@ const _getTargetValue = (target) => {
 };
 
 export class FormBuilder {
+  /**
+   * @private
+   */
   _initialValues;
+  /**
+   * @private
+   */
   _controls = Object.create(null);
+  /**
+   * @private
+   */
   _errors = new Map();
-  _isTouched = false;
 
   constructor(initialValues) {
     this._initialValues = initialValues;
@@ -43,18 +51,30 @@ export class FormBuilder {
         validators: val.length > 1 ? val[1] : []
       };
     }
+    this.changeHandler = this.changeHandler.bind(this);
+    this.getControl = this.getControl.bind(this);
+    this.reset = this.reset.bind(this);
   }
 
+  /**
+   * @type Map
+   */
   get errors() {
     this._checkValidity();
     return this._errors;
   }
 
+  /**
+   * @type boolean
+   */
   get valid() {
     this._checkValidity();
     return this._errors.size ? false : true;
   }
 
+  /**
+   * @type Object
+   */
   get value() {
     const values = {};
     for (const [key, value] of Object.entries(this._controls)) {
@@ -84,6 +104,9 @@ export class FormBuilder {
     this._isTouched = false;
   }
 
+  /**
+   * @private
+   */
   _checkValidity() {
     this._errors.clear();
     this._isTouched = true;
