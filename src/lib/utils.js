@@ -71,8 +71,13 @@ class BehaviourSubjectObs extends SubjectObs {
 
   subscribe(fn) {
     const unsub = super.subscribe(fn);
-    this.next(this._initialValue);
+    super.next(this._initialValue);
     return unsub;
+  }
+
+  next(newvalue) {
+    this._initialValue = newvalue;
+    super.next(newvalue);
   }
 }
 
