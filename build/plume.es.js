@@ -63,11 +63,19 @@ const U = new (J = class {
       t(e);
     });
   }
-});
-let ct = () => Math.random().toString(36).substring(2);
+}), ct = () => Math.random().toString(36).substring(2);
 class Y {
   constructor() {
+    /**
+     * @private
+     */
     g(this, "_callbackCollection", {});
+  }
+  /**
+   * @private
+   */
+  unsubscribe(t) {
+    delete this._callbackCollection[t];
   }
   asObservable() {
     return {
@@ -77,9 +85,6 @@ class Y {
   subscribe(t) {
     const e = ct();
     return this._callbackCollection[e] = t, () => this.unsubscribe(e);
-  }
-  unsubscribe(t) {
-    delete this._callbackCollection[t];
   }
   next(t) {
     for (const e in this._callbackCollection)
