@@ -1,3 +1,4 @@
+import { augmentor } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
@@ -167,8 +168,9 @@ const registerElement = (componentOptions, klass) => {
             this.#klass.mount?.();
           })
         );
-
-        this.#klass.beforeMount?.();
+        if (this.#klass.beforeMount) {
+          this.#internalSubscriptions.add(augmentor(this.update, this.#klass.beforeMount.bind(this.#klass)));
+        }
         //this update is needed so that when we use refs in mount hook they won't break
         this.update();
         this.#klass.mount?.();

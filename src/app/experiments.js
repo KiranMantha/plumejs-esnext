@@ -1,4 +1,4 @@
-import { Component, Injectable, Renderer, html } from '../lib';
+import { Component, Injectable, Renderer, html, signal } from '../lib';
 
 const useState = (obj) => {
   const update = (newObj) => {
@@ -19,8 +19,19 @@ class ExpService {
 class ConditionalComponent {
   static observedProperties = ['name'];
   name;
+  val;
+  beforeMount() {
+    this.val = signal(1);
+  }
   render() {
-    return html`<p>rendering conditionally ${this.name}</p>`;
+    return html` <p>rendering conditionally ${this.name} ${this.val().toString()}</p>
+      <button
+        onclick=${() => {
+          this.val.set((initialValue) => initialValue + 1);
+        }}
+      >
+        click
+      </button>`;
   }
 }
 
