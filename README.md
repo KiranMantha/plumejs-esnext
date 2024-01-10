@@ -1,4 +1,4 @@
-# 🚀 Welcome to your new awesome project!
+# 🚀 Welcome to PlumeJS!
 
 This project has been created using **webpack scaffold**, you can now run
 
@@ -13,6 +13,14 @@ yarn build
 ```
 
 to bundle your application
+
+# Bundles
+
+```cmd
+plume.es.js   26.78 KiB / gzip: 8.12 KiB / brotliCompress: 7.11kb
+plume.umd.js   18.10 KiB / gzip: 6.90 KiB / brotliCompress: 6.05kb
+plume.iife.js   17.93 KiB / gzip: 6.82 KiB / brotliCompress: 5.99kb
+```
 
 ## CDN links
 
@@ -82,14 +90,6 @@ to bundle your application
         </li>
     </ul>
 </nav>
-```
-
-# Bundles
-
-```cmd
-plume.es.js   26.95 KiB / gzip: 8.19 KiB / brotliCompress: 7.16kb
-plume.umd.js   18.17 KiB / gzip: 6.94 KiB / brotliCompress: 6.09kb
-plume.iife.js   18 KiB / gzip: 6.87 KiB / brotliCompress: 6.03kb
 ```
 
 # Useful links:
