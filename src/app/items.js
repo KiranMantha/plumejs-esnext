@@ -5,22 +5,15 @@ import { Router } from '../lib/router';
 @Component({ selector: 'app-items', deps: [Router] })
 class ItemsComponent {
   sheetForm;
-  // changeHandler;
-  // resetForm;
-  apiUrl = 'https://sheet.best/api/sheets/d406eddb-4e35-4496-a526-34fb27c763e4';
+  apiUrl =
+    'https://script.google.com/macros/s/AKfycbzCyH7MIo7UFlhbkNWjbIyCp-Rae-CElryGsGM4oWSDeIx0QMOidUSlBEMs78kQZIsLCQ/exec';
   table;
   personsList = [];
   errorsRef;
-  hasErrors = false;
 
   constructor(routerSrvc) {}
 
   beforeMount() {
-    // [this.sheetForm, this.changeHandler, this.resetForm] = useFormFields({
-    //   name: ['', Validators.required],
-    //   age: ['', Validators.required],
-    //   salary: ['', Validators.required]
-    // });
     this.sheetForm = new FormBuilder({
       name: ['', [Validators.required]],
       age: ['', [Validators.required]],
@@ -35,27 +28,21 @@ class ItemsComponent {
 
   submitForm(e) {
     e.preventDefault();
-    // this.errorsRef.innerHTML = '';
-    // if (!this.sheetForm.valid) {
-    //   this.getErrorSummary();
-    //   return;
-    // }
     console.log(this.sheetForm.value);
-    this.hasErrors = false;
     if (!this.sheetForm.valid) {
       console.log(this.sheetForm.errors);
-      this.hasErrors = !!this.sheetForm.errors.size;
     } else {
       this.personsList.push(this.sheetForm.value);
       this.sheetForm.reset();
+      axios
+        .get(this.apiUrl + `?f=insert&n=${value}`)
+        .then((response) => response.data)
+        .then((res) => {
+          if (res.data.success) {
+            this.getData();
+          }
+        });
     }
-    // axios
-    //   .post(this.apiUrl, this.sheetForm.value)
-    //   .then((response) => response.data)
-    //   .then((persons) => {
-    //     this.personsList.push(...persons);
-    //     this.sheetForm.reset();
-    //   });
   }
 
   getData() {
@@ -63,15 +50,7 @@ class ItemsComponent {
       .get(this.apiUrl)
       .then((response) => response.data)
       .then((persons) => {
-        this.personsList = persons;
-
-        setTimeout(() => {
-          this.personsList.push({
-            name: 'test',
-            age: '20',
-            salary: '30000'
-          });
-        }, 2000);
+        this.personsList = persons.data;
       });
   }
 
@@ -81,7 +60,9 @@ class ItemsComponent {
         <pre>
           <code ref=${(node) => {
           this.errorsRef = node;
-        }}>${this.hasErrors ? JSON.stringify(Object.fromEntries(this.sheetForm.errors), null, 4) : null}</code>
+        }}>${this.sheetForm.hasErrors
+          ? JSON.stringify(Object.fromEntries(this.sheetForm.errors), null, 4)
+          : null}</code>
         </pre>
         <form
           onsubmit=${(e) => {

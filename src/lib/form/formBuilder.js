@@ -1,3 +1,5 @@
+import { signal } from '../augment';
+
 const _getTargetValue = (target) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -36,24 +38,30 @@ export class FormBuilder {
   /**
    * @private
    */
-  _controls = Object.create(null);
+  _controls = new Map();
   /**
    * @private
    */
   _errors = new Map();
+  /**
+   * @private
+   */
+  _errorCount;
 
   constructor(initialValues) {
+    this._errorCount = signal(0);
     this._initialValues = initialValues;
     for (const [key, value] of Object.entries(initialValues)) {
       const val = [...(Array.isArray(value) ? value : [value])];
-      this._controls[key] = {
+      this._controls.set(key, {
         value: val[0],
         validators: val.length > 1 ? val[1] : []
-      };
+      });
     }
-    this.changeHandler = this.changeHandler.bind(this);
-    this.getControl = this.getControl.bind(this);
-    this.reset = this.reset.bind(this);
+  }
+
+  get hasErrors() {
+    return !!this._errorCount();
   }
 
   /**
@@ -77,31 +85,31 @@ export class FormBuilder {
    */
   get value() {
     const values = {};
-    for (const [key, value] of Object.entries(this._controls)) {
+    for (const [key, value] of this._controls) {
       values[key] = value.value;
     }
     return values;
   }
 
   getControl(controlName) {
-    return this._controls[controlName];
+    return this._controls.get(controlName);
   }
 
   changeHandler(key) {
     return (e) => {
       const value = _getTargetValue(e.target);
       this.getControl(key).value = value;
-      this._isTouched = true;
+      this._errorCount.set(0);
     };
   }
 
   reset() {
     for (const [key, value] of Object.entries(this._initialValues)) {
       const val = [...(Array.isArray(value) ? value : [value])];
-      this._controls[key].value = JSON.parse(JSON.stringify(val))[0];
+      this._controls.get(key).value = JSON.parse(JSON.stringify(val))[0];
     }
     this._errors.clear();
-    this._isTouched = false;
+    this._errorCount.set(0);
   }
 
   /**
@@ -109,26 +117,18 @@ export class FormBuilder {
    */
   _checkValidity() {
     this._errors.clear();
-    this._isTouched = true;
-    for (const key in this._controls) {
-      const value = this._controls[key].value;
-      const validators = this._controls[key].validators;
-      this._controls[key].errors = null;
+    for (const [key, { value, validators }] of this._controls) {
       for (const validator of validators) {
         const validity = validator(value);
         if (validity !== null) {
           if (this._errors.has(key)) {
             this._errors.set(key, { ...this._errors.get(key), ...validity });
-            this._controls[key].errors = {
-              ...this._controls[key].errors,
-              ...validity
-            };
           } else {
             this._errors.set(key, validity);
-            this._controls[key].errors = validity;
           }
         }
       }
     }
+    this._errorCount.set(this._errors.size);
   }
 }
