@@ -221,15 +221,6 @@ const sanitizeHTML = (htmlString) => {
   return html.innerHTML;
 };
 
-const debounceRender = function (elementInstance) {
-  if (elementInstance.renderCount === 1) {
-    queueMicrotask(() => {
-      elementInstance.update();
-      elementInstance.renderCount = 0;
-    });
-  }
-};
-
 const proxifiedClass = (elementInstance, target) => {
   const constructorArgs = getArgs(target);
 
@@ -243,8 +234,7 @@ const proxifiedClass = (elementInstance, target) => {
     },
     set(obj, prop, value) {
       obj[prop] = value;
-      ++elementInstance.renderCount;
-      debounceRender(elementInstance);
+      elementInstance.setRenderIntoQueue();
       return true;
     }
   });

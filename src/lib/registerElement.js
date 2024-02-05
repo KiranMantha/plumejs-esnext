@@ -111,6 +111,7 @@ const registerElement = (componentOptions, klass) => {
         this.#createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
+        this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
       }
 
       #createProxyInstance() {
@@ -153,6 +154,16 @@ const registerElement = (componentOptions, klass) => {
         return this.#klass;
       }
 
+      setRenderIntoQueue() {
+        ++this.renderCount;
+        if (this.renderCount === 1) {
+          queueMicrotask(() => {
+            this.update();
+            this.renderCount = 0;
+          });
+        }
+      }
+
       /**
        * Default html element events
        */
@@ -169,7 +180,9 @@ const registerElement = (componentOptions, klass) => {
           })
         );
         if (this.#klass.beforeMount) {
-          this.#internalSubscriptions.add(augmentor(this.update, this.#klass.beforeMount.bind(this.#klass)));
+          this.#internalSubscriptions.add(
+            augmentor(this.setRenderIntoQueue, this.#klass.beforeMount.bind(this.#klass))
+          );
         }
         //this update is needed so that when we use refs in mount hook they won't break
         this.update();

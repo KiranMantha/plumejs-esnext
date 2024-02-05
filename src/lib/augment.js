@@ -10,7 +10,7 @@ function signalWrapper(updateFn, fn) {
   const prev = token;
   let generatedToken;
   token = createToken();
-  updateFnRegistry[token] = { updateFn, updates: 0 };
+  updateFnRegistry[token] = updateFn;
   try {
     fn();
   } finally {
@@ -21,7 +21,7 @@ function signalWrapper(updateFn, fn) {
 }
 
 function signal(initialValue) {
-  const registery = updateFnRegistry[token];
+  const updateFn = updateFnRegistry[token];
   let value = initialValue;
   function boundSignal() {
     return value;
@@ -32,13 +32,7 @@ function signal(initialValue) {
     } else {
       value = v;
     }
-    ++registery.updates;
-    if (registery.updates === 1) {
-      queueMicrotask(() => {
-        registery.updateFn();
-        registery.updates = 0;
-      });
-    }
+    updateFn();
   };
   return boundSignal;
 }
