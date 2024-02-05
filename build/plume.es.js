@@ -508,7 +508,7 @@ const yt = {
         const y = s.styles.replaceAll(":host", s.selector);
         k(this, o, z(y, document.head));
       }
-      D(this, l, tt).call(this), this.getInstance = this.getInstance.bind(this), this.update = this.update.bind(this), this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
+      this.getInstance = this.getInstance.bind(this), this.update = this.update.bind(this), this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this), D(this, l, tt).call(this);
     }
     static get observedAttributes() {
       return t.observedAttributes || [];
