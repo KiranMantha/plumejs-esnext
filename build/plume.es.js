@@ -189,7 +189,7 @@ const q = (s) => ut(s) ? s : ht(s) ? pt(Promise.resolve(s)) : ft(s), F = (s, t, 
       return ["[object Object]", "[object Array]"].indexOf(l) > -1 && !("__metadata__" in o[u]) ? new Proxy(o[u], r()) : o[u];
     },
     set(o, u, l) {
-      return o[u] = l, s.setRenderIntoQueue(), !0;
+      return o[u] = l, s(), !0;
     }
   });
   return class extends t {
@@ -558,7 +558,7 @@ const yt = {
       this.update();
     }, y.emitEvent = (C, v) => {
       D(this, _, et).call(this, C, v);
-    }, k(this, e, X(mt(this, t), s.deps, y));
+    }, k(this, e, X(mt(this.setRenderIntoQueue, t), s.deps, y));
   }, _ = new WeakSet(), et = function(y, C) {
     const v = new CustomEvent(y, {
       detail: C

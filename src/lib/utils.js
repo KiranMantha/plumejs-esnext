@@ -221,7 +221,7 @@ const sanitizeHTML = (htmlString) => {
   return html.innerHTML;
 };
 
-const proxifiedClass = (elementInstance, target) => {
+const proxifiedClass = (setRenderIntoQueue, target) => {
   const constructorArgs = getArgs(target);
 
   const handler = () => ({
@@ -234,7 +234,7 @@ const proxifiedClass = (elementInstance, target) => {
     },
     set(obj, prop, value) {
       obj[prop] = value;
-      elementInstance.setRenderIntoQueue();
+      setRenderIntoQueue();
       return true;
     }
   });

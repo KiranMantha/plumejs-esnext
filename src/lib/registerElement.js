@@ -122,7 +122,11 @@ const registerElement = (componentOptions, klass) => {
         rendererInstance.emitEvent = (eventName, data) => {
           this.#emitEvent(eventName, data);
         };
-        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
+        this.#klass = instantiate(
+          proxifiedClass(this.setRenderIntoQueue, klass),
+          componentOptions.deps,
+          rendererInstance
+        );
       }
 
       #emitEvent(eventName, data) {
