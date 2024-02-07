@@ -1,67 +1,77 @@
 import axios from 'axios';
-import { Component, html, render, Renderer, Router } from '../lib';
+import { Component, html, Renderer, Router } from '../lib';
+
+class PersonsService {}
 
 @Component({ selector: 'app-persons', deps: [Router] })
 class PersonsComponent {
-  ulRef;
-  personDetailsCompRef;
+  users = [];
+  selectedPerson;
+  routeData = {};
 
   constructor(router) {}
 
   mount() {
-    render(this.ulRef, html` loading `);
-    axios
-      .get('https://jsonplaceholder.typicode.com/users')
-      .then((response) => response.data)
-      .then((users) => {
-        let nodes = users.map((user) => {
-          return html`
-            <li
-              class="is-clickable"
-              onclick="${() => {
-                this.loadPersonDetails(user);
-              }}"
-            >
-              ${user.name}
-            </li>
-          `;
-        });
-
-        render(this.ulRef, html` ${nodes} `);
-      });
+    this.loadRouteData();
   }
 
   loadRouteData() {
-    const route = this.router.getCurrentRoute();
-    return {
-      path: route.path,
-      routeParams: Object.fromEntries(route.routeParams),
-      queryParams: Object.fromEntries(route.queryParams),
-      state: route.state
-    };
-  }
+    this.router.getCurrentRoute().subscribe((route) => {
+      this.routeData = {
+        path: route.path,
+        routeParams: Object.fromEntries(route.routeParams),
+        queryParams: Object.fromEntries(route.queryParams),
+        state: route.state
+      };
 
-  loadPersonDetails(personDetails) {
-    this.personDetailsCompRef.setProps({ personDetails });
+      axios
+        .get('https://jsonplaceholder.typicode.com/users')
+        .then((response) => response.data)
+        .then((users) => {
+          this.users = users;
+        });
+    });
   }
 
   onUserClick(person) {
     console.log('data from app-person-details comp: ', person);
   }
 
+  updateUrl() {
+    this.router.navigateTo(`/persons/${Math.random()}/testuser?a=${Math.random()}`);
+  }
+
   render() {
     return html`
       <h3>Persons route</h3>
+      <span role="tag">sample tag</span>
+      <button onclick=${() => {
+        this.updateUrl();
+      }}>Update url</button>
+      <p>${this.routeData?.queryParams?.a}</p>
       <p>
-        Current route data: <pre><code>${JSON.stringify(this.loadRouteData(), null, 4)}</code></pre>
+        Current route data: <pre><code>${JSON.stringify(this.routeData, null, 4)}</code></pre>
       </p>
-      <ul ref="${(ref) => {
-        this.ulRef = ref;
-      }}"></ul>
+      <ul>
+        ${
+          this.users.length
+            ? this.users.map((user) => {
+                return html`
+                  <li
+                    class="is-clickable"
+                    onclick="${() => {
+                      this.selectedPerson = user;
+                    }}"
+                  >
+                    ${user.name}
+                  </li>
+                `;
+              })
+            : 'loading'
+        }
+      </ul>
       <app-person-details
-        ref="${(node) => {
-          this.personDetailsCompRef = node;
-        }}"
+        data-input=${{ personDetails: this.selectedPerson }}
         onuserclick="${(e) => {
           this.onUserClick(e.detail);
         }}"
@@ -72,6 +82,8 @@ class PersonsComponent {
 
 @Component({ selector: 'app-person-details', deps: [Renderer] })
 class PersonDetailsComponent {
+  static observedProperties = ['personDetails'];
+
   constructor(renderer) {}
   personDetails;
 

@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs';
 import styles from './base.scss?inline';
-import { Component, html, Injectable, registerRouterComponent, render, Renderer } from './lib';
-import { Router } from './lib/router';
+import { Component, html, Injectable, registerRouterComponent, render, Renderer, Subscriptions } from './lib';
+import { matchPath, Router } from './lib/router';
 
 registerRouterComponent();
 
@@ -63,10 +63,11 @@ class AppComponent {
   setClass = true;
   tabsContainer;
   routePath = '';
+  subscriptions = new Subscriptions();
 
   routes = [
     {
-      path: '',
+      path: '/',
       redirectTo: '/home'
     },
     {
@@ -146,13 +147,17 @@ class AppComponent {
    * @param {Router} routerSrvc
    */
   constructor(testService, routerSrvc) {
-    routerSrvc.registerRoutes(this.routes, false);
+    routerSrvc.registerRoutes(this.routes, false, false);
     this.greet = testService.getGreeting();
   }
 
   beforeMount() {
-    this.routePath = this.routerSrvc.getCurrentRoute().path;
-    console.log('routePath', this.routePath);
+    this.subscriptions.add(
+      this.routerSrvc.onNavigationEnd().subscribe(() => {
+        this.routePath = this.routerSrvc.getCurrentRoute().path;
+        console.log('routePath', this.routePath);
+      })
+    );
   }
 
   toggleActiveTab() {
@@ -178,6 +183,10 @@ class AppComponent {
     window.localStorage.removeItem('@plumejs/core');
   }
 
+  setNavActive(path) {
+    return matchPath(path, this.routePath) ? 'active' : '';
+  }
+
   render() {
     return html`
       <div class="layout">
@@ -185,17 +194,39 @@ class AppComponent {
           <nav>
             <ul>
               <li>
-                <a href="#/home">Items Route</a>
-              </li>
-              <li>
-                <a href="#/persons/123/testuser?a=123">Persons Route</a>
-              </li>
-              <li>
-                <a href="#/form">Sample Form</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/home')}"
+                  onclick=${(e) => {
+                    this.navigate(e, '/home');
+                  }}
+                  >Items Route</a
+                >
               </li>
               <li>
                 <a
                   href="#"
+                  class="navlink ${this.setNavActive('/persons/:id/:name')}"
+                  onclick=${(e) => {
+                    this.navigate(e, '/persons/123/testuser?a=123', { date: new Date() });
+                  }}
+                  >Persons Route</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/form')}"
+                  onclick=${(e) => {
+                    this.navigate(e, '/form');
+                  }}
+                  >Sample Form</a
+                >
+              </li>
+              <li>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/calculator/:id')}"
                   onclick=${(e) =>
                     this.navigate(e, '/calculator/123', {
                       name: 'kiran'
@@ -204,16 +235,52 @@ class AppComponent {
                 >
               </li>
               <li>
-                <a href="#/controls">Controls</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/controls')}"
+                  onclick=${(e) => this.navigate(e, '/controls')}
+                  >Controls</a
+                >
               </li>
               <li>
-                <a href="#/nested-table">Nested Table</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/nested-table')}"
+                  onclick=${(e) => this.navigate(e, '/nested-table')}
+                  >Nested Table</a
+                >
               </li>
               <li>
-                <a href="#/editor">Editor</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/editor')}"
+                  onclick=${(e) => this.navigate(e, '/editor')}
+                  >Editor</a
+                >
               </li>
               <li>
-                <a href="#/experiments">Experiments</a>
+                <a
+                  href="#"
+                  class="navlink ${this.setNavActive('/experiments')}"
+                  onclick=${(e) => this.navigate(e, '/experiments')}
+                  >Experiments</a
+                >
+              </li>
+              <li>
+                <details role="listbox">
+                  <summary>dropdown</summary>
+                  <ul role="menu">
+                    <li role="menuitem">
+                      <a>Sub menu 1</a>
+                    </li>
+                    <li role="menuitem">
+                      <a>Sub menu 2</a>
+                    </li>
+                    <li role="menuitem">
+                      <a>Sub menu 3</a>
+                    </li>
+                  </ul>
+                </details>
               </li>
             </ul>
           </nav>

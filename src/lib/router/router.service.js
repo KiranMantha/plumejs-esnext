@@ -22,6 +22,14 @@ class Router {
   }
 
   /**
+   * triggers on navigation end
+   * @return {Observable<void>}
+   */
+  onNavigationEnd() {
+    return this.internalRouter.onNavigationEnd();
+  }
+
+  /**
    * type that defines route structure
    * @typedef  Route
    */
@@ -30,8 +38,13 @@ class Router {
    * register routes for routing
    * @param {{path: string, template: string, templatePath: () => Promise, redirectTo: string, canActivate: () => (boolean | Observable<boolean> | Promise<boolean>)}[]} routes
    * @param {boolean} preloadRoutes
+   * @param {boolean} isHashBasedRouting
    */
-  registerRoutes(routes, preloadAllRoutes = false) {
+  registerRoutes(routes, preloadAllRoutes = false, isHashBasedRouting = false) {
+    if (isHashBasedRouting) {
+      StaticRouter.isHistoryBasedRouting = !isHashBasedRouting;
+    }
+
     if (Array.isArray(routes)) {
       for (const route of routes) {
         StaticRouter.formatRoute(route);

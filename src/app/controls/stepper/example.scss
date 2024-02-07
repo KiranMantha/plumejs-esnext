@@ -1,0 +1,16 @@
+.form-details {
+  display: flex;
+
+  .ui-stepper {
+    flex: 1 1 30%;
+  }
+
+  .stepper-content {
+    flex: 1 1 70%;
+    margin: 0;
+
+    .form-control {
+      margin-bottom: var(--spacing);
+    }
+  }
+}

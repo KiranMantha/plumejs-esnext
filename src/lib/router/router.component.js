@@ -1,28 +1,34 @@
-import { Component, html } from '../index';
+import { Component, Renderer, Subscriptions, html } from '../index';
 import { InternalRouter } from './internalRouter.service';
+import { StaticRouter } from './staticRouter';
 
 const registerRouterComponent = () => {
   class RouterComponent {
     _template = '';
-    _subscriptions;
+    _subscriptions = new Subscriptions();
 
-    constructor(internalRouterSrvc) {}
+    constructor(internalRouterSrvc, renderer) {}
 
     beforeMount() {
-      this._subscriptions = this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-        this._template = tmpl;
-      });
-      this.internalRouterSrvc.startHashChange();
+      this._subscriptions.add(
+        this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
+          if (this._template !== tmpl) {
+            this._template = tmpl;
+          }
+        })
+      );
+      this._subscriptions.add(this.internalRouterSrvc.listenRouteChanges());
     }
 
     mount() {
-      let path = window.location.hash.replace(/^#/, '');
-      this.internalRouterSrvc.navigateTo(path);
+      const path = StaticRouter.isHistoryBasedRouting
+        ? window.location.pathname
+        : window.location.hash.replace(/^#/, '');
+      this.internalRouterSrvc.navigateTo(path || '/');
     }
 
     unmount() {
-      this._subscriptions();
-      this.internalRouterSrvc.stopHashChange();
+      this._subscriptions.unsubscribe();
     }
 
     render() {
@@ -35,7 +41,7 @@ const registerRouterComponent = () => {
       }
     }
   }
-  Component({ selector: 'router-outlet', deps: [InternalRouter] })(RouterComponent);
+  Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] })(RouterComponent);
 };
 
 export { registerRouterComponent };

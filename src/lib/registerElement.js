@@ -1,7 +1,8 @@
+import { augmentor } from './augment';
 import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
-import { CSS_SHEET_NOT_SUPPORTED, proxifiedClass, sanitizeHTML } from './utils';
+import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML, Subscriptions } from './utils';
 
 /**
  * a renderer instance which provides additional functions for DOM tree navigation, DOM updation & emitEvent function to pass data to parent elements
@@ -50,7 +51,8 @@ const DEFAULT_COMPONENT_OPTIONS = {
   root: false,
   styles: '',
   deps: [],
-  standalone: false
+  standalone: false,
+  encapsulation: 'shadowDom'
 };
 
 const createStyleTag = (content, where) => {
@@ -62,7 +64,7 @@ const createStyleTag = (content, where) => {
 
 /**
  * Register a webcomponent with supplied tag and ES6 class
- * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean }} componentOptions
+ * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean, encapsulation: string }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
 const registerElement = (componentOptions, klass) => {
@@ -87,6 +89,7 @@ const registerElement = (componentOptions, klass) => {
       #shadow;
       #componentStyleTag;
       renderCount = 0;
+      #internalSubscriptions = new Subscriptions();
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -94,16 +97,21 @@ const registerElement = (componentOptions, klass) => {
 
       constructor() {
         super();
-        this.#shadow = this.attachShadow({ mode: 'open' });
-        if (!CSS_SHEET_NOT_SUPPORTED) {
+        if (CSS_SHEET_SUPPORTED) {
+          this.#shadow = this.attachShadow({ mode: 'open' });
           this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             componentOptions.styles,
             componentOptions.standalone
           );
+        } else {
+          this.#shadow = this;
+          const styles = componentOptions.styles.replaceAll(':host', componentOptions.selector);
+          this.#componentStyleTag = createStyleTag(styles, document.head);
         }
-        this.#createProxyInstance();
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
+        this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
+        this.#createProxyInstance();
       }
 
       #createProxyInstance() {
@@ -114,16 +122,11 @@ const registerElement = (componentOptions, klass) => {
         rendererInstance.emitEvent = (eventName, data) => {
           this.#emitEvent(eventName, data);
         };
-        this.#klass = instantiate(proxifiedClass(this, klass), componentOptions.deps, rendererInstance);
-      }
-
-      /**
-       * user defined functions
-       */
-      #emulateComponent() {
-        if (CSS_SHEET_NOT_SUPPORTED && componentOptions.styles) {
-          this.#componentStyleTag = createStyleTag(componentOptions.styles);
-        }
+        this.#klass = instantiate(
+          proxifiedClass(this.setRenderIntoQueue, klass),
+          componentOptions.deps,
+          rendererInstance
+        );
       }
 
       #emitEvent(eventName, data) {
@@ -140,15 +143,6 @@ const registerElement = (componentOptions, klass) => {
         } else {
           render(this.#shadow, renderValue);
         }
-        if (CSS_SHEET_NOT_SUPPORTED) {
-          componentOptions.styles && this.#shadow.insertBefore(this.#componentStyleTag, this.#shadow.childNodes[0]);
-          if (componentRegistry.globalStyleTag && !componentOptions.standalone) {
-            this.#shadow.insertBefore(
-              document.importNode(componentRegistry.globalStyleTag, true),
-              this.#shadow.childNodes[0]
-            );
-          }
-        }
       }
 
       setProps(propsObj) {
@@ -164,24 +158,39 @@ const registerElement = (componentOptions, klass) => {
         return this.#klass;
       }
 
+      setRenderIntoQueue() {
+        ++this.renderCount;
+        if (this.renderCount === 1) {
+          queueMicrotask(() => {
+            this.update();
+            this.renderCount = 0;
+          });
+        }
+      }
+
       /**
        * Default html element events
        */
       connectedCallback() {
-        this.#emulateComponent();
-        this.#klass.beforeMount?.();
+        this.#internalSubscriptions.add(
+          fromEvent(this, 'bindprops', (e) => {
+            const propsObj = e.detail.props;
+            propsObj && this.setProps(propsObj);
+          })
+        );
+        this.#internalSubscriptions.add(
+          fromEvent(this, 'refresh_component', () => {
+            this.#klass.mount?.();
+          })
+        );
+        if (this.#klass.beforeMount) {
+          this.#internalSubscriptions.add(
+            augmentor(this.setRenderIntoQueue, this.#klass.beforeMount.bind(this.#klass))
+          );
+        }
         //this update is needed so that when we use refs in mount hook they won't break
         this.update();
         this.#klass.mount?.();
-        this.#emitEvent(
-          'bindprops',
-          {
-            setProps: (propsObj) => {
-              this.setProps(propsObj);
-            }
-          },
-          false
-        );
       }
 
       attributeChangedCallback(name, oldValue, newValue) {
@@ -191,9 +200,11 @@ const registerElement = (componentOptions, klass) => {
       disconnectedCallback() {
         this.renderCount = 1;
         this.#klass.unmount?.();
+        this.#componentStyleTag?.remove();
+        this.#internalSubscriptions.unsubscribe();
       }
     }
   );
 };
 
-export { Renderer, registerElement };
+export { registerElement, Renderer };

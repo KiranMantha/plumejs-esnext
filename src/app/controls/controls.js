@@ -26,7 +26,6 @@ class NestedModal {
 
 @Component({ selector: 'app-controls', deps: [DialogService] })
 class ControlsComponent {
-  dropdownComp;
   dropdownOptions = {
     options: [
       {
@@ -64,25 +63,16 @@ class ControlsComponent {
   enableMultiselect(checked) {
     this.dropdownOptions.multiple = checked;
     this.dropdownOptions.resetDropdown = true;
-    this.dropdownComp.setProps({
-      dropdownOptions: this.dropdownOptions
-    });
   }
 
   disableDropdown(checked) {
     this.dropdownOptions.disable = checked;
     this.dropdownOptions.resetDropdown = true;
-    this.dropdownComp.setProps({
-      dropdownOptions: this.dropdownOptions
-    });
   }
 
   enableFilter(checked) {
     this.dropdownOptions.enableFilter = checked;
     this.dropdownOptions.resetDropdown = true;
-    this.dropdownComp.setProps({
-      dropdownOptions: this.dropdownOptions
-    });
   }
 
   showAlert() {
@@ -137,9 +127,6 @@ class ControlsComponent {
         <legend>Dropdown</legend>
         <button onclick=${() => {
           this.dropdownOptions.resetDropdown = true;
-          this.dropdownComp.setProps({
-            dropdownOptions: this.dropdownOptions
-          });
         }}>Reset</button>
         <div style="display: flex; align-items: center;">
           enable multi select: <input type='checkbox' role='switch' onchange=${(e) =>
@@ -155,10 +142,7 @@ class ControlsComponent {
         </div>
         <ui-dropdown
           class="is-inline-block"
-          ref=${(node) => {
-            this.dropdownComp = node;
-          }}
-          onbindprops=${() => ({ dropdownOptions: this.dropdownOptions })}
+          data-input=${{ dropdownOptions: this.dropdownOptions }}
           onoptionselected=${(event) => {
             console.log(event.detail);
           }}>
@@ -182,6 +166,10 @@ class ControlsComponent {
       <div>
         <app-tree-view></app-tree-view>
       </div>
+      <fieldset class="fieldset">
+        <legend>Stepper</legend>
+        <app-example-stepper></app-example-stepper>
+      </fieldset>
     `;
   }
 }

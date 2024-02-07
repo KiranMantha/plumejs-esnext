@@ -53,7 +53,6 @@ class DropdownComponent {
 
   onOptionSelected(isChecked, selectedOption, index) {
     if (!this.isMultiSelect) {
-      this.detailsNode.removeAttribute('open');
       this.selectedOptions = [selectedOption];
     } else {
       // update selected options
@@ -154,8 +153,9 @@ class DropdownComponent {
         <details
           role="dropdown"
           class="${this.dropdownOptions.disable ? 'disabled' : ''}"
+          data-preserve-attributes="${this.isMultiSelect}"
           ref=${(node) => {
-            if (!this.detailsNode) this.detailsNode = node;
+            this.detailsNode = node;
           }}
           ontoggle=${() => {
             this.onDropdownToggle();
@@ -163,14 +163,14 @@ class DropdownComponent {
         >
           <summary
             ref=${(node) => {
-              if (!this.summaryNode) this.summaryNode = node;
+              this.summaryNode = node;
             }}
           >
             ${this.getSummaryText()}
           </summary>
           <ul
             ref=${(node) => {
-              if (!this.optionsContainerNode) this.optionsContainerNode = node;
+              this.optionsContainerNode = node;
             }}
           >
             ${this.buildItems()}
