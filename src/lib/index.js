@@ -6,6 +6,6 @@ export { signal } from './augment';
 export { Component, Injectable } from './decorators';
 export { FormBuilder, Validators } from './form';
 export { html, render } from './html';
-export { Renderer } from './registerElement';
+export { Renderer } from './renderer';
 export { Router, registerRouterComponent } from './router';
 export { BehaviourSubjectObs, SubjectObs, Subscriptions, fromEvent, promisify, wrapIntoObservable } from './utils';

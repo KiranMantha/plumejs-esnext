@@ -1,4 +1,7 @@
-import { Component, Renderer, Subscriptions, html } from '../index';
+import { Component } from '../decorators';
+import { html } from '../html';
+import { Renderer } from '../renderer';
+import { Subscriptions } from '../utils';
 import { InternalRouter } from './internalRouter.service';
 import { StaticRouter } from './staticRouter';
 

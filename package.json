@@ -21,7 +21,8 @@
     "build:lib": "vite build",
     "vite:start": "vite",
     "lint": "eslint . --ext .js --fix",
-    "prepare": "husky install"
+    "prepare": "husky install",
+    "show-dep-graph": "skott --displayMode=webapp"
   },
   "husky": {
     "hooks": {
@@ -57,6 +58,7 @@
     "prettier": "^2.8.3",
     "sass": "^1.58.0",
     "sass-loader": "^13.2.0",
+    "skott": "^0.32.1",
     "style-loader": "^3.3.1",
     "terser-webpack-plugin": "^5.3.6",
     "vite": "^4.0.4",
