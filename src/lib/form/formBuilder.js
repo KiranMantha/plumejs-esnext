@@ -1,5 +1,9 @@
 import { signal } from '../augment';
 
+function nodeName(elem, name) {
+  return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+}
+
 const _getTargetValue = (target) => {
   let targetValue;
   switch (target.nodeName && target.nodeName.toLowerCase()) {
@@ -15,7 +19,9 @@ const _getTargetValue = (target) => {
     }
     case 'select': {
       const one = target.type === 'select-one';
-      const options = Array.from(target.options);
+      const options = Array.from(target.options).filter(
+        (option) => !option.disabled && (!option.parentNode.disabled || !nodeName(option.parentNode, 'optgroup'))
+      );
       const value = [...options]
         .filter((option) => option.selected)
         .map((option) => option.value ?? (option.textContent.match(/[^\x20\t\r\n\f]+/g) || []).join(' '));
