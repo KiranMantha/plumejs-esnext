@@ -3,7 +3,15 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
 import { Renderer } from './renderer';
-import { CSS_SHEET_SUPPORTED, fromEvent, proxifiedClass, sanitizeHTML, Subscriptions } from './utils';
+import {
+  CSS_SHEET_SUPPORTED,
+  Subscriptions,
+  createToken,
+  fromEvent,
+  isPromise,
+  proxifiedClass,
+  sanitizeHTML
+} from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS = {
   selector: '',
@@ -23,12 +31,16 @@ const createStyleTag = (content, where) => {
 
 /**
  * Register a webcomponent with supplied tag and ES6 class
- * @param {{ selector: string, root: boolean, styles: string, deps: Function[], standalone: boolean, encapsulation: string }} componentOptions
+ * @param {{ selector: string, root: boolean, styles: string | import(), deps: Function[], standalone: boolean, encapsulation: string }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
-const registerElement = (componentOptions, klass) => {
+const registerElement = async (componentOptions, klass) => {
   // mapping with defaults
   componentOptions = { ...DEFAULT_COMPONENT_OPTIONS, ...componentOptions };
+  if (isPromise(componentOptions.styles)) {
+    const styles = await componentOptions.styles;
+    componentOptions.styles = styles.default.toString();
+  }
   componentOptions.styles = componentOptions.styles.toString();
 
   if (componentOptions.root && !componentRegistry.isRootNodeSet) {
@@ -47,8 +59,8 @@ const registerElement = (componentOptions, klass) => {
       #klass;
       #shadow;
       #componentStyleTag;
-      renderCount = 0;
       #internalSubscriptions = new Subscriptions();
+      renderCount = 0;
 
       static get observedAttributes() {
         return klass.observedAttributes || [];
@@ -64,8 +76,12 @@ const registerElement = (componentOptions, klass) => {
           );
         } else {
           this.#shadow = this;
-          const styles = componentOptions.styles.replaceAll(':host', componentOptions.selector);
-          this.#componentStyleTag = createStyleTag(styles, document.head);
+          const id = createToken();
+          this.setAttribute('data-did', id);
+          const styles = componentOptions.styles.replaceAll(':host', `${componentOptions.selector}[data-did='${id}']`);
+          if (!componentOptions.root && styles) {
+            this.#componentStyleTag = createStyleTag(styles, document.head);
+          }
         }
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
@@ -88,13 +104,6 @@ const registerElement = (componentOptions, klass) => {
         );
       }
 
-      #emitEvent(eventName, data) {
-        const event = new CustomEvent(eventName, {
-          detail: data
-        });
-        this.dispatchEvent(event);
-      }
-
       update() {
         const renderValue = this.#klass.render();
         if (typeof renderValue === 'string') {
@@ -104,10 +113,17 @@ const registerElement = (componentOptions, klass) => {
         }
       }
 
+      #emitEvent(eventName, data) {
+        const event = new CustomEvent(eventName, {
+          detail: data
+        });
+        this.dispatchEvent(event);
+      }
+
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
           if (klass.observedProperties.find((property) => property === key)) {
-            this.#klass[key] = value;
+            this.#klass[key] = value; //JSON.parse(JSON.stringify(value));
           }
         }
         this.#klass.onPropertiesChanged?.();
@@ -139,7 +155,7 @@ const registerElement = (componentOptions, klass) => {
         );
         this.#internalSubscriptions.add(
           fromEvent(this, 'refresh_component', () => {
-            this.#klass.mount?.();
+            this.update();
           })
         );
         if (this.#klass.beforeMount) {

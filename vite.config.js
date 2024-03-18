@@ -3,8 +3,26 @@ import { defineConfig } from 'vite';
 import babel from 'vite-plugin-babel';
 import viteCompression from 'vite-plugin-compression';
 
+const esbuildCssInline = {
+  name: 'css-inline',
+  setup(build) {
+    build.onResolve({ filter: /\.scss$/ }, ({ path }) => {
+      console.log(path);
+      return {
+        path: path + '?inline',
+        external: true
+      };
+    });
+  }
+};
+
 export default defineConfig({
   base: './',
+  optimizeDeps: {
+    esbuildOptions: {
+      plugins: [esbuildCssInline]
+    }
+  },
   plugins: [
     babel({
       babelConfig: {

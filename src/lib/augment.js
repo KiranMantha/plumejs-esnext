@@ -1,10 +1,8 @@
+import { createToken } from './utils';
+
 const isFunction = (value) => typeof value === 'function';
 const updateFnRegistry = Object.create(null);
 let token = null;
-
-function createToken() {
-  return Math.random().toString(36).substring(2);
-}
 
 function signalWrapper(updateFn, fn) {
   const prev = token;

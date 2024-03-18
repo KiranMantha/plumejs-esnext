@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import styles from './base.scss?inline';
+// import styles from './base.scss';
 import { Component, html, Injectable, registerRouterComponent, render, Renderer, Subscriptions } from './lib';
 import { matchPath, Router } from './lib/router';
 
@@ -53,7 +53,7 @@ class TestComponent {
 
 @Component({
   selector: 'app-root',
-  styles: styles,
+  styles: import('./base.scss'),
   root: true,
   deps: [TestService, Router]
 })
