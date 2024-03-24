@@ -1,6 +1,6 @@
 import { Component, html, signal } from '../lib';
 
-@Component({ selector: 'app-calculator', styles: import('./calculator.scss') })
+@Component({ selector: 'app-calculator', styles: import('./calculator.scss?inline') })
 class CalculatorComponent {
   btnValues;
   calc;

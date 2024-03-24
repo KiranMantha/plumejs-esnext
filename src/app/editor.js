@@ -1,8 +1,7 @@
 import MarkdownIt from 'markdown-it';
 import { Component, html } from '../lib';
-import editorStyles from './editor.scss?inline';
 
-@Component({ selector: 'app-editor', styles: editorStyles })
+@Component({ selector: 'app-editor', styles: import('./editor.scss?inline') })
 class Editor {
   editorNode;
   previewNode;
