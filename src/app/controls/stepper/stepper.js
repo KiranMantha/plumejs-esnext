@@ -1,9 +1,8 @@
 import { Component, html } from '../../../lib';
-import stepperStyles from './stepper.scss?inline';
 
 @Component({
   selector: 'ui-stepper',
-  styles: stepperStyles
+  styles: import('./stepper.scss?inline')
 })
 class Stepper {
   static observedProperties = ['stepperOptions', 'currentStep'];

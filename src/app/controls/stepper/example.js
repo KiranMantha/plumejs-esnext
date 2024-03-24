@@ -1,10 +1,9 @@
 import { Component, html } from '../../../lib';
-import exampleStyles from './example.scss?inline';
 import './stepper';
 
 @Component({
   selector: 'app-example-stepper',
-  styles: exampleStyles
+  styles: import('./example.scss?inline')
 })
 class ExampleStepper {
   currentStep = 1;
