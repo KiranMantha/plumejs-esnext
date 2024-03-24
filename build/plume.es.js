@@ -552,7 +552,7 @@ const yt = {
     }
     disconnectedCallback() {
       var g, v, C;
-      this.renderCount = 1, (v = (g = _(this, e)).unmount) == null || v.call(g), (C = _(this, o)) == null || C.remove(), _(this, a).unsubscribe();
+      this.renderCount = 0, (v = (g = _(this, e)).unmount) == null || v.call(g), (C = _(this, o)) == null || C.remove(), _(this, a).unsubscribe();
     }
   }, e = new WeakMap(), r = new WeakMap(), o = new WeakMap(), a = new WeakMap(), u = new WeakSet(), st = function() {
     const g = new et(this, _(this, r));

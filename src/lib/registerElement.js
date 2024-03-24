@@ -123,7 +123,7 @@ const registerElement = async (componentOptions, klass) => {
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
           if (klass.observedProperties.find((property) => property === key)) {
-            this.#klass[key] = value; //JSON.parse(JSON.stringify(value));
+            this.#klass[key] = value;
           }
         }
         this.#klass.onPropertiesChanged?.();
@@ -173,7 +173,7 @@ const registerElement = async (componentOptions, klass) => {
       }
 
       disconnectedCallback() {
-        this.renderCount = 1;
+        this.renderCount = 0;
         this.#klass.unmount?.();
         this.#componentStyleTag?.remove();
         this.#internalSubscriptions.unsubscribe();
