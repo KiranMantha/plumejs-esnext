@@ -19,7 +19,7 @@ const DEFAULT_COMPONENT_OPTIONS = {
   styles: '',
   deps: [],
   standalone: false,
-  encapsulation: 'shadowDom'
+  shadowDomEncapsulation: true
 };
 
 const createStyleTag = (content, where) => {
@@ -31,7 +31,7 @@ const createStyleTag = (content, where) => {
 
 /**
  * Register a webcomponent with supplied tag and ES6 class
- * @param {{ selector: string, root: boolean, styles: string | import(), deps: Function[], standalone: boolean, encapsulation: string }} componentOptions
+ * @param {{ selector: string, root: boolean, styles: string | import(), deps: Function[], standalone: boolean, shadowDomEncapsulation: boolean }} componentOptions
  * @param { Function } klass ES6 class defining the behavior of webcomponent
  */
 const registerElement = async (componentOptions, klass) => {
@@ -68,7 +68,7 @@ const registerElement = async (componentOptions, klass) => {
 
       constructor() {
         super();
-        if (CSS_SHEET_SUPPORTED) {
+        if (componentOptions.shadowDomEncapsulation && CSS_SHEET_SUPPORTED) {
           this.#shadow = this.attachShadow({ mode: 'open' });
           this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             componentOptions.styles,

@@ -473,7 +473,7 @@ const yt = {
   styles: "",
   deps: [],
   standalone: !1,
-  encapsulation: "shadowDom"
+  shadowDomEncapsulation: !0
 }, Q = (s, t) => {
   const e = document.createElement("style");
   return e.innerHTML = s, t && t.appendChild(e), e;
@@ -500,7 +500,7 @@ const yt = {
       P(this, o, void 0);
       P(this, a, new X());
       b(this, "renderCount", 0);
-      if (ct)
+      if (s.shadowDomEncapsulation && ct)
         M(this, r, this.attachShadow({
           mode: "open"
         })), _(this, r).adoptedStyleSheets = O.getComputedCss(s.styles, s.standalone);
