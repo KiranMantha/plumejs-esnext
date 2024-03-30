@@ -8,7 +8,7 @@ const SERVICE_OPTIONS_DEFAULTS = {
 
 /**
  * Component decorator
- * @param {{selector: string; styles?: string; root?: boolean; deps?: Injectable[]; standalone?: boolean;}} options
+ * @param {{selector: string; styles?: string; root?: boolean; deps?: Injectable[]; standalone?: boolean; shadowDomEncapsulation?: boolean;}} options
  */
 const Component = (options) => (target) => {
   if (options.selector.indexOf('-') <= 0) {
