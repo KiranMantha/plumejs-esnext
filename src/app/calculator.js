@@ -2,24 +2,18 @@ import { Component, html, signal } from '../lib';
 
 @Component({ selector: 'app-calculator', styles: import('./calculator.scss?inline') })
 class CalculatorComponent {
-  btnValues;
-  calc;
-  setCalc;
-
-  beforeMount() {
-    this.btnValues = [
-      ['C', '+-', '%', '/'],
-      [7, 8, 9, 'X'],
-      [4, 5, 6, '-'],
-      [1, 2, 3, '+'],
-      [0, '.', '=']
-    ];
-    this.calc = signal({
-      sign: '',
-      num: 0,
-      res: 0
-    });
-  }
+  btnValues = [
+    ['C', '+-', '%', '/'],
+    [7, 8, 9, 'X'],
+    [4, 5, 6, '-'],
+    [1, 2, 3, '+'],
+    [0, '.', '=']
+  ];
+  calc = signal({
+    sign: '',
+    num: 0,
+    res: 0
+  });
 
   toLocaleString = (num) => String(num).replace(/(?<!\..*)(\d)(?=(?:\d{3})+(?:\.|$))/g, '$1 ');
 
