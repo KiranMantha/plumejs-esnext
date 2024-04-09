@@ -97,10 +97,14 @@ const registerElement = async (componentOptions, klass) => {
         rendererInstance.emitEvent = (eventName, data) => {
           this.#emitEvent(eventName, data);
         };
-        this.#klass = instantiate(
-          proxifiedClass(this.setRenderIntoQueue, klass),
-          componentOptions.deps,
-          rendererInstance
+        this.#internalSubscriptions.add(
+          augmentor(this.setRenderIntoQueue, () => {
+            this.#klass = instantiate(
+              proxifiedClass(this.setRenderIntoQueue, klass),
+              componentOptions.deps,
+              rendererInstance
+            );
+          })
         );
       }
 
@@ -158,11 +162,7 @@ const registerElement = async (componentOptions, klass) => {
             this.update();
           })
         );
-        if (this.#klass.beforeMount) {
-          this.#internalSubscriptions.add(
-            augmentor(this.setRenderIntoQueue, this.#klass.beforeMount.bind(this.#klass))
-          );
-        }
+        this.#klass.beforeMount?.();
         //this update is needed so that when we use refs in mount hook they won't break
         this.update();
         this.#klass.mount?.();

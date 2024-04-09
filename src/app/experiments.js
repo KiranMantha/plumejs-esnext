@@ -19,10 +19,7 @@ class ExpService {
 class ConditionalComponent {
   static observedProperties = ['name'];
   name;
-  val;
-  beforeMount() {
-    this.val = signal(1);
-  }
+  val = signal(1);
   render() {
     return html` <p>rendering conditionally ${this.name} ${this.val().toString()}</p>
       <button

@@ -4,7 +4,11 @@ import { Router } from '../lib/router';
 
 @Component({ selector: 'app-items', deps: [Router] })
 class ItemsComponent {
-  sheetForm;
+  sheetForm = new FormBuilder({
+    name: ['', [Validators.required]],
+    age: ['', [Validators.required]],
+    salary: ['', [Validators.required]]
+  });
   apiUrl =
     'https://script.google.com/macros/s/AKfycbzCyH7MIo7UFlhbkNWjbIyCp-Rae-CElryGsGM4oWSDeIx0QMOidUSlBEMs78kQZIsLCQ/exec';
   table;
@@ -12,14 +16,6 @@ class ItemsComponent {
   errorsRef;
 
   constructor(routerSrvc) {}
-
-  beforeMount() {
-    this.sheetForm = new FormBuilder({
-      name: ['', [Validators.required]],
-      age: ['', [Validators.required]],
-      salary: ['', [Validators.required]]
-    });
-  }
 
   mount() {
     console.table(this.routerSrvc.getCurrentRoute());
