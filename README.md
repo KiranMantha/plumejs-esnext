@@ -17,9 +17,9 @@ to bundle your application
 # Bundles
 
 ```cmd
-plume.es.js   27.05 KiB / gzip: 8.23 KiB / brotliCompress: 7.19kb
-plume.umd.js   18.29 KiB / gzip: 6.98 KiB / brotliCompress: 6.13kb
-plume.iife.js   18.11 KiB / gzip: 6.90 KiB / brotliCompress: 6.05kb
+plume.es.js   27.17 KiB / gzip: 8.31 KiB / brotliCompress: 7.27kb
+plume.umd.js   18.45 KiB / gzip: 7.04 KiB / brotliCompress: 6.18kb
+plume.iife.js   18.28 KiB / gzip: 6.97 KiB / brotliCompress: 6.11kb
 ```
 
 ## CDN links

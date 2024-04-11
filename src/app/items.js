@@ -68,37 +68,19 @@ class ItemsComponent {
           <div class="field">
             <label class="label" for="exampleInputEmail1">Name</label>
             <div class="control">
-              <input
-                type="text"
-                class="input"
-                id="name"
-                value=${this.sheetForm.getControl('name').value}
-                onchange=${this.sheetForm.changeHandler('name')}
-              />
+              <input type="text" class="input" id="name" ${this.sheetForm.register('name')} />
             </div>
           </div>
           <div class="field">
             <label class="label" for="exampleInputPassword1">Age</label>
             <div class="control">
-              <input
-                type="text"
-                class="input"
-                id="age"
-                value=${this.sheetForm.getControl('age').value}
-                onchange=${this.sheetForm.changeHandler('age')}
-              />
+              <input type="text" class="input" id="age" ${this.sheetForm.register('age')} />
             </div>
           </div>
           <div class="field">
             <label class="label" for="exampleInputPassword1">Salary</label>
             <div class="control">
-              <input
-                type="text"
-                class="input"
-                id="salary"
-                value=${this.sheetForm.getControl('salary').value}
-                onchange=${this.sheetForm.changeHandler('salary')}
-              />
+              <input type="text" class="input" id="salary" ${this.sheetForm.register('salary')} />
             </div>
           </div>
           <div class="field">
