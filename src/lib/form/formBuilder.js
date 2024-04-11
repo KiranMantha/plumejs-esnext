@@ -104,15 +104,15 @@ export class FormBuilder {
   register(key) {
     return {
       attrs: {
+        name: key,
+        value: this.getControl(key).value,
         onchange: (e) => {
           const value = _getTargetValue(e.target);
           this.getControl(key).value = value;
         },
         onblur: () => {
           this._checkValidity();
-        },
-        name: key,
-        value: this.getControl(key).value
+        }
       }
     };
   }
