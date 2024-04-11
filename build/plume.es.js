@@ -673,15 +673,15 @@ class Le {
   register(e) {
     return {
       attrs: {
+        name: e,
+        value: this.getControl(e).value,
         onchange: (t) => {
           const r = Re(t.target);
           this.getControl(e).value = r;
         },
         onblur: () => {
           this._checkValidity();
-        },
-        name: e,
-        value: this.getControl(e).value
+        }
       }
     };
   }
