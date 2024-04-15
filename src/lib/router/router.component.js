@@ -1,5 +1,4 @@
 import { Component } from '../decorators';
-import { html } from '../html';
 import { Renderer } from '../renderer';
 import { Subscriptions } from '../utils';
 import { InternalRouter } from './internalRouter.service';
@@ -35,13 +34,7 @@ const registerRouterComponent = () => {
     }
 
     render() {
-      if (this._template) {
-        const stringArray = [`${this._template}`];
-        stringArray.raw = [`${this._template}`];
-        return html(stringArray);
-      } else {
-        return html``;
-      }
+      return this._template;
     }
   }
   Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] })(RouterComponent);
