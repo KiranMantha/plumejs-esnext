@@ -4,7 +4,7 @@
           <code ref=${function(e){t.errorsRef=e}}>${this.sheetForm.hasErrors?JSON.stringify(Object.fromEntries(this.sheetForm.errors),null,4):null}</code>
         </pre>
         <form
-          onsubmit=${function(e){t.submitForm(e)}}
+          onsubmit=${function(e){t.sheetForm.handleSubmit(e,t.submitForm)}}
         >
           <div class="field">
             <label class="label" for="exampleInputEmail1">Name</label>
