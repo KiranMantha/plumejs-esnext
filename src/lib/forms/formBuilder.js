@@ -1,4 +1,4 @@
-import { signal } from '../augment';
+import { signal } from '../core/augment';
 
 function nodeName(elem, name) {
   return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();

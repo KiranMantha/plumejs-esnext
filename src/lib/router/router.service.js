@@ -1,4 +1,4 @@
-import { Injectable } from '../decorators';
+import { Injectable } from '../core/decorators';
 import { InternalRouter } from './internalRouter.service';
 import { StaticRouter } from './staticRouter';
 
