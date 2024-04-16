@@ -362,7 +362,7 @@ const Z = new (V = class {
         name: f
       } of u)
         o[f] || i.removeAttribute(f);
-    if (i.tagName.toLowerCase() === "input" && (i.value = n.value), i.tagName.indexOf("-") > -1 && n.tagName.indexOf("-") > -1) {
+    if (["input", "textarea"].includes(i.tagName.toLowerCase()) && (i.value = n.value), i.tagName.indexOf("-") > -1 && n.tagName.indexOf("-") > -1) {
       const f = Object.getOwnPropertySymbols(n).find((x) => x.description === "input"), C = Object.getOwnPropertySymbols(i).find((x) => x.description === "input"), v = f ? n[f] : "", k = C ? i[C] : "";
       v && k && v !== k && P(i, JSON.parse(v), C);
     }
