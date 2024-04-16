@@ -62,7 +62,7 @@ class ItemsComponent {
         </pre>
         <form
           onsubmit=${(e) => {
-            this.submitForm(e);
+            this.sheetForm.handleSubmit(e, this.submitForm);
           }}
         >
           <div class="field">
