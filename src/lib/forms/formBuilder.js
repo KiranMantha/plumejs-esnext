@@ -1,5 +1,7 @@
 import { signal } from '../core/augment';
 
+const isFunction = (value) => typeof value === 'function';
+
 function nodeName(elem, name) {
   return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
 }
@@ -66,7 +68,8 @@ export class FormBuilder {
       this._controls.set(key, {
         value: val[0],
         validators: val.length > 1 ? val[1] : [],
-        isTouched: false
+        isTouched: false,
+        errorMessage: ''
       });
     }
   }
@@ -110,7 +113,7 @@ export class FormBuilder {
   /**
    *
    * @param {string} controlName
-   * @returns {value: string; validators: []; isTouched: boolean}
+   * @returns {value: string; validators: []; isTouched: boolean; errorMessage: string}
    */
   getControl(controlName) {
     return this._controls.get(controlName);
@@ -132,7 +135,7 @@ export class FormBuilder {
         },
         onblur: () => {
           this.getControl(key).isTouched = true;
-          this._checkValidity(true);
+          this._checkValidity(key);
         }
       }
     };
@@ -146,15 +149,20 @@ export class FormBuilder {
   handleSubmit(e, fn) {
     e.preventDefault();
     this._isSubmitted = true;
-    this._checkValidity(false);
+    this._checkValidity();
     fn(this.value);
   }
 
   reset() {
     for (const [key, value] of Object.entries(this._initialValues)) {
       const val = [...(Array.isArray(value) ? value : [value])];
-      this._controls.get(key).value = JSON.parse(JSON.stringify(val))[0];
-      this._controls.get(key).isTouched = false;
+      const { validators } = this._controls.get(key);
+      this._controls.set(key, {
+        value: JSON.parse(JSON.stringify(val))[0],
+        validators,
+        isTouched: false,
+        errorMessage: ''
+      });
     }
     this._isSubmitted = false;
     this._errors.clear();
@@ -164,25 +172,38 @@ export class FormBuilder {
   /**
    * @private
    */
-  _checkValidity(checkValidationForTouchedElements) {
-    this._errors.clear();
-    for (const [key, { value, validators, isTouched }] of this._controls) {
-      if (
-        (checkValidationForTouchedElements && isTouched) ||
-        (!checkValidationForTouchedElements && this._isSubmitted)
-      ) {
-        for (const validator of validators) {
-          const validity = validator(value);
-          if (validity !== null) {
-            if (this._errors.has(key)) {
-              this._errors.set(key, { ...this._errors.get(key), ...validity });
-            } else {
-              this._errors.set(key, validity);
-            }
-          }
-        }
+  _checkValidity(controlName) {
+    if (controlName) {
+      this._executeValidators(controlName);
+    } else {
+      this._errors.clear();
+      for (const [key] of this._controls) {
+        this._executeValidators(key);
       }
     }
     this._errorCount.set(this._errors.size);
+  }
+
+  /**
+   * @private
+   */
+  _executeValidators(controlName) {
+    const { value, validators } = this._controls.get(controlName);
+    let errorMessage = '';
+    for (const validator of validators) {
+      const validity = isFunction(validator) ? validator(value) : validator.rule(value);
+      if (validity !== null) {
+        if (this._errors.has(controlName)) {
+          this._errors.set(controlName, { ...this._errors.get(controlName), ...validity });
+        } else {
+          this._errors.set(controlName, validity);
+        }
+        errorMessage = !isFunction(validator) ? validator.message : 'error';
+        break;
+      } else {
+        this._errors.delete(controlName);
+      }
+    }
+    this._controls.get(controlName).errorMessage = errorMessage;
   }
 }
