@@ -68,9 +68,9 @@ forms/index.iife.js   3.17 KiB / gzip: 1.35 KiB / brotliCompress: 1.15kb
 
 ### Router
 
-- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.es.js) version
-- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.iife.js) version
-- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.umd.js) version
+- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/router/index.es.js) version
+- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/router/index.iife.js) version
+- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/router/index.umd.js) version
 
 ### Forms
 
