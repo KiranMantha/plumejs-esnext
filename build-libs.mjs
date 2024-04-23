@@ -27,7 +27,7 @@ libraries.forEach(async (lib) => {
       outDir: './build',
       lib: {
         ...lib,
-        formats: ['es', 'cjs']
+        formats: ['es', 'iife', 'umd']
       },
       emptyOutDir: false
     }

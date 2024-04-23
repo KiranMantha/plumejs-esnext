@@ -16,17 +16,67 @@ to bundle your application
 
 # Bundles
 
+## Single Package
+
 ```cmd
 plume.es.js   28.28 KiB / gzip: 8.57 KiB / brotliCompress: 7.46kb
 plume.umd.js   18.91 KiB / gzip: 7.19 KiB / brotliCompress: 6.30kb
 plume.iife.js   18.74 KiB / gzip: 7.12 KiB / brotliCompress: 6.24kb
 ```
 
-## CDN links
+## Isolated Packages
+
+### Core
+
+```cmd
+core/index.es.js   17.44 KiB / gzip: 5.76 KiB / brotliCompress: 7.46kb
+core/index.umd.js   11.99 KiB / gzip: 5.00 KiB / brotliCompress: 4.34kb
+core/index.iife.js   11.81 KiB / gzip: 4.92 KiB / brotliCompress: 4.29kb
+```
+
+### Router
+
+```cmd
+router/index.es.js   23.25 KiB / gzip: 7.33 KiB / brotliCompress: 6.39kb
+router/index.umd.js   15.90 KiB / gzip: 6.21 KiB / brotliCompress: 5.46kb
+router/index.iife.js   15.73 KiB / gzip: 6.14 KiB / brotliCompress: 5.37kb
+```
+
+### Forms
+
+```cmd
+forms/index.es.js   5.10 KiB / gzip: 1.68 KiB / brotliCompress: 1.43kb
+forms/index.umd.js   3.34 KiB / gzip: 1.42 KiB / brotliCompress: 1.21kb
+forms/index.iife.js   3.17 KiB / gzip: 1.35 KiB / brotliCompress: 1.15kb
+```
+
+# CDN links
+
+## Global Package
 
 - [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/plume.es.js) version
 - [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/plume.iife.js) version
 - [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/plume.umd.js) version
+
+## Isolated Packages
+
+### Core
+
+- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/core/index.es.js) version
+- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/core/index.iife.js) version
+- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/core/index.umd.js) version
+
+### Router
+
+- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.es.js) version
+- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.iife.js) version
+- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.umd.js) version
+
+### Forms
+
+- [ES Module](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.es.js) version
+- [IIFE](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.iife.js) version
+- [UMD](https://cdn.jsdelivr.net/gh/kiranmantha/plumejs-esnext/build/forms/index.umd.js) version
 
 #### navigation for simple css
 
