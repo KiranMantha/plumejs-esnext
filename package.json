@@ -18,7 +18,7 @@
     "serve": "webpack-dev-server --config webpack/server.js",
     "build": "npm run build:bundle && npm run build:lib",
     "build:bundle": "webpack --config webpack/build.js",
-    "build:lib": "vite build",
+    "build:lib": "vite build && node build-libs.mjs",
     "vite:start": "vite",
     "lint": "eslint . --ext .js --fix",
     "prepare": "husky install",
