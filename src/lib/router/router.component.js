@@ -1,6 +1,4 @@
-import { Component } from '../core/decorators';
-import { Renderer } from '../core/renderer';
-import { Subscriptions } from '../core/utils';
+import { Component, Renderer, Subscriptions } from '../core';
 import { InternalRouter } from './internalRouter.service';
 import { StaticRouter } from './staticRouter';
 

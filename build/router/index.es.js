@@ -10,8 +10,150 @@ var y = (s, t, e) => (W(s, t, "read from private field"), e ? e.call(s) : t.get(
   t instanceof WeakSet ? t.add(s) : t.set(s, e);
 }, O = (s, t, e, r) => (W(s, t, "write to private field"), r ? r.call(s, e) : t.set(s, e), e);
 var $ = (s, t, e) => (W(s, t, "access private method"), e);
+const at = (s) => !!s && typeof s.subscribe == "function", Y = (s) => !!s && typeof s.then == "function", G = (s) => {
+  const t = s.toString().split(/constructor\s*[^\(]*\(\s*([^\)]*)\)/m);
+  return t.length === 3 ? t[1].split(",").map((e) => e.trim()) : [];
+}, ct = (() => {
+  try {
+    return new CSSStyleSheet(), !0;
+  } catch {
+    return !1;
+  }
+})(), lt = (s) => ({
+  subscribe: (t) => {
+    t(s);
+  }
+}), ut = (s) => ({
+  subscribe: (t) => {
+    Promise.resolve(s).then((e) => {
+      t(e);
+    });
+  }
+}), B = () => Math.random().toString(36).substring(2);
+class K {
+  constructor() {
+    /**
+     * @private
+     */
+    m(this, "_callbackCollection", {});
+  }
+  /**
+   * @private
+   */
+  unsubscribe(t) {
+    delete this._callbackCollection[t];
+  }
+  asObservable() {
+    return {
+      subscribe: (t) => this.subscribe(t)
+    };
+  }
+  subscribe(t) {
+    const e = B();
+    return this._callbackCollection[e] = t, () => this.unsubscribe(e);
+  }
+  next(t) {
+    for (const e in this._callbackCollection)
+      this._callbackCollection[e](t);
+  }
+}
+class Q extends K {
+  constructor(e) {
+    super();
+    m(this, "_initialValue");
+    this._initialValue = e;
+  }
+  subscribe(e) {
+    const r = super.subscribe(e);
+    return super.next(this._initialValue), r;
+  }
+  next(e) {
+    this._initialValue = e, super.next(e);
+  }
+}
+class X {
+  constructor() {
+    m(this, "_subcribers", []);
+  }
+  /**
+   * add subscribers to subscriptions
+   * @param {Function} fn
+   * @returns {void}
+   */
+  add(t) {
+    this._subcribers.push(t);
+  }
+  /**
+   * remove all added subcriptions
+   * @returns {void}
+   */
+  unsubscribe() {
+    for (const t of this._subcribers)
+      t();
+    this._subcribers = [];
+  }
+}
+const U = (s) => at(s) ? s : Y(s) ? ut(Promise.resolve(s)) : lt(s), F = (s, t, e, r = !1) => (s.addEventListener(t, e, r), () => {
+  s.removeEventListener(t, e, r);
+}), ht = (s) => {
+  const t = () => new DOMParser().parseFromString(s, "text/html").body || document.createElement("body"), e = (f) => {
+    const b = f.querySelectorAll("script");
+    for (const C of b)
+      C.remove();
+  }, r = (f, b) => {
+    if (b = b.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(f) && (b.includes("javascript:") || b.includes("data:")) || f.startsWith("on"))
+      return !0;
+  }, l = (f) => {
+    const b = f.attributes;
+    for (const {
+      name: C,
+      value: T
+    } of b)
+      r(C, T) && f.removeAttribute(C);
+  }, d = (f) => {
+    const b = f.children;
+    for (const C of b)
+      l(C), d(C);
+  }, a = t();
+  return e(a), d(a), a.innerHTML;
+}, dt = (s, t) => {
+  const e = G(t), r = () => ({
+    get(l, d) {
+      const a = Object.prototype.toString.call(l[d]);
+      return ["[object Object]", "[object Array]"].indexOf(a) > -1 && !("__metadata__" in l[d]) ? new Proxy(l[d], r()) : l[d];
+    },
+    set(l, d, a) {
+      return l[d] = a, s(), !0;
+    }
+  });
+  return class extends t {
+    constructor(...l) {
+      return super(...l), l.forEach((d, a) => {
+        e[a] && e[a] !== "undefined" && (this[e[a]] = d);
+      }), new Proxy(this, r());
+    }
+  };
+}, Z = /* @__PURE__ */ Object.create(null);
+let D = null;
+function ft(s, t) {
+  const e = D;
+  let r;
+  D = B(), Z[D] = s;
+  try {
+    t();
+  } finally {
+    r = D, D = e;
+  }
+  return r;
+}
+function pt(s, t) {
+  const e = ft(s, t);
+  return function() {
+    delete Z[e];
+  };
+}
 var M, z;
-const Y = new (z = class {
+const V = new (z = class {
   constructor() {
     L(this, M, void 0);
     O(this, M, /* @__PURE__ */ new WeakMap());
@@ -44,160 +186,18 @@ const Y = new (z = class {
   clear() {
     O(this, M, /* @__PURE__ */ new WeakMap());
   }
-}, M = new WeakMap(), z)(), at = (s) => !!s && typeof s.subscribe == "function", G = (s) => !!s && typeof s.then == "function", K = (s) => {
-  const t = s.toString().split(/constructor\s*[^\(]*\(\s*([^\)]*)\)/m);
-  return t.length === 3 ? t[1].split(",").map((e) => e.trim()) : [];
-}, ct = (() => {
-  try {
-    return new CSSStyleSheet(), !0;
-  } catch {
-    return !1;
-  }
-})(), lt = (s) => ({
-  subscribe: (t) => {
-    t(s);
-  }
-}), ut = (s) => ({
-  subscribe: (t) => {
-    Promise.resolve(s).then((e) => {
-      t(e);
-    });
-  }
-}), B = () => Math.random().toString(36).substring(2);
-class X {
-  constructor() {
-    /**
-     * @private
-     */
-    m(this, "_callbackCollection", {});
-  }
-  /**
-   * @private
-   */
-  unsubscribe(t) {
-    delete this._callbackCollection[t];
-  }
-  asObservable() {
-    return {
-      subscribe: (t) => this.subscribe(t)
-    };
-  }
-  subscribe(t) {
-    const e = B();
-    return this._callbackCollection[e] = t, () => this.unsubscribe(e);
-  }
-  next(t) {
-    for (const e in this._callbackCollection)
-      this._callbackCollection[e](t);
-  }
-}
-class Q extends X {
-  constructor(e) {
-    super();
-    m(this, "_initialValue");
-    this._initialValue = e;
-  }
-  subscribe(e) {
-    const r = super.subscribe(e);
-    return super.next(this._initialValue), r;
-  }
-  next(e) {
-    this._initialValue = e, super.next(e);
-  }
-}
-class Z {
-  constructor() {
-    m(this, "_subcribers", []);
-  }
-  /**
-   * add subscribers to subscriptions
-   * @param {Function} fn
-   * @returns {void}
-   */
-  add(t) {
-    this._subcribers.push(t);
-  }
-  /**
-   * remove all added subcriptions
-   * @returns {void}
-   */
-  unsubscribe() {
-    for (const t of this._subcribers)
-      t();
-    this._subcribers = [];
-  }
-}
-const U = (s) => at(s) ? s : G(s) ? ut(Promise.resolve(s)) : lt(s), F = (s, t, e, r = !1) => (s.addEventListener(t, e, r), () => {
-  s.removeEventListener(t, e, r);
-}), ht = (s) => {
-  const t = () => new DOMParser().parseFromString(s, "text/html").body || document.createElement("body"), e = (f) => {
-    const b = f.querySelectorAll("script");
-    for (const C of b)
-      C.remove();
-  }, r = (f, b) => {
-    if (b = b.replace(/\s+/g, "").toLowerCase(), ["src", "href", "xlink:href"].includes(f) && (b.includes("javascript:") || b.includes("data:")) || f.startsWith("on"))
-      return !0;
-  }, l = (f) => {
-    const b = f.attributes;
-    for (const {
-      name: C,
-      value: T
-    } of b)
-      r(C, T) && f.removeAttribute(C);
-  }, d = (f) => {
-    const b = f.children;
-    for (const C of b)
-      l(C), d(C);
-  }, a = t();
-  return e(a), d(a), a.innerHTML;
-}, dt = (s, t) => {
-  const e = K(t), r = () => ({
-    get(l, d) {
-      const a = Object.prototype.toString.call(l[d]);
-      return ["[object Object]", "[object Array]"].indexOf(a) > -1 && !("__metadata__" in l[d]) ? new Proxy(l[d], r()) : l[d];
-    },
-    set(l, d, a) {
-      return l[d] = a, s(), !0;
-    }
-  });
-  return class extends t {
-    constructor(...l) {
-      return super(...l), l.forEach((d, a) => {
-        e[a] && e[a] !== "undefined" && (this[e[a]] = d);
-      }), new Proxy(this, r());
-    }
-  };
-}, V = (s, t, e) => {
+}, M = new WeakMap(), z)(), tt = (s, t, e) => {
   if (t.length > 0) {
     const r = [];
     for (const a of t)
-      a.prototype.__metadata__.name !== "RENDERER" ? r.push(Y.getService(a)) : r.push(e);
-    const l = K(s), d = new s(...r);
+      a.prototype.__metadata__.name !== "RENDERER" ? r.push(V.getService(a)) : r.push(e);
+    const l = G(s), d = new s(...r);
     return t.forEach((a, f) => {
       d[l[f]] = r[f];
     }), d;
   } else
     return new s();
-}, tt = /* @__PURE__ */ Object.create(null);
-let D = null;
-function ft(s, t) {
-  const e = D;
-  let r;
-  D = B(), tt[D] = s;
-  try {
-    t();
-  } finally {
-    r = D, D = e;
-  }
-  return r;
-}
-function pt(s, t) {
-  const e = ft(s, t);
-  return function() {
-    delete tt[e];
-  };
-}
-const I = new class {
+}, I = new class {
   constructor() {
     m(this, "globalStyles");
     m(this, "globalStyleTag");
@@ -474,7 +474,7 @@ const bt = {
   if (s = {
     ...bt,
     ...s
-  }, G(s.styles)) {
+  }, Y(s.styles)) {
     const P = await s.styles;
     s.styles = P.default.toString();
   }
@@ -490,7 +490,7 @@ const bt = {
       L(this, e, void 0);
       L(this, r, void 0);
       L(this, l, void 0);
-      L(this, d, new Z());
+      L(this, d, new X());
       m(this, "renderCount", 0);
       if (s.shadowDomEncapsulation && ct)
         O(this, r, this.attachShadow({
@@ -553,7 +553,7 @@ const bt = {
     }, p.emitEvent = (w, R) => {
       $(this, b, rt).call(this, w, R);
     }, y(this, d).add(pt(this.setRenderIntoQueue, () => {
-      O(this, e, V(dt(this.setRenderIntoQueue, t), s.deps, p));
+      O(this, e, tt(dt(this.setRenderIntoQueue, t), s.deps, p));
     }));
   }, b = new WeakSet(), rt = function(p, w) {
     const R = new CustomEvent(p, {
@@ -575,8 +575,8 @@ const bt = {
     name: "SERVICE"
   }, s.deps.some((r) => r.prototype.__metadata__.name === "RENDERER"))
     throw Error("Renderer cannot be a dependency for a service. It should be used with component");
-  const e = V(t, s.deps);
-  Y.register(t, e);
+  const e = tt(t, s.deps);
+  V.register(t, e);
 }, H = class {
   static checkParams(t, e) {
     let r = 0;
@@ -635,7 +635,7 @@ class q {
       state: {}
     }));
     m(this, "_template", new Q(""));
-    m(this, "_navigationEndEvent", new X());
+    m(this, "_navigationEndEvent", new K());
     m(this, "_routeStateMap", /* @__PURE__ */ new Map());
   }
   listenRouteChanges() {
@@ -699,7 +699,7 @@ const Tt = () => {
   class s {
     constructor(e, r) {
       m(this, "_template", "");
-      m(this, "_subscriptions", new Z());
+      m(this, "_subscriptions", new X());
     }
     beforeMount() {
       this._subscriptions.add(this.internalRouterSrvc.getTemplate().subscribe((e) => {
