@@ -1,5 +1,4 @@
-import { Injectable } from '../core/decorators';
-import { BehaviourSubjectObs, SubjectObs, fromEvent, wrapIntoObservable } from '../core/utils';
+import { BehaviourSubjectObs, Injectable, SubjectObs, fromEvent, wrapIntoObservable } from '../core';
 import { StaticRouter } from './staticRouter';
 import { matchPath } from './utils';
 
