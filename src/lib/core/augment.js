@@ -30,7 +30,9 @@ function signal(initialValue) {
     } else {
       value = v;
     }
-    updateFn();
+    try {
+      updateFn();
+    } catch (e) {}
   };
   return boundSignal;
 }

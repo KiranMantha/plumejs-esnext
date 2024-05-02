@@ -60,6 +60,7 @@ const registerElement = async (componentOptions, klass) => {
       #shadow;
       #componentStyleTag;
       #internalSubscriptions = new Subscriptions();
+      #isEmulated = false;
       renderCount = 0;
 
       static get observedAttributes() {
@@ -69,19 +70,15 @@ const registerElement = async (componentOptions, klass) => {
       constructor() {
         super();
         if (componentOptions.shadowDomEncapsulation && CSS_SHEET_SUPPORTED) {
+          this.#isEmulated = false;
           this.#shadow = this.attachShadow({ mode: 'open' });
           this.#shadow.adoptedStyleSheets = componentRegistry.getComputedCss(
             componentOptions.styles,
             componentOptions.standalone
           );
         } else {
+          this.#isEmulated = true;
           this.#shadow = this;
-          const id = createToken();
-          this.setAttribute('data-did', id);
-          const styles = componentOptions.styles.replaceAll(':host', `${componentOptions.selector}[data-did='${id}']`);
-          if (!componentOptions.root && styles) {
-            this.#componentStyleTag = createStyleTag(styles, document.head);
-          }
         }
         this.getInstance = this.getInstance.bind(this);
         this.update = this.update.bind(this);
@@ -151,6 +148,15 @@ const registerElement = async (componentOptions, klass) => {
        * Default html element events
        */
       connectedCallback() {
+        if (this.#isEmulated) {
+          const id = createToken();
+          this.setAttribute('data-did', id);
+          const styles = componentOptions.styles.replaceAll(':host', `${componentOptions.selector}[data-did='${id}']`);
+          if (!componentOptions.root && styles) {
+            this.#componentStyleTag = createStyleTag(styles, document.head);
+          }
+        }
+
         this.#internalSubscriptions.add(
           fromEvent(this, 'bindprops', (e) => {
             const propsObj = e.detail.props;
