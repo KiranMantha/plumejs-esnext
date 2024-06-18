@@ -438,7 +438,7 @@ const ne = new (X = class {
               break;
             }
             default:
-              a += f || "";
+              a += f ?? "";
           }
       }
       a += n[u - 1];

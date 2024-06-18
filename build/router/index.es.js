@@ -419,7 +419,7 @@ const st = new (G = class {
               break;
             }
             default:
-              o += u || "";
+              o += u ?? "";
           }
       }
       o += r[c - 1];
