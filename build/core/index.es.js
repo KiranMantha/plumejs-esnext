@@ -438,7 +438,7 @@ const Y = new (q = class {
               break;
             }
             default:
-              o += a || "";
+              o += a ?? "";
           }
       }
       o += r[c - 1];
