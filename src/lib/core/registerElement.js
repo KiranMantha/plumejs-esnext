@@ -80,13 +80,10 @@ const registerElement = async (componentOptions, klass) => {
           this.#isEmulated = true;
           this.#shadow = this;
         }
-        this.getInstance = this.getInstance.bind(this);
-        this.update = this.update.bind(this);
-        this.setRenderIntoQueue = this.setRenderIntoQueue.bind(this);
         this.#createProxyInstance();
       }
 
-      #createProxyInstance() {
+      #createProxyInstance = () => {
         const rendererInstance = new Renderer(this, this.#shadow);
         rendererInstance.update = () => {
           this.update();
@@ -103,38 +100,38 @@ const registerElement = async (componentOptions, klass) => {
             );
           })
         );
-      }
+      };
 
-      update() {
+      update = () => {
         const renderValue = this.#klass.render();
         if (typeof renderValue === 'string') {
           this.#shadow.innerHTML = sanitizeHTML(renderValue);
         } else {
           render(this.#shadow, renderValue);
         }
-      }
+      };
 
-      #emitEvent(eventName, data) {
+      #emitEvent = (eventName, data) => {
         const event = new CustomEvent(eventName, {
           detail: data
         });
         this.dispatchEvent(event);
-      }
+      };
 
-      setProps(propsObj) {
+      setProps = (propsObj) => {
         for (const [key, value] of Object.entries(propsObj)) {
           if (klass.observedProperties.find((property) => property === key)) {
             this.#klass[key] = value;
           }
         }
         this.#klass.onPropertiesChanged?.();
-      }
+      };
 
-      getInstance() {
+      getInstance = () => {
         return this.#klass;
-      }
+      };
 
-      setRenderIntoQueue() {
+      setRenderIntoQueue = () => {
         ++this.renderCount;
         if (this.renderCount === 1) {
           queueMicrotask(() => {
@@ -142,7 +139,7 @@ const registerElement = async (componentOptions, klass) => {
             this.renderCount = 0;
           });
         }
-      }
+      };
 
       /**
        * Default html element events
