@@ -18,17 +18,22 @@ function signalWrapper(updateFn, fn) {
   return generatedToken;
 }
 
-function signal(initialValue) {
+/**
+ * @param {any} initialValue
+ * @param {(previousState, newState) => finalState} callback - callback that provides previous state, new state as arguments and should return final state;
+ * @returns Function
+ */
+function signal(initialValue, callback) {
   const updateFn = updateFnRegistry[token];
   let value = initialValue;
   function boundSignal() {
     return value;
   }
   boundSignal.set = function (v) {
-    if (isFunction(v)) {
-      value = v(value);
+    if (callback && isFunction(callback)) {
+      value = callback(value, v);
     } else {
-      value = v;
+      value = isFunction(v) ? v(value) : v;
     }
     try {
       updateFn();
