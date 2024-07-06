@@ -221,36 +221,36 @@ const sanitizeHTML = (htmlString) => {
   return html.innerHTML;
 };
 
-const proxifiedClass = (setRenderIntoQueue, target) => {
-  const constructorArgs = getArgs(target);
+// const proxifiedClass = (setRenderIntoQueue, target) => {
+//   const constructorArgs = getArgs(target);
 
-  const handler = () => ({
-    get(obj, prop) {
-      const propertyType = Object.prototype.toString.call(obj[prop]);
-      if (['[object Object]', '[object Array]'].indexOf(propertyType) > -1 && !('__metadata__' in obj[prop])) {
-        return new Proxy(obj[prop], handler());
-      }
-      return obj[prop];
-    },
-    set(obj, prop, value) {
-      obj[prop] = value;
-      setRenderIntoQueue();
-      return true;
-    }
-  });
+//   const handler = () => ({
+//     get(obj, prop) {
+//       const propertyType = Object.prototype.toString.call(obj[prop]);
+//       if (['[object Object]', '[object Array]'].indexOf(propertyType) > -1 && !('__metadata__' in obj[prop])) {
+//         return new Proxy(obj[prop], handler());
+//       }
+//       return obj[prop];
+//     },
+//     set(obj, prop, value) {
+//       obj[prop] = value;
+//       setRenderIntoQueue();
+//       return true;
+//     }
+//   });
 
-  return class extends target {
-    constructor(...args) {
-      super(...args);
-      args.forEach((arg, i) => {
-        if (constructorArgs[i] && constructorArgs[i] !== 'undefined') {
-          this[constructorArgs[i]] = arg;
-        }
-      });
-      return new Proxy(this, handler());
-    }
-  };
-};
+//   return class extends target {
+//     constructor(...args) {
+//       super(...args);
+//       args.forEach((arg, i) => {
+//         if (constructorArgs[i] && constructorArgs[i] !== 'undefined') {
+//           this[constructorArgs[i]] = arg;
+//         }
+//       });
+//       return new Proxy(this, handler());
+//     }
+//   };
+// };
 
 const promisify = () => {
   let resolver;
@@ -272,7 +272,7 @@ export {
   isObject,
   isPromise,
   promisify,
-  proxifiedClass,
+  // proxifiedClass,
   sanitizeHTML,
   wrapIntoObservable
 };

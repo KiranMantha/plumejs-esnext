@@ -3,15 +3,7 @@ import { componentRegistry } from './componentRegistry';
 import { render } from './html.js';
 import { instantiate } from './instantiate.js';
 import { Renderer } from './renderer';
-import {
-  CSS_SHEET_SUPPORTED,
-  Subscriptions,
-  createToken,
-  fromEvent,
-  isPromise,
-  proxifiedClass,
-  sanitizeHTML
-} from './utils';
+import { CSS_SHEET_SUPPORTED, Subscriptions, createToken, fromEvent, isPromise, sanitizeHTML } from './utils';
 
 const DEFAULT_COMPONENT_OPTIONS = {
   selector: '',
@@ -97,7 +89,8 @@ const registerElement = async (componentOptions, klass) => {
         this.#internalSubscriptions.add(
           augmentor(this.setRenderIntoQueue, () => {
             this.#klass = instantiate(
-              proxifiedClass(this.setRenderIntoQueue, klass),
+              // proxifiedClass(this.setRenderIntoQueue, klass),
+              klass,
               componentOptions.deps,
               rendererInstance
             );
@@ -124,7 +117,7 @@ const registerElement = async (componentOptions, klass) => {
       setProps(propsObj) {
         for (const [key, value] of Object.entries(propsObj)) {
           if (klass.observedProperties.find((property) => property === key)) {
-            this.#klass[key] = value;
+            this.#klass[key].set(value);
           }
         }
         this.#klass.onPropertiesChanged?.();

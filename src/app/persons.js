@@ -1,13 +1,13 @@
 import axios from 'axios';
-import { Component, html, Renderer, Router } from '../lib';
+import { Component, html, Renderer, Router, signal } from '../lib';
 
 class PersonsService {}
 
 @Component({ selector: 'app-persons', deps: [Router] })
 class PersonsComponent {
-  users = [];
-  selectedPerson;
-  routeData = {};
+  users = signal([]);
+  selectedPerson = signal();
+  routeData = signal({});
 
   constructor(router) {}
 
@@ -17,18 +17,18 @@ class PersonsComponent {
 
   loadRouteData() {
     this.router.getCurrentRoute().subscribe((route) => {
-      this.routeData = {
+      this.routeData.set({
         path: route.path,
         routeParams: Object.fromEntries(route.routeParams),
         queryParams: Object.fromEntries(route.queryParams),
         state: route.state
-      };
+      });
 
       axios
         .get('https://jsonplaceholder.typicode.com/users')
         .then((response) => response.data)
         .then((users) => {
-          this.users = users;
+          this.users.set(users);
         });
     });
   }
@@ -48,19 +48,19 @@ class PersonsComponent {
       <button onclick=${() => {
         this.updateUrl();
       }}>Update url</button>
-      <p>${this.routeData?.queryParams?.a}</p>
+      <p>${this.routeData()?.queryParams?.a}</p>
       <p>
-        Current route data: <pre><code>${JSON.stringify(this.routeData, null, 4)}</code></pre>
+        Current route data: <pre><code>${JSON.stringify(this.routeData(), null, 4)}</code></pre>
       </p>
       <ul>
         ${
-          this.users.length
-            ? this.users.map((user) => {
+          this.users().length
+            ? this.users().map((user) => {
                 return html`
                   <li
                     class="is-clickable"
                     onclick="${() => {
-                      this.selectedPerson = user;
+                      this.selectedPerson.set(user);
                     }}"
                   >
                     ${user.name}
@@ -71,7 +71,7 @@ class PersonsComponent {
         }
       </ul>
       <app-person-details
-        data-input=${{ personDetails: this.selectedPerson }}
+        data-input=${{ personDetails: this.selectedPerson() }}
         onuserclick="${(e) => {
           this.onUserClick(e.detail);
         }}"
@@ -85,18 +85,18 @@ class PersonDetailsComponent {
   static observedProperties = ['personDetails'];
 
   constructor(renderer) {}
-  personDetails;
+  personDetails = signal();
 
   sendDataToParent() {
-    this.renderer.emitEvent('userclick', this.personDetails);
+    this.renderer.emitEvent('userclick', this.personDetails());
   }
 
   render() {
-    if (this.personDetails?.name) {
+    if (this.personDetails()?.name) {
       return html`
         <strong>Person Details</strong>
-        <div>Name: ${this.personDetails.name}</div>
-        <div>Company: ${this.personDetails.company.name}</div>
+        <div>Name: ${this.personDetails().name}</div>
+        <div>Company: ${this.personDetails().company.name}</div>
         <button
           class="button is-info is-light"
           onclick="${() => {

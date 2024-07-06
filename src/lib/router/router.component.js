@@ -1,10 +1,10 @@
-import { Component, Renderer, Subscriptions } from '../core';
+import { Component, Renderer, signal, Subscriptions } from '../core';
 import { InternalRouter } from './internalRouter.service';
 import { StaticRouter } from './staticRouter';
 
 const registerRouterComponent = () => {
   class RouterComponent {
-    _template = '';
+    _template = signal('');
     _subscriptions = new Subscriptions();
 
     constructor(internalRouterSrvc, renderer) {}
@@ -12,8 +12,8 @@ const registerRouterComponent = () => {
     beforeMount() {
       this._subscriptions.add(
         this.internalRouterSrvc.getTemplate().subscribe((tmpl) => {
-          if (this._template !== tmpl) {
-            this._template = tmpl;
+          if (this._template() !== tmpl) {
+            this._template.set(tmpl);
           }
         })
       );
@@ -32,7 +32,7 @@ const registerRouterComponent = () => {
     }
 
     render() {
-      return this._template;
+      return this._template();
     }
   }
   Component({ selector: 'router-outlet', deps: [InternalRouter, Renderer] })(RouterComponent);
