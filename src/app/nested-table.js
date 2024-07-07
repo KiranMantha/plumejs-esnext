@@ -1,23 +1,24 @@
-import { Component, html } from '../lib';
+import { Component, html, signal } from '../lib';
 import './editable-table';
 
 @Component({
   selector: 'app-row-item',
-  styles: `:host {
+  styles: `
+    :host {
       display: table-row-group;
-  }
-  .hide-row {
+    }
+    .hide-row {
       display: none;
-  }
-  :host > tr > td[colspan] table {
+    }
+    :host > tr > td[colspan] table {
       margin: 0;
-  }
+    }
   `
 })
 class RowItem {
   static observedProperties = ['category'];
 
-  category;
+  category = signal();
   nestedRow;
 
   toggleNestedTable() {
@@ -25,8 +26,8 @@ class RowItem {
   }
 
   populateNestedTable() {
-    if (this.category.questions.length) {
-      return this.category.questions.map((question) => {
+    if (this.category().questions.length) {
+      return this.category().questions.map((question) => {
         return html`<tr>
           <td>${question.id}</td>
           <td>${question.name}</td>
@@ -41,11 +42,11 @@ class RowItem {
   }
 
   render() {
-    if (this.category) {
+    if (this.category()) {
       return html`
         <tr part="table-row">
-          <td part="table-cell">${this.category.id}</td>
-          <td part="table-cell">${this.category.name}</td>
+          <td part="table-cell">${this.category().id}</td>
+          <td part="table-cell">${this.category().name}</td>
           <td part="table-cell">
             <button
               onclick=${() => {
@@ -91,7 +92,7 @@ class RowItem {
 class NestedTable {
   static observedAttributes = ['name'];
 
-  categories = [
+  categories = signal([
     {
       id: 1,
       name: 'category 1',
@@ -113,7 +114,7 @@ class NestedTable {
       name: 'category 2',
       questions: []
     }
-  ];
+  ]);
 
   onAttributesChanged(name, oldValue, newValue) {
     console.log(name, oldValue, newValue);
@@ -132,7 +133,7 @@ class NestedTable {
             <th></th>
           </tr>
         </thead>
-        ${this.categories.map((category) => {
+        ${this.categories().map((category) => {
           return html`<app-row-item
             data-input=${{
               category

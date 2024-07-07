@@ -1,5 +1,5 @@
 import { Observable } from 'rxjs';
-import { Component, html, Injectable, registerRouterComponent, render, Renderer, Subscriptions } from './lib';
+import { Component, html, Injectable, registerRouterComponent, render, Renderer, signal, Subscriptions } from './lib';
 import { matchPath, Router } from './lib/router';
 
 registerRouterComponent();
@@ -14,7 +14,7 @@ class TestService {
 @Component({ selector: 'test-ele', deps: [Renderer] })
 class TestComponent {
   constructor(renderer) {}
-  inputVal = '';
+  inputVal = signal('');
 
   emitDataToParent() {
     this.renderer.emitEvent('customoutput', {
@@ -25,7 +25,7 @@ class TestComponent {
   handleInput(e) {
     const value = e.target.value;
     console.log(value);
-    this.inputVal = value;
+    this.inputVal.set(value);
   }
 
   render() {
@@ -42,8 +42,8 @@ class TestComponent {
         </button>
         <div>
           <p>two way data binding</p>
-          <p>${this.inputVal}</p>
-          <input type="text" value="${this.inputVal}" oninput="${(e) => this.handleInput(e)}" />
+          <p>${this.inputVal()}</p>
+          <input type="text" value="${this.inputVal()}" oninput="${(e) => this.handleInput(e)}" />
         </div>
       </fieldset>
     `;
@@ -57,7 +57,7 @@ class TestComponent {
   deps: [TestService, Router]
 })
 class AppComponent {
-  greet;
+  greet = signal('');
   divRef;
   setClass = true;
   tabsContainer;
@@ -147,7 +147,7 @@ class AppComponent {
    */
   constructor(testService, routerSrvc) {
     routerSrvc.registerRoutes(this.routes, false, false);
-    this.greet = testService.getGreeting();
+    this.greet.set(testService.getGreeting());
   }
 
   beforeMount() {
@@ -301,13 +301,13 @@ class AppComponent {
               class="hello ${this.setClass ? 'world' : ''}"
               data-adj="${this.setClass}"
             >
-              ${this.greet}
+              ${this.greet()}
               <input
-                value="${this.greet}"
+                value="${this.greet()}"
                 oninput="${(e) => {
                   const value = e.target.value;
                   console.log(value);
-                  this.greet = value;
+                  this.greet.set(value);
                 }}"
               />
 

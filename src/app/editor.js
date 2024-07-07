@@ -1,25 +1,23 @@
 import MarkdownIt from 'markdown-it';
-import { Component, html } from '../lib';
+import { Component, html, signal } from '../lib';
 
 @Component({ selector: 'app-editor', styles: import('./editor.scss?inline') })
 class Editor {
-  editorNode;
-  previewNode;
   md;
-  inEditMode = true;
+  text = signal('');
+  inEditMode = signal(true);
+  markup = signal();
 
   beforeMount() {
     this.md = new MarkdownIt();
   }
 
   editOrPreview() {
-    this.editorNode.classList.toggle('show');
-    this.previewNode.classList.toggle('show');
-    this.inEditMode = !this.inEditMode;
-    if (!this.inEditMode) {
-      const html = this.md.render(this.editorNode.value);
-      this.previewNode.innerHTML = html;
+    if (this.inEditMode()) {
+      const html = this.md.render(this.text());
+      this.markup.set(html);
     }
+    this.inEditMode.set(!this.inEditMode());
   }
 
   render() {
@@ -32,18 +30,14 @@ class Editor {
         Edit / Preview
       </button>
       <textarea
-        ref=${(node) => {
-          this.editorNode = node;
-        }}
-        class="editor show"
+        class="editor ${this.inEditMode() ? 'show' : ''}"
         placeholder="write your post here.."
-      ></textarea>
-      <div
-        ref=${(node) => {
-          this.previewNode = node;
+        value="${this.text()}"
+        oninput=${(e) => {
+          this.text.set(e.target.value);
         }}
-        class="preview"
-      ></div>
+      ></textarea>
+      <div class="preview ${!this.inEditMode() ? 'show' : ''}">${this.markup()}</div>
     `;
   }
 }

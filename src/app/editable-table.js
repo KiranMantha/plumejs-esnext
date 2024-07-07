@@ -1,19 +1,19 @@
 import axios from 'axios';
-import { Component, html } from '../lib';
+import { Component, html, signal } from '../lib';
 
 @Component({
   selector: 'app-editable-table'
 })
 class EditableTable {
   constructor() {}
-  users = [];
+  users = signal([]);
 
   mount() {
     axios
       .get('https://jsonplaceholder.typicode.com/users')
       .then((response) => response.data)
       .then((users) => {
-        this.users = users;
+        this.users.set(users);
       });
   }
 
@@ -24,7 +24,7 @@ class EditableTable {
   }
 
   render() {
-    if (!this.users.length) {
+    if (!this.users().length) {
       return 'Loading';
     }
 
@@ -41,7 +41,7 @@ class EditableTable {
           </tr>
         </thead>
         <tbody>
-          ${this.users.map(({ id, name, email }) => {
+          ${this.users().map(({ id, name, email }) => {
             return html`
               <tr>
                 <td>

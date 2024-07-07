@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Component, FormBuilder, Validators, html } from '../lib';
+import { Component, FormBuilder, Validators, html, signal } from '../lib';
 import { Router } from '../lib/router';
 
 @Component({ selector: 'app-items', deps: [Router] })
@@ -12,7 +12,7 @@ class ItemsComponent {
   apiUrl =
     'https://script.google.com/macros/s/AKfycbzCyH7MIo7UFlhbkNWjbIyCp-Rae-CElryGsGM4oWSDeIx0QMOidUSlBEMs78kQZIsLCQ/exec';
   table;
-  personsList = [];
+  personsList = signal([]);
   errorsRef;
 
   constructor(routerSrvc) {}
@@ -28,7 +28,7 @@ class ItemsComponent {
     if (!this.sheetForm.valid) {
       console.log(this.sheetForm.errors);
     } else {
-      this.personsList.push(this.sheetForm.value);
+      this.personsList.set((prevValue) => prevValue.push(this.sheetForm.value));
       this.sheetForm.reset();
       axios
         .get(this.apiUrl + `?f=insert&n=${value}`)
@@ -46,7 +46,7 @@ class ItemsComponent {
       .get(this.apiUrl)
       .then((response) => response.data)
       .then((persons) => {
-        this.personsList = persons.data;
+        this.personsList.set(persons.data);
       });
   }
 
@@ -98,7 +98,7 @@ class ItemsComponent {
             </tr>
           </thead>
           <tbody>
-            ${this.personsList.map((item) => {
+            ${this.personsList().map((item) => {
               return html`
                 <tr>
                   <td>${item.name}</td>
