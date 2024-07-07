@@ -94,14 +94,15 @@ class ControlsComponent {
       modalTitle: 'Hello World',
       hideDefaultCloseButton: false,
       preventEsc: false,
-      renderTemplate: () => html`<p>i'm inside a modal</p>
-        <button
-          onclick=${() => {
-            this.showNestedModal();
-          }}
-        >
-          open nested modal
-        </button> `
+      renderTemplate: () =>
+        html`<p>i'm inside a modal</p>
+          <button
+            onclick=${() => {
+              this.showNestedModal();
+            }}
+          >
+            open nested modal
+          </button> `
     });
 
     modal.afterClosed().then(() => {

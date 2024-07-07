@@ -81,7 +81,7 @@ class AppComponent {
       canActivate: () => {
         return new Observable((observer) => {
           setTimeout(() => {
-            let key = localStorage.getItem('@plumejs/core');
+            const key = localStorage.getItem('@plumejs/core');
             if (!key) {
               this.routerSrvc.navigateTo('/home');
               observer.next(false);

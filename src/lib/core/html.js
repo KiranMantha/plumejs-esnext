@@ -25,7 +25,7 @@ const { html, render } = (() => {
     };
     let str = JSON.stringify(data);
     const replaceTag = (tag) => tagsToReplace[tag] || tag;
-    const safe_tags_replace = (str) => str.replace(/[&<>\(\)]/g, replaceTag);
+    const safe_tags_replace = (str) => str.replace(/[&<>()]/g, replaceTag);
     str = safe_tags_replace(str);
     return JSON.parse(str);
   };

@@ -34,8 +34,8 @@ class Observable {
   }
 }
 
-let Subscription = function (handlerId, unsubscribeNotificationCallback) {
-  let self = this;
+const Subscription = function (handlerId, unsubscribeNotificationCallback) {
+  const self = this;
 
   self.unsubscribe = () => {
     if (unsubscribeNotificationCallback) {
@@ -46,10 +46,10 @@ let Subscription = function (handlerId, unsubscribeNotificationCallback) {
   return self;
 };
 
-let Subject = function (subscribersStateChangeNotificationCallback) {
-  let self = this;
+const Subject = function (subscribersStateChangeNotificationCallback) {
+  const self = this;
 
-  let handlers = {};
+  const handlers = {};
 
   Object.defineProperty(self, 'subscribersFound', {
     get() {
@@ -80,7 +80,7 @@ let Subject = function (subscribersStateChangeNotificationCallback) {
     }
   });
 
-  let unsubscribeNotificationCallback = (handlerId) => {
+  const unsubscribeNotificationCallback = (handlerId) => {
     if (handlerId && handlerId !== '' && handlers.hasOwnProperty(handlerId)) {
       delete handlers[handlerId];
 
@@ -91,7 +91,7 @@ let Subject = function (subscribersStateChangeNotificationCallback) {
   };
 
   self.subscribe = (handler) => {
-    let handlerId = createGuid();
+    const handlerId = createGuid();
     handlers[handlerId] = handler;
 
     if (subscribersStateChangeNotificationCallback && self.subscribersCount === 1) {
@@ -110,7 +110,7 @@ let Subject = function (subscribersStateChangeNotificationCallback) {
   return self;
 };
 
-let createGuid = function () {
+const createGuid = function () {
   return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
     var r = (Math.random() * 16) | 0,
       v = c === 'x' ? r : (r & 0x3) | 0x8;

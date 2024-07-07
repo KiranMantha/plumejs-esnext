@@ -31,7 +31,7 @@ class ItemsComponent {
       this.personsList.push(this.sheetForm.value);
       this.sheetForm.reset();
       axios
-        .get(this.apiUrl + `?f=insert&n=${value}`)
+        .get(this.apiUrl + `?f=insert`)
         .then((response) => response.data)
         .then((res) => {
           if (res.data.success) {

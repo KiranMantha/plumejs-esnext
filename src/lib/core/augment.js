@@ -37,7 +37,9 @@ function signal(initialValue, callback) {
     }
     try {
       updateFn();
-    } catch (e) {}
+    } catch (e) {
+      console.log(e);
+    }
   };
   return boundSignal;
 }

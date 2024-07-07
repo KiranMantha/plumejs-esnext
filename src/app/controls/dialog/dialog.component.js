@@ -160,7 +160,7 @@ class AlertDialog extends BaseDialog {
           }}
         >
           <section>${this.alertOptions.message}</section>
-          <menu> ${this.renderActionButtons()} </menu>
+          <menu>${this.renderActionButtons()}</menu>
         </dialog>
       `;
     } else {

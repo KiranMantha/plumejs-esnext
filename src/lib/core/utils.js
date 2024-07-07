@@ -4,7 +4,7 @@ const isObservable = (obj) => !!obj && typeof obj.subscribe === 'function';
 const isPromise = (obj) => !!obj && typeof obj.then === 'function';
 
 const getArgs = (func) => {
-  const result = func.toString().split(/constructor\s*[^\(]*\(\s*([^\)]*)\)/m);
+  const result = func.toString().split(/constructor\s*[^(]*\(\s*([^)]*)\)/m);
   if (result.length === 3) {
     return result[1].split(',').map((a) => a.trim());
   }

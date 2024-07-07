@@ -97,8 +97,8 @@ class CalculatorComponent {
               calc.num === 0 && key === '0'
                 ? '0'
                 : this.removeSpaces(calc.num) % 1 === 0
-                ? this.toLocaleString(Number(this.removeSpaces(calc.num + key)))
-                : this.toLocaleString(calc.num + key),
+                  ? this.toLocaleString(Number(this.removeSpaces(calc.num + key)))
+                  : this.toLocaleString(calc.num + key),
             res: !calc.sign ? 0 : calc.res
           });
         }

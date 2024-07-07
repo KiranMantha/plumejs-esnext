@@ -36,7 +36,7 @@ class DropdownComponent {
         ...this.dropdownOptions
       };
       const { multiple, resetDropdown } = this.dropdownOptions;
-      if (!!resetDropdown) {
+      if (resetDropdown) {
         this.optionsContainerNode.innerHTML = '';
         this.selectedOptions = [];
         this.dropdownOptions.options = this.dropdownOptions.options.map((option) => {

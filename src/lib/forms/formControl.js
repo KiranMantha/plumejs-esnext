@@ -11,7 +11,7 @@ const _getTargetValue = (target) => {
   switch (target.nodeName && target.nodeName.toLowerCase()) {
     case 'input':
     case 'textarea': {
-      let nonTextElements = ['radio', 'checkbox'];
+      const nonTextElements = ['radio', 'checkbox'];
       if (nonTextElements.includes(target.type)) {
         targetValue = target.checked ? (target.value !== null && target.value !== 'on' ? target.value : true) : false;
       } else {

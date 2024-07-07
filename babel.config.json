@@ -1,0 +1,23 @@
+{
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "loose": true,
+        "targets": {
+          "edge": "79",
+          "firefox": "73",
+          "chrome": "73",
+          "safari": "15"
+        },
+        "shippedProposals": true
+      }
+    ]
+  ],
+  "plugins": [
+    "@babel/plugin-syntax-dynamic-import",
+    ["@babel/plugin-proposal-decorators", { "version": "2023-11" }],
+    "@babel/plugin-transform-class-properties",
+    "@babel/plugin-transform-arrow-functions"
+  ]
+}

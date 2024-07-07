@@ -1,4 +1,4 @@
-import { fromEvent, Injectable } from '../../../lib';
+import { fromEvent, html, Injectable } from '../../../lib';
 
 const DEFAULT_MODAL_PROPS = {
   modalTitle: '',
